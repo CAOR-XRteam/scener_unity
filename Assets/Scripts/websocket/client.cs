@@ -1,6 +1,6 @@
-using UnityEngine;
-using NativeWebSocket;
 using System.Collections.Generic;
+using NativeWebSocket;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 public class WebSocketClient : MonoBehaviour
@@ -8,10 +8,9 @@ public class WebSocketClient : MonoBehaviour
     public static WebSocketClient Instance { get; private set; }
 
     WebSocket websocket;
-    List<string> messageHistory = new List<string>();
 
-    // Reference to UI TextField to update
-    TextField chatHistoryField;
+    ScrollView chatScrollView;
+    List<string> messageHistory = new List<string>();
 
     void Awake()
     {
@@ -31,22 +30,14 @@ public class WebSocketClient : MonoBehaviour
         websocket = new WebSocket("ws://localhost:8765");
 
         // Find UIDocument and TextField in scene (assuming one exists)
-        var uiDoc = FindObjectOfType<UIDocument>();
+        var uiDoc = FindFirstObjectByType<UIDocument>();
         if (uiDoc != null)
         {
-            chatHistoryField = uiDoc.rootVisualElement.Q<TextField>("chat_history");
-            if (chatHistoryField != null)
-            {
-                chatHistoryField.isReadOnly = true;
-                chatHistoryField.multiline = true;
-            }
+            var root = uiDoc.rootVisualElement;
+            chatScrollView = root.Q<ScrollView>("chat_scrollview");
         }
 
-        websocket.OnOpen += async () =>
-        {
-            Debug.Log("Connection opened!");
-            // await websocket.SendText("Hello from Unity client!");
-        };
+        websocket.OnOpen += () => Debug.Log("Connection opened!");
         websocket.OnError += e => Debug.Log("Error: " + e);
         websocket.OnClose += e => Debug.Log("Connection closed!");
         websocket.OnMessage += (bytes) =>
@@ -54,7 +45,7 @@ public class WebSocketClient : MonoBehaviour
             string message = System.Text.Encoding.UTF8.GetString(bytes);
             Debug.Log("Received: " + message);
             messageHistory.Add(message);
-            UpdateChatHistoryUI();
+            AddMessageToChat("[Agent]: " + message);
         };
 
         await websocket.Connect();
@@ -67,31 +58,35 @@ public class WebSocketClient : MonoBehaviour
 #endif
     }
 
-    async void OnApplicationQuit()
+    public async void OnApplicationQuit()
     {
         await websocket.Close();
-    }
-
-    void UpdateChatHistoryUI()
-    {
-        if (chatHistoryField != null)
-        {
-            // Join messages with new lines
-            chatHistoryField.value = string.Join("\n", messageHistory);
-        }
     }
 
     public List<string> GetMessageHistory()
     {
         return new List<string>(messageHistory);
     }
-    
-    public async System.Threading.Tasks.Task SendMessage(string message) {
-    if (websocket != null && websocket.State == WebSocketState.Open) {
-        await websocket.SendText(message);
-    } else {
-        Debug.LogWarning("WebSocket is not connected.");
+
+    public async System.Threading.Tasks.Task SendUserMessage(string message)
+    {
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            await websocket.SendText(message);
+        }
+        else
+        {
+            Debug.LogWarning("WebSocket is not connected.");
+        }
+    }
+
+    public void AddMessageToChat(string msg)
+    {
+        if (chatScrollView == null)
+            return;
+
+        var label = new Label(msg);
+        label.AddToClassList("chat-message");
+        chatScrollView.Add(label);
     }
 }
-}
-
