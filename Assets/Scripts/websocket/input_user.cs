@@ -8,8 +8,8 @@ public class WebSocketUIChat : MonoBehaviour {
 
     async void Start() {
         // Setup WebSocket
-        websocket = new WebSocket("ws://localhost:8765");
-        await websocket.Connect();
+        // websocket = new WebSocket("ws://localhost:8765");
+        // await websocket.Connect();
 
         // Get UIDocument root
         var root = GetComponent<UIDocument>().rootVisualElement;
@@ -25,7 +25,7 @@ public class WebSocketUIChat : MonoBehaviour {
         if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter) {
             string message = chatInput.value.Trim();
             if (!string.IsNullOrEmpty(message)) {
-                await websocket.SendText(message);
+                await WebSocketClient.Instance.SendMessage(message);
                 chatInput.value = ""; // clear input
             }
         }
