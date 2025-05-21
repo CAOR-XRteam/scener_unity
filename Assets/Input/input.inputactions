@@ -1,0 +1,74 @@
+{
+    "name": "input",
+    "maps": [
+        {
+            "name": "Camera",
+            "id": "c5871518-8b6c-4202-849f-b9f38f5a10b8",
+            "actions": [
+                {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "937dee32-9451-4301-8a65-57f397f5413f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "OrbitHold",
+                    "type": "Button",
+                    "id": "cc0d8dc0-99d1-4f7e-bf4d-b8b1aa353388",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "94b550c3-66da-406d-b8d6-7dd25879d3ec",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "cbe44ca3-56fd-4f8f-94c0-d1e48c35a4b0",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f282c00f-563b-4da8-9efb-b2a755956dd5",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "OrbitHold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c57b8021-772e-490c-a224-ea4d6ee10619",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
