@@ -4,39 +4,54 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//Define scene object ID
-public class UID : MonoBehaviour {
-  //---------------------------
+public static class SceneData {
+  public static string GetType(GameObject obj) {
+    var types = new List<string>();
+    //---------------------------
 
-  public string ID = Guid.NewGuid().ToString();
+    if (obj.GetComponent<MeshRenderer>() != null) {
+      types.Add("mesh");
+    }
+    if (obj.GetComponent<Light>() != null) {
+      types.Add("light");
+    }
 
-  //---------------------------
-}
+    //---------------------------
+    return types.Count > 0 ? string.Join(", ", types) : "?";
+  }
+  public static string GetNode(GameObject obj) {
+    var node = "?";
+    //---------------------------
 
-//Convert Unity vector3 to json readable vec3
-[Serializable]
-public struct vec3 {
-  //---------------------------
+    if (SceneUtils.HasChildren(obj)) {
+      node = "parent";
+    }
+    else{
+      node = "child";
+    }
 
-  public float x, y, z;
-  public vec3(Vector3 v) {x = v.x; y = v.y; z = v.z;}
+    //---------------------------
+    return node;
+  }
+  public static SceneObject FillObjectData(GameObject obj){
+    //---------------------------
 
-  //---------------------------
-}
+    //Get object ID
+    var uid = obj.GetComponent<UID>();
+    string ID = uid != null ? uid.ID : "default_id";
 
-//Main structure to store each scene elements
-[Serializable]
-public class SceneObject {
-  //---------------------------
+    //Get current object data
+    var data = new SceneObject {
+        id = ID,
+        name = obj.name,
+        type = GetType(obj),
+        node = GetNode(obj),
+        position = new vec3(obj.transform.localPosition),
+        rotation = new vec3(obj.transform.localEulerAngles),
+        scale = new vec3(obj.transform.localScale)
+    };
 
-  public string id;
-  public string name;
-  public string type;
-  public string node;
-  public vec3 position;
-  public vec3 rotation;
-  public vec3 scale;
-  public List<SceneObject> children = new List<SceneObject>();
-
-  //---------------------------
+    //---------------------------
+    return data;
+  }
 }
