@@ -7,5 +7,6 @@
             <ui:TextField name="chat_input" class="chat-input" multiline="true" />
             <ui:Button name="chat_send_button" text="Send" class="chat-send-button" />
         </ui:VisualElement>
+        <ui:VisualElement name="image_container"/>
     </ui:VisualElement>
 </ui:UXML>

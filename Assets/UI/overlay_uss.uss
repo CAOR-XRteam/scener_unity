@@ -29,6 +29,8 @@
     color: black;
     width: 210px;
     height: 40px;
+    overflow: scroll;
+    white-space: normal;
 }
 
 .chat-input-field {
