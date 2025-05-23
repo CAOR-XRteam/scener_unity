@@ -42,8 +42,9 @@ public class SceneGraph {
       bool top_level = (obj.transform.parent == null);
       bool not_hide = (obj.hideFlags == HideFlags.None);
       bool is_active = obj.activeInHierarchy;
+      bool is_ghost = (obj.name == "Ghost");
 
-      if (top_level && not_hide && is_active) {
+      if (top_level && not_hide && is_active && !is_ghost) {
         this.AddChildrenRecursive(obj);
       }
 
