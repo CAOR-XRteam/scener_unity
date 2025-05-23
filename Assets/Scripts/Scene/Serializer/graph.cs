@@ -27,6 +27,7 @@ public class SceneGraph {
       data_parent.children.Add(data);
     } else {
       graph.Add(data);
+      SceneData.SimplifyScene(data);
     }
 
     //---------------------------
@@ -45,6 +46,7 @@ public class SceneGraph {
       if (top_level && not_hide && is_active) {
         this.AddChildrenRecursive(obj);
       }
+
     }
 
     //---------------------------

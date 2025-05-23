@@ -1,29 +1,7 @@
 {
   "sceneName": "main_scene",
-  "timestamp": "2025-05-22T18:50:56.8463910+02:00",
+  "timestamp": "2025-05-23T11:14:02.2160290+02:00",
   "graph": [
-    {
-      "id": "default_id",
-      "name": "Directional Light",
-      "type": "light",
-      "node": "child",
-      "position": {
-        "x": 5.51,
-        "y": 11.01,
-        "z": 8.12
-      },
-      "rotation": {
-        "x": 42.0383072,
-        "y": 228.7561,
-        "z": 335.9772
-      },
-      "scale": {
-        "x": 1.0,
-        "y": 1.0,
-        "z": 1.0
-      },
-      "children": []
-    },
     {
       "id": "default_id",
       "name": "Assets",
@@ -48,8 +26,8 @@
         {
           "id": "default_id",
           "name": "theatre",
-          "type": "?",
-          "node": "parent",
+          "type": "mesh",
+          "node": "child",
           "position": {
             "x": 0.0,
             "y": 3.83,
@@ -65,36 +43,13 @@
             "y": 10.0,
             "z": 10.0
           },
-          "children": [
-            {
-              "id": "default_id",
-              "name": "geometry_0",
-              "type": "mesh",
-              "node": "child",
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "children": []
-            }
-          ]
+          "children": []
         },
         {
           "id": "default_id",
           "name": "dread",
-          "type": "?",
-          "node": "parent",
+          "type": "mesh",
+          "node": "child",
           "position": {
             "x": -1.13,
             "y": 1.59,
@@ -110,36 +65,13 @@
             "y": 0.27859,
             "z": 0.27859
           },
-          "children": [
-            {
-              "id": "default_id",
-              "name": "default",
-              "type": "mesh",
-              "node": "child",
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "children": []
-            }
-          ]
+          "children": []
         },
         {
           "id": "default_id",
           "name": "teapot",
-          "type": "?",
-          "node": "parent",
+          "type": "mesh",
+          "node": "child",
           "position": {
             "x": 1.77341175,
             "y": 1.80000007,
@@ -155,36 +87,13 @@
             "y": 0.01,
             "z": 0.01
           },
-          "children": [
-            {
-              "id": "default_id",
-              "name": "Object001",
-              "type": "mesh",
-              "node": "child",
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "children": []
-            }
-          ]
+          "children": []
         },
         {
           "id": "default_id",
           "name": "Medieval_building",
-          "type": "?",
-          "node": "parent",
+          "type": "mesh",
+          "node": "child",
           "position": {
             "x": -0.891927838,
             "y": 1.4000001,
@@ -200,32 +109,53 @@
             "y": 0.2,
             "z": 0.2
           },
-          "children": [
-            {
-              "id": "default_id",
-              "name": "default",
-              "type": "mesh",
-              "node": "child",
-              "position": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "rotation": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "scale": {
-                "x": 1.0,
-                "y": 1.0,
-                "z": 1.0
-              },
-              "children": []
-            }
-          ]
+          "children": []
         }
       ]
+    },
+    {
+      "id": "default_id",
+      "name": "Directional Light",
+      "type": "light",
+      "node": "child",
+      "position": {
+        "x": 5.51,
+        "y": 11.01,
+        "z": 8.12
+      },
+      "rotation": {
+        "x": 42.0383072,
+        "y": 228.7561,
+        "z": 335.9772
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "children": []
+    },
+    {
+      "id": "default_id",
+      "name": "Ghost",
+      "type": "mesh",
+      "node": "child",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "children": []
     }
   ]
 }

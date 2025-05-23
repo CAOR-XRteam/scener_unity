@@ -33,6 +33,22 @@ public static class SceneData {
     //---------------------------
     return node;
   }
+  public static void SimplifyScene(SceneObject node) {
+    //---------------------------
+
+    if (node.children.Count == 1 && node.type == "?" && node.children[0].type != "?") {
+      var child = node.children[0];
+      node.type = child.type;
+      node.node = child.node;
+      node.children = child.children;
+    }
+
+    foreach (var child in node.children) {
+      SimplifyScene(child);
+    }
+
+    //---------------------------
+  }
   public static SceneObject FillObjectData(GameObject obj){
     //---------------------------
 
