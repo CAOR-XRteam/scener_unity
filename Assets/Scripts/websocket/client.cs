@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using NativeWebSocket;
 using Newtonsoft.Json;
@@ -189,8 +190,8 @@ public class WebSocketClient : MonoBehaviour
                 scaleMode = ScaleMode.ScaleToFit,
                 style =
                 {
-                    width = Length.Percent(100),
-                    height = tex.height,
+                    width = 64,
+                    height = 64,
                     marginTop = 5,
                     marginBottom = 5,
                 },

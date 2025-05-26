@@ -4,9 +4,9 @@
         <ui:Label text="Chat" class="chat-title" />
         <ui:ScrollView name="chat_scrollview" show-vertical-scroller="true" class="chat-scrollview" />
         <ui:VisualElement name="chat_input_field" class="chat-input-field">
-            <ui:TextField name="chat_input" class="chat-input" multiline="true" />
+            <ui:TextField name="chat_input" multiline="true" class="chat-input" />
             <ui:Button name="chat_send_button" text="Send" class="chat-send-button" />
         </ui:VisualElement>
-        <ui:VisualElement name="image_container"/>
     </ui:VisualElement>
+    <ui:VisualElement name="image_container" class="image_container" style="align-items: flex-start; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
 </ui:UXML>
