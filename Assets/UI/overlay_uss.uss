@@ -15,6 +15,7 @@
     flex-grow: 1;
     background-color: rgb(166, 204, 241);
     height: 150px;
+    white-space: normal;
 }
 
 .chat-message {

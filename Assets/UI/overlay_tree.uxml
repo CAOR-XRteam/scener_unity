@@ -8,5 +8,5 @@
             <ui:Button name="chat_send_button" text="Send" class="chat-send-button" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="image_container" class="image_container" style="align-items: flex-start; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+    <ui:VisualElement name="image_container" class="image_container" />
 </ui:UXML>

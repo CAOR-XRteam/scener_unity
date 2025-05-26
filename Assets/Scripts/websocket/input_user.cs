@@ -30,7 +30,7 @@ public class WebSocketUIChat : MonoBehaviour
             if (!string.IsNullOrEmpty(message))
             {
                 await WebSocketClient.Instance.SendUserMessage(message);
-                WebSocketClient.Instance.AddMessageToChat("[You]: " + message);
+                WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
                 chatInput.value = ""; // clear input
             }
         }
@@ -42,7 +42,7 @@ public class WebSocketUIChat : MonoBehaviour
         if (!string.IsNullOrEmpty(message))
         {
             await WebSocketClient.Instance.SendUserMessage(message);
-            WebSocketClient.Instance.AddMessageToChat("[You]: " + message);
+            WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
             chatInput.value = "";
         }
     }

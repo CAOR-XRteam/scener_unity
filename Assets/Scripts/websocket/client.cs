@@ -1,49 +1,17 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization;
 using NativeWebSocket;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class WebSocketClient : MonoBehaviour
 {
-    public enum Action
-    {
-        [EnumMember(Value = "thinking_process")]
-        ThinkingProcess,
-
-        [EnumMember(Value = "agent_response")]
-        AgentResponse,
-
-        [EnumMember(Value = "image_generation")]
-        GenerateImage,
-    }
-
-    public enum Status
-    {
-        stream,
-        error,
-    };
-
-    public class IncomingMessage
-    {
-        public Status status;
-
-        public int code;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public Action action;
-
-        public string message;
-    }
-
     public static WebSocketClient Instance { get; private set; }
 
     WebSocket websocket;
 
     ScrollView chatScrollView;
+    private Label chatTextLabel;
     List<string> messageHistory = new List<string>();
 
     private int expectedImages = 0;
@@ -75,6 +43,18 @@ public class WebSocketClient : MonoBehaviour
             var root = uiDoc.rootVisualElement;
             chatScrollView = root.Q<ScrollView>("chat_scrollview");
             imageContainer = root.Q<VisualElement>("image_container");
+
+            chatTextLabel = new Label();
+            chatTextLabel.style.whiteSpace = WhiteSpace.Normal;
+            chatTextLabel.style.flexGrow = 1;
+            chatTextLabel.selection.isSelectable = true;
+            chatTextLabel.pickingMode = PickingMode.Position;
+            chatTextLabel.enableRichText = true;
+            Font myFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            chatTextLabel.style.unityFont = myFont;
+            chatTextLabel.AddToClassList("chat-message");
+
+            chatScrollView.Add(chatTextLabel);
         }
 
         websocket.OnOpen += () => Debug.Log("Connection opened!");
@@ -101,12 +81,12 @@ public class WebSocketClient : MonoBehaviour
                     awaitingImages = true;
                     receivedImages.Clear();
                     Debug.Log("Awaiting images...");
-                    AddMessageToChat("[Agent]: " + parsed.message);
+                    AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
                 }
                 else
                 {
                     Debug.Log($"Received message: {parsed.message}");
-                    AddMessageToChat("[Agent]: " + parsed.message);
+                    AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
                 }
             }
             catch
@@ -175,9 +155,8 @@ public class WebSocketClient : MonoBehaviour
         if (chatScrollView == null)
             return;
 
-        var label = new Label(msg);
-        label.AddToClassList("chat-message");
-        chatScrollView.Add(label);
+        chatTextLabel.text += msg + "\n\n";
+        chatScrollView.Add(chatTextLabel);
     }
 
     void DisplayImages(List<Texture2D> images)
