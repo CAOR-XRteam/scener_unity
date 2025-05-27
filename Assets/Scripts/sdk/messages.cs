@@ -44,8 +44,17 @@ public enum OutputType
     Gesture,
 }
 
-public class OutgoingMessageType
+public enum Command
 {
+    [EnumMember(Value = "chat")]
+    Chat,
+}
+
+public class OutgoingMessageMeta
+{
+    [JsonConverter(typeof(StringEnumConverter))]
+    public Command command;
+
     [JsonConverter(typeof(StringEnumConverter))]
     public OutputType type;
 }

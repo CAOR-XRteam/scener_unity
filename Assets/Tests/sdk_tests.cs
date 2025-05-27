@@ -71,4 +71,29 @@ public class SdkTests
         Assert.AreEqual(Action.GenerateImage, res4.action);
         Assert.AreEqual("OK", res4.message);
     }
+
+    [Test]
+    public void TestSereializeOutgoingMessageMeta()
+    {
+        var meta1 = new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text };
+        var meta2 = new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Audio };
+        var meta3 = new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Gesture };
+
+        string ser1 = JsonConvert.SerializeObject(meta1);
+        string ser2 = JsonConvert.SerializeObject(meta2);
+        string ser3 = JsonConvert.SerializeObject(meta3);
+
+        var deser1 = JsonConvert.DeserializeObject<OutgoingMessageMeta>(ser1);
+        var deser2 = JsonConvert.DeserializeObject<OutgoingMessageMeta>(ser2);
+        var deser3 = JsonConvert.DeserializeObject<OutgoingMessageMeta>(ser3);
+
+        Assert.AreEqual(Command.Chat, deser1.command);
+        Assert.AreEqual(OutputType.Text, deser1.type);
+
+        Assert.AreEqual(Command.Chat, deser2.command);
+        Assert.AreEqual(OutputType.Audio, deser2.type);
+
+        Assert.AreEqual(Command.Chat, deser3.command);
+        Assert.AreEqual(OutputType.Gesture, deser3.type);
+    }
 }

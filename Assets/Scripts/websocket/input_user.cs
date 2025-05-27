@@ -74,7 +74,9 @@ public class WebSocketUIChat : MonoBehaviour
             byte[] audioData = VoiceInput.ConvertToWav(recordedClip);
 
             await WebSocketClient.Instance.SendTextMessage(
-                JsonConvert.SerializeObject(new OutgoingMessageType { type = OutputType.Audio })
+                JsonConvert.SerializeObject(
+                    new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Audio }
+                )
             );
             await WebSocketClient.Instance.SendBytesMessage(audioData);
         }
