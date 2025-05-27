@@ -1,5 +1,5 @@
 .chatbox {
-    width: 300px;
+    width: 370px;
     height: 220px;
     padding: 10px;
     flex-direction: column;
@@ -41,6 +41,14 @@
 }
 
 .chat-send-button {
+    width: 60px;
+    background-color: rgb(41, 128, 185);
+    color: white;
+    font-size: 13px;
+    border-radius: 4px;
+}
+
+.chat-dictate-button {
     width: 60px;
     background-color: rgb(41, 128, 185);
     color: white;

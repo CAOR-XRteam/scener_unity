@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -18,6 +19,10 @@ public class WebSocketClient : MonoBehaviour
     private bool awaitingImages = false;
     private List<Texture2D> receivedImages = new();
     public VisualElement imageContainer;
+
+    private AudioClip recordedClip;
+    private const int maxRecordDuration = 10;
+    private string microphoneDevice;
 
     void Awake()
     {
@@ -138,11 +143,25 @@ public class WebSocketClient : MonoBehaviour
         return new List<string>(messageHistory);
     }
 
-    public async System.Threading.Tasks.Task SendUserMessage(string message)
+    public async System.Threading.Tasks.Task SendTextMessage(string message)
     {
         if (websocket != null && websocket.State == WebSocketState.Open)
         {
             await websocket.SendText(message);
+            Debug.Log($"Sent message: {message}");
+        }
+        else
+        {
+            Debug.LogWarning("WebSocket is not connected.");
+        }
+    }
+
+    public async System.Threading.Tasks.Task SendBytesMessage(byte[] message)
+    {
+        if (websocket != null && websocket.State == WebSocketState.Open)
+        {
+            await websocket.Send(message);
+            Debug.Log("Sent binary message");
         }
         else
         {
@@ -178,5 +197,11 @@ public class WebSocketClient : MonoBehaviour
 
             imageContainer.Add(image);
         }
+    }
+
+    public void StartRecording()
+    {
+        Debug.Log("Starting recording...");
+        recordedClip = Microphone.Start(microphoneDevice, false, maxRecordDuration, 44100);
     }
 }

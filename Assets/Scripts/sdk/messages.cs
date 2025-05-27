@@ -39,16 +39,13 @@ public enum OutputType
 
     [EnumMember(Value = "audio")]
     Audio,
+
+    [EnumMember(Value = "gesture")]
+    Gesture,
 }
 
-public class OutgoingTextMessage
+public class OutgoingMessageType
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public OutputType type;
-    public string text;
-}
-
-public class OutgoingAudioMessage
-{
-    public OutputType type;
-    public byte[] audio;
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class VoiceInput : MonoBehaviour
 {
-    private static byte[] ConvertAudioToByteArray(AudioClip clip)
+    public static byte[] ConvertToWav(AudioClip clip)
     {
         var samples = new float[clip.samples];
         clip.GetData(samples, 0);

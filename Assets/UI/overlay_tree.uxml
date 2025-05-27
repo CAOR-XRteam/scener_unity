@@ -6,6 +6,7 @@
         <ui:VisualElement name="chat_input_field" class="chat-input-field">
             <ui:TextField name="chat_input" multiline="true" class="chat-input" />
             <ui:Button name="chat_send_button" text="Send" class="chat-send-button" />
+            <ui:Button name="chat_dictate_button" text="Dictate" class="chat-dictate-button" />
         </ui:VisualElement>
     </ui:VisualElement>
     <ui:VisualElement name="image_container" class="image_container" />
