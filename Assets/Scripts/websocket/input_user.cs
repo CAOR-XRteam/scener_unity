@@ -39,6 +39,11 @@ public class WebSocketUIChat : MonoBehaviour
             string message = chatInput.value.Trim();
             if (!string.IsNullOrEmpty(message))
             {
+                await WebSocketClient.Instance.SendTextMessage(
+                    JsonConvert.SerializeObject(
+                        new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
+                    )
+                );
                 await WebSocketClient.Instance.SendTextMessage(message);
                 WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
                 chatInput.value = ""; // clear input
@@ -51,6 +56,11 @@ public class WebSocketUIChat : MonoBehaviour
         string message = chatInput.value.Trim();
         if (!string.IsNullOrEmpty(message))
         {
+            await WebSocketClient.Instance.SendTextMessage(
+                JsonConvert.SerializeObject(
+                    new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
+                )
+            );
             await WebSocketClient.Instance.SendTextMessage(message);
             WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
             chatInput.value = "";
@@ -61,13 +71,13 @@ public class WebSocketUIChat : MonoBehaviour
     {
         if (!isRecording)
         {
-            Debug.Log("Starting recording...");
+            Debug.Log("Started recording...");
             recordedClip = Microphone.Start(microphoneDevice, false, maxRecordDuration, 44100);
             isRecording = true;
         }
         else
         {
-            Debug.Log("Stopping recording...");
+            Debug.Log("Stopped recording...");
             Microphone.End(microphoneDevice);
             isRecording = false;
 

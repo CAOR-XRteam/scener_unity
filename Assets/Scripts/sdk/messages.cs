@@ -12,6 +12,9 @@ public enum Action
 
     [EnumMember(Value = "image_generation")]
     GenerateImage,
+
+    [EnumMember(Value = "converted_speech")]
+    ConvertedSpeech,
 }
 
 public enum Status

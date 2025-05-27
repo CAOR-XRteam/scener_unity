@@ -1,8 +1,7 @@
-using System.Collections;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
+
+// TODO: unit tests
 
 public class SdkTests
 {
@@ -40,6 +39,15 @@ public class SdkTests
         string input4 =
             @"
         {
+            ""status"": ""stream"",
+            ""code"": 200,
+            ""action"": ""converted_speech"",
+            ""message"": ""OK""
+        }";
+
+        string input5 =
+            @"
+        {
             ""status"": ""error"",
             ""code"": 200,
             ""action"": ""image_generation"",
@@ -50,6 +58,7 @@ public class SdkTests
         var res2 = JsonConvert.DeserializeObject<IncomingMessage>(input2);
         var res3 = JsonConvert.DeserializeObject<IncomingMessage>(input3);
         var res4 = JsonConvert.DeserializeObject<IncomingMessage>(input4);
+        var res5 = JsonConvert.DeserializeObject<IncomingMessage>(input5);
 
         Assert.AreEqual(Status.stream, res1.status);
         Assert.AreEqual(200, res1.code);
@@ -66,10 +75,15 @@ public class SdkTests
         Assert.AreEqual(Action.GenerateImage, res3.action);
         Assert.AreEqual("OK", res3.message);
 
-        Assert.AreEqual(Status.error, res4.status);
+        Assert.AreEqual(Status.stream, res4.status);
         Assert.AreEqual(200, res4.code);
-        Assert.AreEqual(Action.GenerateImage, res4.action);
+        Assert.AreEqual(Action.ConvertedSpeech, res4.action);
         Assert.AreEqual("OK", res4.message);
+
+        Assert.AreEqual(Status.error, res5.status);
+        Assert.AreEqual(200, res5.code);
+        Assert.AreEqual(Action.GenerateImage, res5.action);
+        Assert.AreEqual("OK", res5.message);
     }
 
     [Test]

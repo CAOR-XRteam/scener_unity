@@ -88,6 +88,16 @@ public class WebSocketClient : MonoBehaviour
                     Debug.Log("Awaiting images...");
                     AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
                 }
+                else if (parsed.action == Action.ConvertedSpeech)
+                {
+                    AddMessageToChat("<b>[You]</b>: " + parsed.message);
+                    Debug.Log($"Received converted audio message: {parsed.message}");
+                }
+                else if (parsed.action == Action.ThinkingProcess)
+                {
+                    Debug.Log($"Thinking process: {parsed.message}");
+                    AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
+                }
                 else
                 {
                     Debug.Log($"Received message: {parsed.message}");
