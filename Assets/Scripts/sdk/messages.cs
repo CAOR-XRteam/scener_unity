@@ -31,3 +31,24 @@ public class IncomingMessage
 
     public string message;
 }
+
+public enum OutputType
+{
+    [EnumMember(Value = "text")]
+    Text,
+
+    [EnumMember(Value = "audio")]
+    Audio,
+}
+
+public class OutgoingTextMessage
+{
+    public OutputType type;
+    public string text;
+}
+
+public class OutgoingAudioMessage
+{
+    public OutputType type;
+    public byte[] audio;
+}
