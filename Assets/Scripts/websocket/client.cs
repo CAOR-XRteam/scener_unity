@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Data.SqlTypes;
 using NativeWebSocket;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -13,16 +12,12 @@ public class WebSocketClient : MonoBehaviour
 
     ScrollView chatScrollView;
     private Label chatTextLabel;
-    List<string> messageHistory = new List<string>();
+    readonly List<string> messageHistory = new();
 
     private int expectedImages = 0;
     private bool awaitingImages = false;
-    private List<Texture2D> receivedImages = new();
+    private readonly List<Texture2D> receivedImages = new();
     public VisualElement imageContainer;
-
-    private AudioClip recordedClip;
-    private const int maxRecordDuration = 10;
-    private string microphoneDevice;
 
     void Awake()
     {
@@ -108,7 +103,7 @@ public class WebSocketClient : MonoBehaviour
             {
                 if (awaitingImages)
                 {
-                    Texture2D tex = new Texture2D(2, 2);
+                    Texture2D tex = new(2, 2);
                     if (tex.LoadImage(bytes))
                     {
                         receivedImages.Add(tex);
@@ -207,11 +202,5 @@ public class WebSocketClient : MonoBehaviour
 
             imageContainer.Add(image);
         }
-    }
-
-    public void StartRecording()
-    {
-        Debug.Log("Starting recording...");
-        recordedClip = Microphone.Start(microphoneDevice, false, maxRecordDuration, 44100);
     }
 }

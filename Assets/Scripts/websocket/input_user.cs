@@ -1,11 +1,11 @@
 using NativeWebSocket;
 using Newtonsoft.Json;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class WebSocketUIChat : MonoBehaviour
 {
+    public static WebSocketUIChat Instance { get; private set; }
     readonly WebSocket websocket;
     TextField chatInput;
     Button chatSendButton;
@@ -13,7 +13,7 @@ public class WebSocketUIChat : MonoBehaviour
     private AudioClip recordedClip;
     private const int maxRecordDuration = 60;
     private const int standardFreq = 44100;
-    private string microphoneDevice;
+    public string microphoneDevice;
     private bool isRecording = false;
 
     void Start()
@@ -86,10 +86,11 @@ public class WebSocketUIChat : MonoBehaviour
         else
         {
             Debug.Log("Stopped recording...");
+            int pos = Microphone.GetPosition(microphoneDevice);
             Microphone.End(microphoneDevice);
             isRecording = false;
 
-            byte[] audioData = VoiceInput.ConvertToWav(recordedClip);
+            byte[] audioData = VoiceInput.ConvertToWav(pos, recordedClip);
 
             await WebSocketClient.Instance.SendTextMessage(
                 JsonConvert.SerializeObject(

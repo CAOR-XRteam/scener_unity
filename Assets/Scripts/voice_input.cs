@@ -1,13 +1,32 @@
-using System.Collections;
 using System.IO;
 using UnityEngine;
 
 public class VoiceInput : MonoBehaviour
 {
-    public static byte[] ConvertToWav(AudioClip clip)
+    private static float[] TrimAudioClip(int pos, AudioClip clip)
     {
-        var samples = new float[clip.samples];
-        clip.GetData(samples, 0);
+        // Mic recording pads clips with silence to maxRecordDuration so have to trim before sendind to the server
+
+        var originalClip = new float[clip.samples * clip.channels];
+        var trimmedClip = new float[pos * clip.channels];
+
+        clip.GetData(originalClip, 0);
+        System.Array.Copy(originalClip, 0, trimmedClip, 0, pos * clip.channels);
+        AudioClip newClip = AudioClip.Create(
+            "trimmed_clip",
+            pos,
+            clip.channels,
+            clip.frequency,
+            false
+        );
+        newClip.GetData(trimmedClip, 0);
+
+        return trimmedClip;
+    }
+
+    public static byte[] ConvertToWav(int pos, AudioClip clip)
+    {
+        var samples = TrimAudioClip(pos, clip);
 
         MemoryStream stream = new();
         BinaryWriter writer = new(stream);
