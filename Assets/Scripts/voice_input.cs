@@ -12,14 +12,14 @@ public class VoiceInput : MonoBehaviour
 
         clip.GetData(originalClip, 0);
         System.Array.Copy(originalClip, 0, trimmedClip, 0, pos * clip.channels);
-        AudioClip newClip = AudioClip.Create(
-            "trimmed_clip",
-            pos,
-            clip.channels,
-            clip.frequency,
-            false
-        );
-        newClip.GetData(trimmedClip, 0);
+        // AudioClip newClip = AudioClip.Create(
+        //     "trimmed_clip",
+        //     pos,
+        //     clip.channels,
+        //     clip.frequency,
+        //     false
+        // );
+        // newClip.GetData(trimmedClip, 0);
 
         return trimmedClip;
     }
@@ -33,7 +33,7 @@ public class VoiceInput : MonoBehaviour
 
         //RIFF CHUNK
         writer.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
-        writer.Write(36 + clip.samples * clip.channels * 2); // 36 + data size
+        writer.Write(36 + samples.Length * 2); // 36 + data size
         writer.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
 
         //FMT CHUNK
