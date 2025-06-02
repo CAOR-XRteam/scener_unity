@@ -12,6 +12,7 @@ public class WebSocketUIChat : MonoBehaviour
     Button micButton;
     private AudioClip recordedClip;
     private const int maxRecordDuration = 60;
+    private const int standardFreq = 44100;
     private string microphoneDevice;
     private bool isRecording = false;
 
@@ -74,7 +75,12 @@ public class WebSocketUIChat : MonoBehaviour
         {
             Debug.Log("Started recording...");
             Debug.Log($"Mic: {microphoneDevice}");
-            recordedClip = Microphone.Start(microphoneDevice, false, maxRecordDuration, 44100);
+            recordedClip = Microphone.Start(
+                microphoneDevice,
+                false,
+                maxRecordDuration,
+                standardFreq
+            );
             isRecording = true;
         }
         else
