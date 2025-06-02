@@ -29,6 +29,7 @@ public class WebSocketUIChat : MonoBehaviour
         chatInput.RegisterCallback<KeyDownEvent>(OnChatInputKeyDown);
         chatSendButton.clicked += OnSendClicked;
 
+        microphoneDevice = Microphone.devices[0];
         micButton.clicked += ToggleRecording;
     }
 
@@ -72,6 +73,7 @@ public class WebSocketUIChat : MonoBehaviour
         if (!isRecording)
         {
             Debug.Log("Started recording...");
+            Debug.Log($"Mic: {microphoneDevice}");
             recordedClip = Microphone.Start(microphoneDevice, false, maxRecordDuration, 44100);
             isRecording = true;
         }
