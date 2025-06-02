@@ -23,12 +23,14 @@ public class VoiceInput : MonoBehaviour
         MemoryStream stream = new();
         BinaryWriter writer = new(stream);
 
-        //RIFF CHUNK
+        // Various WAV headers so that whisper can read it directly from a file
+
+        // RIFF CHUNK
         writer.Write(System.Text.Encoding.ASCII.GetBytes("RIFF"));
         writer.Write(36 + samples.Length * 2); // 36 + data size
         writer.Write(System.Text.Encoding.ASCII.GetBytes("WAVE"));
 
-        //FMT CHUNK
+        // FMT CHUNK
         writer.Write(System.Text.Encoding.UTF8.GetBytes("fmt "));
         writer.Write(16); // Subchunk size for PCM
         writer.Write((ushort)1); // Audio format (1 for PCM)
@@ -38,7 +40,7 @@ public class VoiceInput : MonoBehaviour
         writer.Write((ushort)(clip.channels * 2)); // Block align
         writer.Write((ushort)16); // Bits per sample
 
-        //DATA CHUNK
+        // DATA CHUNK
         writer.Write(System.Text.Encoding.UTF8.GetBytes("data"));
         writer.Write(samples.Length * 2);
 
