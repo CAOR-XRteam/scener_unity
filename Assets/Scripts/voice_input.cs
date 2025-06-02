@@ -12,14 +12,6 @@ public class VoiceInput : MonoBehaviour
 
         clip.GetData(originalClip, 0);
         System.Array.Copy(originalClip, 0, trimmedClip, 0, pos * clip.channels);
-        // AudioClip newClip = AudioClip.Create(
-        //     "trimmed_clip",
-        //     pos,
-        //     clip.channels,
-        //     clip.frequency,
-        //     false
-        // );
-        // newClip.GetData(trimmedClip, 0);
 
         return trimmedClip;
     }
