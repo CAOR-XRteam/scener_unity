@@ -1,17 +1,35 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class ArcballCameraNew : MonoBehaviour
 {
-    [SerializeField] private Transform target;
-    [SerializeField] private float distance = 5f;
-    [SerializeField] private float zoomSpeed = 30f;
-    [SerializeField] private float minDistance = 1f;
-    [SerializeField] private float maxDistance = 20f;
-    [SerializeField] private float xSpeed = 80f;
-    [SerializeField] private float ySpeed = 80f;
-    [SerializeField] private float yMinLimit = -20f;
-    [SerializeField] private float yMaxLimit = 80f;
+    [SerializeField]
+    private Transform target;
+
+    [SerializeField]
+    private float distance = 5f;
+
+    [SerializeField]
+    private float zoomSpeed = 30f;
+
+    [SerializeField]
+    private float minDistance = 1f;
+
+    [SerializeField]
+    private float maxDistance = 20f;
+
+    [SerializeField]
+    private float xSpeed = 80f;
+
+    [SerializeField]
+    private float ySpeed = 80f;
+
+    [SerializeField]
+    private float yMinLimit = -20f;
+
+    [SerializeField]
+    private float yMaxLimit = 80f;
 
     private float x = 0.0f;
     private float y = 0.0f;
@@ -41,9 +59,12 @@ public class ArcballCameraNew : MonoBehaviour
         orbitHoldAction = map.FindAction("OrbitHold");
         zoomAction = map.FindAction("Zoom");
 
-        if (lookAction == null) Debug.LogError("Look action missing!");
-        if (orbitHoldAction == null) Debug.LogError("OrbitHold action missing!");
-        if (zoomAction == null) Debug.LogError("Zoom action missing!");
+        if (lookAction == null)
+            Debug.LogError("Look action missing!");
+        if (orbitHoldAction == null)
+            Debug.LogError("OrbitHold action missing!");
+        if (zoomAction == null)
+            Debug.LogError("Zoom action missing!");
 
         map.Enable();
     }
@@ -70,6 +91,12 @@ public class ArcballCameraNew : MonoBehaviour
 
     void LateUpdate()
     {
+        if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+        {
+            // If the pointer is over UI, do not process camera input
+            return;
+        }
+
         if (lookAction == null || orbitHoldAction == null || zoomAction == null)
         {
             Debug.LogError("Input actions not assigned!");
@@ -101,4 +128,3 @@ public class ArcballCameraNew : MonoBehaviour
         transform.position = target.position + offset;
     }
 }
-

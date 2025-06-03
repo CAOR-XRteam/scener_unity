@@ -1,12 +1,20 @@
 using NativeWebSocket;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class WebSocketUIChat : MonoBehaviour
 {
-    WebSocket websocket;
+    public static WebSocketUIChat Instance { get; private set; }
+    readonly WebSocket websocket;
     TextField chatInput;
     Button chatSendButton;
+    Button micButton;
+    private AudioClip recordedClip;
+    private const int maxRecordDuration = 60;
+    private const int standardFreq = 44100;
+    public string microphoneDevice;
+    private bool isRecording = false;
 
     void Start()
     {
@@ -16,10 +24,14 @@ public class WebSocketUIChat : MonoBehaviour
         // Find the TextField
         chatInput = root.Q<TextField>("chat_input");
         chatSendButton = root.Q<Button>("chat_send_button");
+        micButton = root.Q<Button>("chat_dictate_button");
 
         // Register callback
         chatInput.RegisterCallback<KeyDownEvent>(OnChatInputKeyDown);
         chatSendButton.clicked += OnSendClicked;
+
+        microphoneDevice = Microphone.devices[0];
+        micButton.clicked += ToggleRecording;
     }
 
     async void OnChatInputKeyDown(KeyDownEvent evt)
@@ -29,8 +41,13 @@ public class WebSocketUIChat : MonoBehaviour
             string message = chatInput.value.Trim();
             if (!string.IsNullOrEmpty(message))
             {
-                await WebSocketClient.Instance.SendUserMessage(message);
-                WebSocketClient.Instance.AddMessageToChat("[You]: " + message);
+                await WebSocketClient.Instance.SendTextMessage(
+                    JsonConvert.SerializeObject(
+                        new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
+                    )
+                );
+                await WebSocketClient.Instance.SendTextMessage(message);
+                WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
                 chatInput.value = ""; // clear input
             }
         }
@@ -41,9 +58,46 @@ public class WebSocketUIChat : MonoBehaviour
         string message = chatInput.value.Trim();
         if (!string.IsNullOrEmpty(message))
         {
-            await WebSocketClient.Instance.SendUserMessage(message);
-            WebSocketClient.Instance.AddMessageToChat("[You]: " + message);
+            await WebSocketClient.Instance.SendTextMessage(
+                JsonConvert.SerializeObject(
+                    new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
+                )
+            );
+            await WebSocketClient.Instance.SendTextMessage(message);
+            WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
             chatInput.value = "";
+        }
+    }
+
+    async void ToggleRecording()
+    {
+        if (!isRecording)
+        {
+            Debug.Log("Started recording...");
+            Debug.Log($"Mic: {microphoneDevice}");
+            recordedClip = Microphone.Start(
+                microphoneDevice,
+                false,
+                maxRecordDuration,
+                standardFreq
+            );
+            isRecording = true;
+        }
+        else
+        {
+            Debug.Log("Stopped recording...");
+            int pos = Microphone.GetPosition(microphoneDevice);
+            Microphone.End(microphoneDevice);
+            isRecording = false;
+
+            byte[] audioData = VoiceInput.ConvertToWav(pos, recordedClip);
+
+            await WebSocketClient.Instance.SendTextMessage(
+                JsonConvert.SerializeObject(
+                    new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Audio }
+                )
+            );
+            await WebSocketClient.Instance.SendBytesMessage(audioData);
         }
     }
 
