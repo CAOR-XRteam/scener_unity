@@ -1,16 +1,127 @@
 {
   "sceneName": "main_scene",
-  "timestamp": "2025-05-23T11:21:03.8849310+02:00",
+  "timestamp": "2025-05-23T14:57:34.0630480+02:00",
   "graph": [
     {
       "id": "default_id",
-      "name": "Ghost",
-      "type": "mesh",
-      "node": "child",
+      "name": "Entity",
+      "type": "?",
+      "node": "parent",
       "position": {
         "x": 0.0,
         "y": 0.0,
         "z": 0.0
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 8.537736E-06,
+        "z": 0.0
+      },
+      "scale": {
+        "x": 1.0,
+        "y": 1.0,
+        "z": 1.0
+      },
+      "children": [
+        {
+          "id": "default_id",
+          "name": "theatre",
+          "type": "mesh",
+          "node": "child",
+          "position": {
+            "x": 0.0,
+            "y": 3.83,
+            "z": 0.0
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 10.0,
+            "y": 10.0,
+            "z": 10.0
+          },
+          "children": []
+        },
+        {
+          "id": "default_id",
+          "name": "dread",
+          "type": "mesh",
+          "node": "child",
+          "position": {
+            "x": -1.13,
+            "y": 1.59,
+            "z": -0.7
+          },
+          "rotation": {
+            "x": 270.0,
+            "y": 138.1616,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.27859,
+            "y": 0.27859,
+            "z": 0.27859
+          },
+          "children": []
+        },
+        {
+          "id": "default_id",
+          "name": "teapot",
+          "type": "mesh",
+          "node": "child",
+          "position": {
+            "x": 1.77341175,
+            "y": 1.80000007,
+            "z": -0.226714224
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": 74.99996,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.01,
+            "y": 0.01,
+            "z": 0.01
+          },
+          "children": []
+        },
+        {
+          "id": "default_id",
+          "name": "Medieval_building",
+          "type": "mesh",
+          "node": "child",
+          "position": {
+            "x": -0.891927838,
+            "y": 1.4000001,
+            "z": 2.29945779
+          },
+          "rotation": {
+            "x": 0.0,
+            "y": -8.537736E-06,
+            "z": 0.0
+          },
+          "scale": {
+            "x": 0.2,
+            "y": 0.2,
+            "z": 0.2
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "default_id",
+      "name": "Light",
+      "type": "light",
+      "node": "child",
+      "position": {
+        "x": -3.17492,
+        "y": 0.0,
+        "z": -9.1388
       },
       "rotation": {
         "x": 0.0,
