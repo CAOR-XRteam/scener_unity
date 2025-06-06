@@ -2,7 +2,10 @@ using NativeWebSocket;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
+using scener.input;
 
+
+namespace scener.ws {
 public class WebSocketUIChat : MonoBehaviour
 {
     public static WebSocketUIChat Instance { get; private set; }
@@ -112,4 +115,5 @@ public class WebSocketUIChat : MonoBehaviour
         websocket?.DispatchMessageQueue();
 #endif
     }
+}
 }

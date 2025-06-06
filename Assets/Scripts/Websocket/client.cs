@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+namespace scener.ws {
 public class WebSocketClient : MonoBehaviour
 {
     public static WebSocketClient Instance { get; private set; }
@@ -203,4 +204,5 @@ public class WebSocketClient : MonoBehaviour
             imageContainer.Add(image);
         }
     }
+}
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
+namespace scener.input {
 public class ArcballCameraNew : MonoBehaviour
 {
     [SerializeField]
@@ -127,4 +128,5 @@ public class ArcballCameraNew : MonoBehaviour
         transform.rotation = rotation;
         transform.position = target.position + offset;
     }
+}
 }

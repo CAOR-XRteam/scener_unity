@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+namespace scener.scene {
 public static class SceneUtils {
   // List of to-keep scene objects
   public static List<Type> filter = new List<Type> {
@@ -40,4 +41,5 @@ public static class SceneUtils {
     //---------------------------
     return false;
   }
+}
 }

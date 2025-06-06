@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace scener.scene {
 //Construct the scene graph
 [Serializable]
 public class SceneGraph {
@@ -53,4 +54,5 @@ public class SceneGraph {
     //---------------------------
   }
 
+}
 }

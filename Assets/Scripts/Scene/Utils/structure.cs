@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
+namespace scener.scene {
 //Define scene object ID
 public class UID : MonoBehaviour {
   //---------------------------
@@ -39,4 +40,5 @@ public class SceneObject {
   public List<SceneObject> children = new List<SceneObject>();
 
   //---------------------------
+}
 }

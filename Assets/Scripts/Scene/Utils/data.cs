@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
+namespace scener.scene {
 public static class SceneData {
   public static string GetType(GameObject obj) {
     var types = new List<string>();
@@ -70,4 +70,5 @@ public static class SceneData {
     //---------------------------
     return data;
   }
+}
 }

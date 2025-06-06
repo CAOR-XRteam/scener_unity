@@ -1,5 +1,6 @@
 using UnityEngine;
 
+namespace scener.scene {
 public class CreateRectangle : MonoBehaviour {
   GameObject rectangle;
   GameObject parent;
@@ -36,4 +37,5 @@ public class CreateRectangle : MonoBehaviour {
 
     //---------------------------
   }
+}
 }

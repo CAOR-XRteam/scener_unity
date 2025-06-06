@@ -1,6 +1,8 @@
 using System.IO;
 using UnityEngine;
 
+
+namespace scener.input {
 public class VoiceInput : MonoBehaviour
 {
     private static float[] TrimAudioClip(int pos, AudioClip clip)
@@ -54,4 +56,5 @@ public class VoiceInput : MonoBehaviour
 
         return bytes;
     }
+}
 }
