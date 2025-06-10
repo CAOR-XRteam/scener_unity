@@ -3,22 +3,22 @@ using NativeWebSocket;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
+using scener.ui;
+
 
 namespace scener.ws {
+
 public class WebSocketClient : MonoBehaviour
 {
     public static WebSocketClient Instance { get; private set; }
 
     WebSocket websocket;
 
-    ScrollView chatScrollView;
-    private Label chatTextLabel;
-    readonly List<string> messageHistory = new();
-
     private int expectedImages = 0;
     private bool awaitingImages = false;
     private readonly List<Texture2D> receivedImages = new();
     public VisualElement imageContainer;
+    private Terminal terminal;
 
     void Awake()
     {
@@ -35,28 +35,7 @@ public class WebSocketClient : MonoBehaviour
 
     async void Start()
     {
-        websocket = new WebSocket("ws://localhost:8765");
-
-        // Find UIDocument and TextField in scene (assuming one exists)
-        var uiDoc = FindFirstObjectByType<UIDocument>();
-        if (uiDoc != null)
-        {
-            var root = uiDoc.rootVisualElement;
-            chatScrollView = root.Q<ScrollView>("chat_scrollview");
-            imageContainer = root.Q<VisualElement>("image_container");
-
-            chatTextLabel = new Label();
-            chatTextLabel.style.whiteSpace = WhiteSpace.Normal;
-            chatTextLabel.style.flexGrow = 1;
-            chatTextLabel.selection.isSelectable = true;
-            chatTextLabel.pickingMode = PickingMode.Position;
-            chatTextLabel.enableRichText = true;
-            Font myFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            chatTextLabel.style.unityFont = myFont;
-            chatTextLabel.AddToClassList("chat-message");
-
-            chatScrollView.Add(chatTextLabel);
-        }
+        //terminal = gameObject.AddComponent<Terminal>();
 
         websocket.OnOpen += () => Debug.Log("Connection opened!");
         websocket.OnError += e => Debug.Log("Error: " + e);
@@ -82,22 +61,22 @@ public class WebSocketClient : MonoBehaviour
                     awaitingImages = true;
                     receivedImages.Clear();
                     Debug.Log("Awaiting images...");
-                    AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
+                    //terminal.AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
                 }
                 else if (parsed.action == Action.ConvertedSpeech)
                 {
-                    AddMessageToChat("<b>[You]</b>: " + parsed.message);
+                    //terminal.AddMessageToChat("<b>[You]</b>: " + parsed.message);
                     Debug.Log($"Received converted audio message: {parsed.message}");
                 }
                 else if (parsed.action == Action.ThinkingProcess)
                 {
                     Debug.Log($"Thinking process: {parsed.message}");
-                    AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
+                    //terminal.AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
                 }
                 else
                 {
                     Debug.Log($"Received message: {parsed.message}");
-                    AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
+                    //terminal.AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
                 }
             }
             catch
@@ -144,11 +123,6 @@ public class WebSocketClient : MonoBehaviour
         await websocket.Close();
     }
 
-    public List<string> GetMessageHistory()
-    {
-        return new List<string>(messageHistory);
-    }
-
     public async System.Threading.Tasks.Task SendTextMessage(string message)
     {
         if (websocket != null && websocket.State == WebSocketState.Open)
@@ -175,15 +149,6 @@ public class WebSocketClient : MonoBehaviour
         }
     }
 
-    public void AddMessageToChat(string msg)
-    {
-        if (chatScrollView == null)
-            return;
-
-        chatTextLabel.text += msg + "\n\n";
-        chatScrollView.Add(chatTextLabel);
-    }
-
     void DisplayImages(List<Texture2D> images)
     {
         foreach (var tex in images)
@@ -205,4 +170,5 @@ public class WebSocketClient : MonoBehaviour
         }
     }
 }
+
 }

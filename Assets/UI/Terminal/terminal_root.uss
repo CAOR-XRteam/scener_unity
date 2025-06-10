@@ -1,0 +1,13 @@
+.terminal_box {
+    width: 370px;
+    height: 220px;
+    padding: 0;
+    flex-direction: column;
+    background-color: rgb(44, 62, 80);
+}
+
+.image_container {
+    align-items: flex-start;
+    margin: 10px;
+    flex-direction: row;
+}

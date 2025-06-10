@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
 using scener.input;
+using scener.ui;
 
 
 namespace scener.ws {
@@ -18,16 +19,18 @@ public class WebSocketUIChat : MonoBehaviour
     private const int standardFreq = 44100;
     public string microphoneDevice;
     private bool isRecording = false;
+    //private Terminal terminal;
 
     void Start()
     {
         // Get UIDocument root
         var root = GetComponent<UIDocument>().rootVisualElement;
+        //terminal = gameObject.AddComponent<Terminal>();
 
         // Find the TextField
-        chatInput = root.Q<TextField>("chat_input");
-        chatSendButton = root.Q<Button>("chat_send_button");
-        micButton = root.Q<Button>("chat_dictate_button");
+        chatInput = root.Q("terminal").Q<VisualElement>("box_input").Q<TextField>("text_input");
+        chatSendButton = root.Q("terminal").Q<VisualElement>("box_input").Q<Button>("button_send");
+        micButton = root.Q("terminal").Q<VisualElement>("box_input").Q<Button>("button_mic");
 
         // Register callback
         chatInput.RegisterCallback<KeyDownEvent>(OnChatInputKeyDown);
@@ -50,7 +53,7 @@ public class WebSocketUIChat : MonoBehaviour
                     )
                 );
                 await WebSocketClient.Instance.SendTextMessage(message);
-                WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
+                //terminal.AddMessageToChat("<b>[You]</b>: " + message);
                 chatInput.value = ""; // clear input
             }
         }
@@ -67,7 +70,7 @@ public class WebSocketUIChat : MonoBehaviour
                 )
             );
             await WebSocketClient.Instance.SendTextMessage(message);
-            WebSocketClient.Instance.AddMessageToChat("<b>[You]</b>: " + message);
+            //terminal.AddMessageToChat("<b>[You]</b>: " + message);
             chatInput.value = "";
         }
     }

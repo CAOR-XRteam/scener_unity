@@ -95,7 +95,7 @@ public class ArcballCameraNew : MonoBehaviour
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
         {
             // If the pointer is over UI, do not process camera input
-            return;
+            //return;
         }
 
         if (lookAction == null || orbitHoldAction == null || zoomAction == null)
