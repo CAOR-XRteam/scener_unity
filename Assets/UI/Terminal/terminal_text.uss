@@ -1,12 +1,7 @@
-:root {
-}
-
 .label_text {
     color: rgb(255, 255, 255);
     font-size: 11px;
     white-space: normal;
-    -unity-line-height: 0;
-    pointer-events: none;
 }
 
 .scroll_box {
@@ -16,5 +11,4 @@
     white-space: normal;
     visibility: visible;
     -unity-text-align: lower-left;
-    pointer-events: none;
 }

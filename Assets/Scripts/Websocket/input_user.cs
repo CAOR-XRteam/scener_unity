@@ -3,10 +3,10 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
 using scener.input;
-using scener.ui;
 
 
 namespace scener.ws {
+
 public class WebSocketUIChat : MonoBehaviour
 {
     public static WebSocketUIChat Instance { get; private set; }
@@ -21,8 +21,9 @@ public class WebSocketUIChat : MonoBehaviour
     private bool isRecording = false;
     //private Terminal terminal;
 
-    void Start()
-    {
+    void Start(){
+        //---------------------------
+
         // Get UIDocument root
         var root = GetComponent<UIDocument>().rootVisualElement;
         //terminal = gameObject.AddComponent<Terminal>();
@@ -38,6 +39,8 @@ public class WebSocketUIChat : MonoBehaviour
 
         microphoneDevice = Microphone.devices[0];
         micButton.clicked += ToggleRecording;
+
+        //---------------------------
     }
 
     async void OnChatInputKeyDown(KeyDownEvent evt)
@@ -47,12 +50,12 @@ public class WebSocketUIChat : MonoBehaviour
             string message = chatInput.value.Trim();
             if (!string.IsNullOrEmpty(message))
             {
-                await WebSocketClient.Instance.SendTextMessage(
+                await WebSocketClient.instance.SendTextMessage(
                     JsonConvert.SerializeObject(
                         new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
                     )
                 );
-                await WebSocketClient.Instance.SendTextMessage(message);
+                await WebSocketClient.instance.SendTextMessage(message);
                 //terminal.AddMessageToChat("<b>[You]</b>: " + message);
                 chatInput.value = ""; // clear input
             }
@@ -64,12 +67,12 @@ public class WebSocketUIChat : MonoBehaviour
         string message = chatInput.value.Trim();
         if (!string.IsNullOrEmpty(message))
         {
-            await WebSocketClient.Instance.SendTextMessage(
+            await WebSocketClient.instance.SendTextMessage(
                 JsonConvert.SerializeObject(
                     new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
                 )
             );
-            await WebSocketClient.Instance.SendTextMessage(message);
+            await WebSocketClient.instance.SendTextMessage(message);
             //terminal.AddMessageToChat("<b>[You]</b>: " + message);
             chatInput.value = "";
         }
@@ -98,18 +101,18 @@ public class WebSocketUIChat : MonoBehaviour
 
             byte[] audioData = VoiceInput.ConvertToWav(pos, recordedClip);
 
-            await WebSocketClient.Instance.SendTextMessage(
+            await WebSocketClient.instance.SendTextMessage(
                 JsonConvert.SerializeObject(
                     new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Audio }
                 )
             );
-            await WebSocketClient.Instance.SendBytesMessage(audioData);
+            await WebSocketClient.instance.SendBytesMessage(audioData);
         }
     }
 
     void OnApplicationQuit()
     {
-        WebSocketClient.Instance.OnApplicationQuit();
+        WebSocketClient.instance.OnApplicationQuit();
     }
 
     void Update()
@@ -119,4 +122,5 @@ public class WebSocketUIChat : MonoBehaviour
 #endif
     }
 }
+
 }

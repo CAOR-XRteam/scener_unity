@@ -1,14 +1,11 @@
-using System.Collections.Generic;
-using NativeWebSocket;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UIElements;
-using scener.ui;
+using System.Collections.Generic;
 
 
-namespace scener.ws {
+namespace ui.terminal {
 
-public class WebSocketClient : MonoBehaviour
+public class TerminalImage : MonoBehaviour
 {
     public VisualElement imageContainer;
   
