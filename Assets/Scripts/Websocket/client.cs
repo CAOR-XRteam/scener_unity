@@ -1,23 +1,16 @@
+using UnityEngine;
+using UnityEngine.UIElements;
 using System.Collections.Generic;
 using NativeWebSocket;
 using Newtonsoft.Json;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 
 namespace scener.ws {
 
 public class WebSocketClient : MonoBehaviour
 {
-    //Singleton instance
-    public static WebSocketClient instance { get; private set; }
-
+    public static WebSocketClient instance { get; private set; } //Singleton instance
     private WebSocket ws;
-
-
-    private int expectedImages = 0;
-    private bool awaitingImages = false;
-    private readonly List<Texture2D> receivedImages = new();
 
     void Awake(){
         //---------------------------
