@@ -8,6 +8,9 @@ namespace ui.terminal {
 public class TerminalImage : MonoBehaviour
 {
     public VisualElement imageContainer;
+    private int expectedImages = 0;
+    private bool awaitingImages = false;
+    private readonly List<Texture2D> receivedImages = new();
   
     void DisplayImages(List<Texture2D> images){
         //---------------------------
