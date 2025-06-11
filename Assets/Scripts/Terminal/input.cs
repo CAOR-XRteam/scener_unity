@@ -13,7 +13,7 @@ public class TerminalInput : MonoBehaviour
         //---------------------------
 
         //Search UI elements
-        var root = GetComponent<UIDocument>().rootVisualElement;
+        var root = FindFirstObjectByType<UIDocument>().rootVisualElement;
         field_text = root.Q("terminal").Q<VisualElement>("box_input").Q<TextField>("field_text");
         button_send = root.Q("terminal").Q<VisualElement>("box_input").Q<Button>("button_send");
 
@@ -57,6 +57,7 @@ public class TerminalInput : MonoBehaviour
             TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
             terminal.AddMessageToChat("<b>[You]</b>: " + message);
             clear_text_field();
+            field_text.Focus();    //Refocus text field
         }
 
         //---------------------------

@@ -2,6 +2,9 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
+
+namespace scener.ws {
+
 public enum Action
 {
     [EnumMember(Value = "thinking_process")]
@@ -60,4 +63,6 @@ public class OutgoingMessageMeta
 
     [JsonConverter(typeof(StringEnumConverter))]
     public OutputType type;
+}
+
 }

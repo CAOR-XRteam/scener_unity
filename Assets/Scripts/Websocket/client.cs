@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 
 namespace scener.ws {
 
-public class WebSocketClient : MonoBehaviour
+public class Client : MonoBehaviour
 {
-    public static WebSocketClient instance { get; private set; } //Singleton instance
+    public static Client instance { get; private set; } //Singleton instance
     private WebSocket ws;
 
     void Awake(){
@@ -28,7 +28,7 @@ public class WebSocketClient : MonoBehaviour
 
     void onMessage(byte[] bytes){
         //---------------------------
-
+/*
         string message = null;
         try{
             message = System.Text.Encoding.UTF8.GetString(bytes);
@@ -81,7 +81,7 @@ public class WebSocketClient : MonoBehaviour
                 Debug.LogWarning("Received unhandled binary message");
             }
         }
-
+*/
         //---------------------------
     }
 

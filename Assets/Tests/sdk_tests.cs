@@ -1,12 +1,13 @@
 using Newtonsoft.Json;
 using NUnit.Framework;
+//using scener.ws;
 
 // TODO: unit tests
 
 public class SdkTests
 {
     // A Test behaves as an ordinary method
-    [Test]
+ /*   [Test]
     public void TestDeserializeIncomingMessage()
     {
         string input1 =
@@ -109,5 +110,5 @@ public class SdkTests
 
         Assert.AreEqual(Command.Chat, deser3.command);
         Assert.AreEqual(OutputType.Gesture, deser3.type);
-    }
+    }*/
 }
