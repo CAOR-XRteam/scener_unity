@@ -1,14 +1,17 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using Newtonsoft.Json;
+using ui.terminal;
 
 
 namespace scener.ws {
 
 public class Text : MonoBehaviour
 {
-    public void process_message(string message){
+    public void process_message(byte[] bytes){
         //---------------------------
+
+        string message = System.Text.Encoding.UTF8.GetString(bytes);
 
         IncomingMessage parsed = JsonConvert.DeserializeObject<IncomingMessage>(message);
         TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
@@ -31,7 +34,7 @@ public class Text : MonoBehaviour
 
     public async System.Threading.Tasks.Task SendTextMessage(string message){
         //---------------------------
-
+/*
         if (ws != null && ws.State == WebSocketState.Open){
             await ws.SendText(message);
             Debug.Log($"Sent message: {message}");
@@ -39,7 +42,7 @@ public class Text : MonoBehaviour
         else{
             Debug.LogWarning("WebSocket is not connected.");
         }
-
+*/
         //---------------------------
     }
 }

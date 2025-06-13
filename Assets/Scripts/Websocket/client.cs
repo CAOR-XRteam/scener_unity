@@ -1,18 +1,25 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections.Generic;
-using NativeWebSocket;
 using Newtonsoft.Json;
+using Google.Protobuf;
+using NativeWebSocket;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Threading;
+using System;
 
 
 namespace scener.ws {
 
 public class Client : MonoBehaviour
 {
+    //Parameters
     public static Client instance { get; private set; } //Singleton instance
-    private WebSocket ws;
+    private NativeWebSocket.WebSocket ws;
 
+    // Automatic functions
     void Awake(){
+        // Permet le singleton
         //---------------------------
 
         if (instance == null){
@@ -25,69 +32,37 @@ public class Client : MonoBehaviour
 
         //---------------------------
     }
-
-    void onMessage(byte[] bytes){
+    void Start(){
+        // Start websocket services without waiting
         //---------------------------
-/*
-        string message = null;
-        try{
-            message = System.Text.Encoding.UTF8.GetString(bytes);
 
-            if (awaitingImages && int.TryParse(message, out int imageCount)){
-                expectedImages = imageCount;
-                Debug.Log($"Expecting {expectedImages} image(s)");
-                return;
-            }
+        _ = InitAsync();
 
-            IncomingMessage parsed = JsonConvert.DeserializeObject<IncomingMessage>(message);
+        //---------------------------
+    }
+    void Update(){
+        //Update stuff essential for websocket not on webgl
+        //---------------------------
 
-            if (parsed.action == Action.GenerateImage){
-                awaitingImages = true;
-                receivedImages.Clear();
-                Debug.Log("Awaiting images...");
-                //terminal.AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
-            }
-            else if (parsed.action == Action.ConvertedSpeech){
-                //terminal.AddMessageToChat("<b>[You]</b>: " + parsed.message);
-                Debug.Log($"Received converted audio message: {parsed.message}");
-            }
-            else if (parsed.action == Action.ThinkingProcess){
-                Debug.Log($"Thinking process: {parsed.message}");
-                //terminal.AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
-            }
-            else{
-                Debug.Log($"Received message: {parsed.message}");
-                //terminal.AddMessageToChat("<b>[Agent]</b>: " + parsed.message);
-            }
-        }
-        catch{
-            if (awaitingImages){
-                Texture2D tex = new(2, 2);
-                if (tex.LoadImage(bytes)){
-                    receivedImages.Add(tex);
-                    Debug.Log($"Received image {receivedImages.Count} from {expectedImages}");
+        #if !UNITY_WEBGL || UNITY_EDITOR
+                ws?.DispatchMessageQueue();
+        #endif
 
-                    if (receivedImages.Count == expectedImages){
-                        awaitingImages = false;
-                        expectedImages = 0;
-                        //DisplayImages(receivedImages);
-                    }
-                }
-                else{
-                    Debug.LogWarning("Failed to load image");
-                }
-            }
-            else{
-                Debug.LogWarning("Received unhandled binary message");
-            }
-        }
-*/
+        //---------------------------
+    }
+    void OnApplicationQuit(){
+        //---------------------------
+
+        ws.Close();
+
         //---------------------------
     }
 
-    async void Start(){
+    // Subfunctions
+    private async Task InitAsync() {
         //---------------------------
 
+        ws = new NativeWebSocket.WebSocket("wss://localhost:8765");
         ws.OnOpen += () => Debug.Log("Connection opened!");
         ws.OnError += e => Debug.Log("Error: " + e);
         ws.OnClose += e => Debug.Log("Connection closed!");
@@ -97,45 +72,27 @@ public class Client : MonoBehaviour
 
         //---------------------------
     }
-
-    void Update(){
+    void onMessage(byte[] bytes){
         //---------------------------
 
-        #if !UNITY_WEBGL || UNITY_EDITOR
-                ws?.DispatchMessageQueue();
-        #endif
+        var msg = Content.Parser.ParseFrom(bytes);
+        Debug.Log($"Response: {msg.Text}\n");
 
         //---------------------------
     }
-
-    public async void OnApplicationQuit(){
-        //---------------------------
-
-        await ws.Close();
-
-        //---------------------------
-    }
-
-    public async System.Threading.Tasks.Task SendTextMessage(string message){
+    public async System.Threading.Tasks.Task SendMessage(string type = "chat", string text = "", byte[] bytes = null){
         //---------------------------
 
         if (ws != null && ws.State == WebSocketState.Open){
-            await ws.SendText(message);
-            Debug.Log($"Sent message: {message}");
-        }
-        else{
-            Debug.LogWarning("WebSocket is not connected.");
-        }
+            var msg = new Content();
+            msg.Type = type;
+            msg.Text = text;
+            msg.Data = ByteString.CopyFrom(bytes ?? new byte[0]);
+            msg.Status = 200;
 
-        //---------------------------
-    }
-
-    public async System.Threading.Tasks.Task SendBytesMessage(byte[] message){
-        //---------------------------
-
-        if (ws != null && ws.State == WebSocketState.Open){
-            await ws.Send(message);
-            Debug.Log("Sent binary message");
+            byte[] data = msg.ToByteArray();
+            await ws.Send(data);
+            Debug.Log($"Sent message: {msg.Text }");
         }
         else{
             Debug.LogWarning("WebSocket is not connected.");

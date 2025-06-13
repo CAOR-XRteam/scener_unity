@@ -614,7 +614,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9aacabeb3cb280e71b6b75f0735ba31c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mic_device: 
 --- !u!114 &699463195
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -855,6 +854,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1314438384}
+  - component: {fileID: 1314438385}
   m_Layer: 0
   m_Name: Websocket
   m_TagString: Untagged
@@ -877,6 +877,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1454943524}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1314438385
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1314438383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b94798a2f332ada18f0e05aba372e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1454943522
 GameObject:
   m_ObjectHideFlags: 0

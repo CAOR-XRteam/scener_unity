@@ -1,17 +1,21 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 namespace scener.ws {
 
-public class Client : MonoBehaviour
+public class Binary : MonoBehaviour
 {
     private int expectedImages = 0;
     private bool awaitingImages = false;
     private readonly List<Texture2D> receivedImages = new();
 
-    void process_message(string message){
+    void process_message(byte[] bytes){
         //---------------------------
+
+        string message = System.Text.Encoding.UTF8.GetString(bytes);
 
         try{
             if (awaitingImages && int.TryParse(message, out int imageCount)){
@@ -56,7 +60,7 @@ public class Client : MonoBehaviour
 
     public async System.Threading.Tasks.Task SendBytesMessage(byte[] message){
         //---------------------------
-
+/*
         if (ws != null && ws.State == WebSocketState.Open){
             await ws.Send(message);
             Debug.Log("Sent binary message");
@@ -64,7 +68,7 @@ public class Client : MonoBehaviour
         else{
             Debug.LogWarning("WebSocket is not connected.");
         }
-
+*/
         //---------------------------
     }
 }

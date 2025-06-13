@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using scener.ws;
 
 
 namespace ui.terminal {
@@ -42,18 +43,15 @@ public class TerminalInput : MonoBehaviour
         //---------------------------
     }
 
-    void callback_button_send(){
+    async void callback_button_send(){
         string message = field_text.value.Trim();
         //---------------------------
 
         if (!string.IsNullOrEmpty(message)){
-            /*await WebSocketClient.instance.SendTextMessage(
-                JsonConvert.SerializeObject(
-                    new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Text }
-                )
-            );
-            await WebSocketClient.instance.SendTextMessage(message);*/
+            //Send message
+            await Client.instance.SendMessage("chat", message);
 
+            //Write message into the terminal chat
             TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
             terminal.AddMessageToChat("<b>[You]</b>: " + message);
             clear_text_field();
