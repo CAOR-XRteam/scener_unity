@@ -11,10 +11,10 @@ using System;
 
 namespace scener.ws {
 
-public class Client : MonoBehaviour
+public class WsClient : MonoBehaviour
 {
     //Parameters
-    public static Client instance { get; private set; } //Singleton instance
+    public static WsClient instance { get; private set; } //Singleton instance
     private NativeWebSocket.WebSocket ws;
 
     // Automatic functions
@@ -62,11 +62,14 @@ public class Client : MonoBehaviour
     private async Task InitAsync() {
         //---------------------------
 
-        ws = new NativeWebSocket.WebSocket("wss://localhost:8765");
+        WsMessage ws_message = FindFirstObjectByType<WsMessage>();
+        if (ws_message == null) { Debug.LogWarning("WsMessage not found in scene."); }
+
+        ws = new NativeWebSocket.WebSocket("ws://localhost:8765");
         ws.OnOpen += () => Debug.Log("Connection opened!");
         ws.OnError += e => Debug.Log("Error: " + e);
         ws.OnClose += e => Debug.Log("Connection closed!");
-        ws.OnMessage += (bytes) => onMessage(bytes);
+        ws.OnMessage += (bytes) => ws_message.process_message(bytes);
 
         await ws.Connect();
 
@@ -84,12 +87,14 @@ public class Client : MonoBehaviour
         //---------------------------
 
         if (ws != null && ws.State == WebSocketState.Open){
+            // Fill protobuf message
             var msg = new Content();
             msg.Type = type;
             msg.Text = text;
             msg.Data = ByteString.CopyFrom(bytes ?? new byte[0]);
             msg.Status = 200;
 
+            //Binarize and send it
             byte[] data = msg.ToByteArray();
             await ws.Send(data);
             Debug.Log($"Sent message: {msg.Text }");

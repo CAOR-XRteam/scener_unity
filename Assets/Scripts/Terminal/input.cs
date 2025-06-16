@@ -49,7 +49,7 @@ public class TerminalInput : MonoBehaviour
 
         if (!string.IsNullOrEmpty(message)){
             //Send message
-            await Client.instance.SendMessage("chat", message);
+            await WsClient.instance.SendMessage("chat", message);
 
             //Write message into the terminal chat
             TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
