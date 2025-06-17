@@ -1,0 +1,324 @@
+using System.Collections.Generic;
+using Newtonsoft.Json;
+
+namespace SceneSerialization
+{
+    [System.Serializable]
+    public class ColorRGBA
+    {
+        public float r;
+        public float g;
+        public float b;
+        public float? a;
+
+        public UnityEngine.Color ToUnityColor()
+        {
+            return new UnityEngine.Color(r, g, b, a ?? 1.0f);
+        }
+    }
+
+    [System.Serializable]
+    public class Vector3
+    {
+        public float x;
+        public float y;
+        public float z;
+
+        public UnityEngine.Vector3 ToUnityVector3()
+        {
+            return new UnityEngine.Vector3(x, y, z);
+        }
+    }
+
+    [System.Serializable]
+    public class Vector4
+    {
+        public float x;
+        public float y;
+        public float z;
+        public float w;
+
+        public UnityEngine.Vector4 ToUnityVector4()
+        {
+            return new UnityEngine.Vector4(x, y, z, w);
+        }
+    }
+
+    public enum SceneObjectType
+    {
+        [EnumMember(Value = "dynamic")]
+        Dynamic,
+
+        [EnumMember(Value = "primitive")]
+        Primitive,
+    }
+
+    public enum ShapeType
+    {
+        [EnumMember(Value = "cube")]
+        Cube,
+
+        [EnumMember(Value = "sphere")]
+        Sphere,
+
+        [EnumMember(Value = "cylinder")]
+        Cylinder,
+
+        [EnumMember(Value = "capsule")]
+        Capsule,
+
+        [EnumMember(Value = "plane")]
+        Plane,
+
+        [EnumMember(Value = "quad")]
+        Quad,
+    }
+
+    [System.Serializable]
+    public class SceneObject
+    {
+        public string id;
+        public string name;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SceneObjectType type;
+
+        public Vector3 position;
+
+        public Vector3 rotation;
+
+        public Vector3 scale;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ShapeType? shape;
+    }
+
+    public enum SkyboxType
+    {
+        [EnumMember(Value = "gradient")]
+        Gradient,
+
+        [EnumMember(Value = "sun")]
+        Sun,
+
+        [EnumMember(Value = "cubed")]
+        Cubed,
+    }
+
+    [System.Serializable]
+    public class Skybox
+    {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SkyboxType type { get; set; }
+    }
+
+    [System.Serializable]
+    public class GradientSkybox : Skybox
+    {
+        public ColorRGBA color1;
+        public ColorRGBA color2;
+        public Vector4 up_vector;
+        public float intensity;
+        public float exponent;
+    }
+
+    [System.Serializable]
+    public class SunSkybox : Skybox
+    {
+        public ColorRGBA top_color;
+
+        public float top_exponent;
+
+        public ColorRGBA horizon_color;
+
+        public ColorRGBA bottom_color;
+
+        public float bottom_exponent;
+        public float sky_intensity;
+
+        public ColorRGBA sun_color;
+
+        public float sun_intensity;
+
+        public float sun_alpha;
+
+        public float sun_beta;
+
+        public Vector4 sun_vector;
+    }
+
+    [System.Serializable]
+    public class CubedSkybox : Skybox
+    {
+        public ColorRGBA tint_color;
+
+        public float exposure;
+
+        public float rotation;
+
+        public string cube_map;
+    }
+
+    public enum LightType
+    {
+        [EnumMember(Value = "spot")]
+        Spot,
+
+        [EnumMember(Value = "directional")]
+        Directional,
+
+        [EnumMember(Value = "point")]
+        Point,
+
+        [EnumMember(Value = "area")]
+        Area,
+    }
+
+    public enum LightMode
+    {
+        [EnumMember(Value = "baked")]
+        Baked,
+
+        [EnumMember(Value = "mixed")]
+        Mixed,
+
+        [EnumMember(Value = "realtime")]
+        Realtime,
+    }
+
+    public enum ShadowType
+    {
+        [EnumMember(Value = "no_shadows")]
+        NoShadows,
+
+        [EnumMember(Value = "hard_shadows")]
+        HardShadows,
+
+        [EnumMember(Value = "soft_shadows")]
+        SoftShadows,
+    }
+
+    public enum LightShape
+    {
+        [EnumMember(Value = "rectangle")]
+        Rectangle,
+
+        [EnumMember(Value = "disk")]
+        Disk,
+    }
+
+    public enum LightType
+    {
+        [EnumMember(Value = "spot")]
+        Spot,
+
+        [EnumMember(Value = "directional")]
+        Directional,
+
+        [EnumMember(Value = "point")]
+        Point,
+
+        [EnumMember(Value = "area")]
+        Area,
+    }
+
+    [System.Serializable]
+    public abstract class BaseLight
+    {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LightType type { get; set; }
+
+        public string id;
+
+        public Vector3 position;
+
+        public Vector3 rotation;
+
+        public Vector3 scale;
+
+        public ColorRGBA color;
+        public float intensity;
+
+        public float indirect_multiplier;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LightMode mode;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ShadowType shadow_type;
+    }
+
+    [System.Serializable]
+    public class SpotLight : BaseLight
+    {
+        public float range;
+
+        public float spot_angle;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LightMode mode;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ShadowType shadow_type;
+    }
+
+    [System.Serializable]
+    public class DirectionalLight : BaseLight
+    {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LightMode Mode;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ShadowType shadow_type;
+    }
+
+    [System.Serializable]
+    public class PointLight : BaseLight
+    {
+        public float range;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LightMode mode;
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ShadowType shadow_type;
+    }
+
+    [System.Serializable]
+    public class AreaLight : BaseLight
+    {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public LightShape shape;
+
+        public float range;
+
+        public float? width;
+
+        public float? height;
+
+        public float? radius;
+    }
+
+    [System.Serializable]
+    public class Scene
+    {
+        [JsonConverter(typeof(SkyboxConverter))]
+        public Skybox skybox;
+
+        [JsonConverter(typeof(PolymorphicListConverter<BaseLight, LightConverter>))]
+        public List<BaseLight> lights;
+
+        public List<SceneObject> objects;
+    }
+
+    // Redo with protobuf structures once it's finalized
+    [System.Serializable]
+    public class FinalDecompositionOutput
+    {
+        public string action;
+
+        public string message;
+
+        public Scene final_scene_json;
+    }
+}
