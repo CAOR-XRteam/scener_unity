@@ -103,7 +103,7 @@ namespace SceneDeserialization
         Cubed,
     }
 
-    public class Skybox
+    public abstract class Skybox
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public SkyboxType type { get; set; }
@@ -236,7 +236,7 @@ namespace SceneDeserialization
     public class DirectionalLight : BaseLight
     {
         [JsonConverter(typeof(StringEnumConverter))]
-        public LightMode Mode;
+        public LightMode mode;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ShadowType shadow_type;
