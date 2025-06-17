@@ -219,8 +219,8 @@ public class SceneBuilder : MonoBehaviour
             }
             else if (objData.type == SceneObjectType.Dynamic)
             {
-                string prefabPath = $"Prefabs/{objData.id}.glb";
-                GameObject prefab = Resources.Load<GameObject>(prefabPath);
+                string objectPath = $"{objData.id}";
+                GameObject prefab = Resources.Load<GameObject>(objectPath);
                 if (prefab != null)
                 {
                     newObj = Instantiate(prefab);
@@ -229,7 +229,7 @@ public class SceneBuilder : MonoBehaviour
                 else
                 {
                     Debug.LogWarning(
-                        $"Prefab not found at 'Resources/{prefabPath}'. Creating a placeholder cube."
+                        $"Prefab not found at 'Resources/{objectPath}'. Creating a placeholder cube."
                     );
                     newObj = GameObject.CreatePrimitive(PrimitiveType.Cube);
                     newObj.name = $"{objData.name} (Placeholder)";
@@ -304,6 +304,14 @@ public class SceneBuilder : MonoBehaviour
                         'position': {'x': 0, 'y': 1, 'z': 5}, 'rotation': {'x': 0, 'y': 25, 'z': 0},
                         'scale': {'x': 2, 'y': 2, 'z': 2}
                     },
+                    {
+                    'id': 'theatre', 
+                    'name': 'theatre', 
+                    'type': 'dynamic',
+                    'position': {'x': 0, 'y': 0, 'z': 10}, 
+                    'rotation': {'x': 0, 'y': 180, 'z': 0},
+                    'scale': {'x': 5, 'y': 5, 'z': 5}
+                }
                 ]
             }
         }".Replace("'", "\"");
