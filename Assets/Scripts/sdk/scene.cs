@@ -89,6 +89,7 @@ namespace SceneDeserialization
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ShapeType? shape;
+        public ColorRGBA color;
     }
 
     public enum SkyboxType

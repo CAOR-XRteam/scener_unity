@@ -188,9 +188,11 @@ public class SceneBuilder : MonoBehaviour
         foreach (var objData in objectsData)
         {
             GameObject newObj = null;
+            bool isPrimitive = false;
 
             if (objData.type == SceneObjectType.Primitive)
             {
+                isPrimitive = true;
                 if (objData.shape.HasValue)
                 {
                     PrimitiveType primitiveType = objData.shape.Value switch
@@ -240,11 +242,21 @@ public class SceneBuilder : MonoBehaviour
                 newObj.transform.position = objData.position.ToUnityVector3();
                 newObj.transform.rotation = Quaternion.Euler(objData.rotation.ToUnityVector3());
                 newObj.transform.localScale = objData.scale.ToUnityVector3();
+
+                if (isPrimitive && objData.color != null)
+                {
+                    MeshRenderer renderer = newObj.GetComponent<MeshRenderer>();
+                    if (renderer != null)
+                    {
+                        Material newMaterial = renderer.material;
+                        newMaterial.color = objData.color.ToUnityColor();
+                    }
+                }
             }
         }
     }
 
-    [ContextMenu("Test Scene Build")]
+    [ContextMenu("Test Scene: Sun Skybox with Directional and Point Lights")]
     private void TestWithSampleJson()
     {
         string sampleJson = @"{
@@ -292,6 +304,92 @@ public class SceneBuilder : MonoBehaviour
                         'position': {'x': 0, 'y': 1, 'z': 5}, 'rotation': {'x': 0, 'y': 25, 'z': 0},
                         'scale': {'x': 2, 'y': 2, 'z': 2}
                     },
+                ]
+            }
+        }".Replace("'", "\"");
+
+        BuildSceneFromJSON(sampleJson);
+    }
+
+    [ContextMenu("Test Scene: Gradient Sky with Area Light")]
+    private void TestGradientScene()
+    {
+        string sampleJson = @"{
+            'action': 'scene_generation',
+            'message': 'Scene description has been successfully generated.',
+            'final_scene_json': {
+                'skybox': {
+                    'type': 'gradient',
+                    'color1': {'r': 0.8, 'g': 0.3, 'b': 0.1, 'a': 1.0},
+                    'color2': {'r': 0.1, 'g': 0.2, 'b': 0.5, 'a': 1.0},
+                    'up_vector': {'x': 0, 'y': 1, 'z': 0, 'w': 0},
+                    'intensity': 1.0,
+                    'exponent': 1.5
+                },
+                'lights': [
+                    {
+                        'id': 'area1', 'type': 'area', 'shape': 'rectangle', 
+                        'position': {'x': 0, 'y': 4, 'z': 0},
+                        'rotation': {'x': 90, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
+                        'color': {'r': 1.0, 'g': 0.9, 'b': 0.9, 'a': 1.0},
+                        'intensity': 3.0, 'indirect_multiplier': 1.0,
+                        'range': 10.0, 'width': 5.0, 'height': 3.0
+                    }
+                ],
+                'objects': [
+                    {
+                        'id': 'floor', 'name': 'White Floor', 'type': 'primitive', 'shape': 'plane',
+                        'position': {'x': 0, 'y': 0, 'z': 0}, 'rotation': {'x': 0, 'y': 0, 'z': 0},
+                        'scale': {'x': 1, 'y': 1, 'z': 1}
+                    },
+                    {
+                        'id': 'wall', 'name': 'Back Wall', 'type': 'primitive', 'shape': 'quad',
+                        'position': {'x': 0, 'y': 2.5, 'z': 5}, 'rotation': {'x': 0, 'y': 0, 'z': 0},
+                        'scale': {'x': 10, 'y': 5, 'z': 1},
+                        'color': {'r': 0.1, 'g': 0.1, 'b': 0.15, 'a': 1.0}
+                    },
+                    {
+                        'id': 'obj', 'name': 'MainCube', 'type': 'primitive', 'shape': 'cube',
+                        'position': {'x': 0, 'y': 1, 'z': 5}, 'rotation': {'x': 0, 'y': 25, 'z': 0},
+                        'scale': {'x': 2, 'y': 2, 'z': 2}
+                    },
+                ]
+            }
+        }".Replace("'", "\"");
+
+        BuildSceneFromJSON(sampleJson);
+    }
+
+    [ContextMenu("Test Scene: Single Point Light")]
+    private void TestMinimalScene()
+    {
+        string sampleJson = @"{
+            'action': 'scene_generation',
+            'message': 'Scene description has been successfully generated.',
+            'final_scene_json': {
+                'skybox': {
+                    'type': 'cubed',
+                    'tint_color': {'r': 0, 'g': 0, 'b': 0, 'a': 1.0},
+                    'exposure': 0.0,
+                    'rotation': 0,
+                    'cube_map': ''
+                },
+                'lights': [
+                    {
+                        'id': 'point1', 'type': 'point', 'position': {'x': 0, 'y': 2, 'z': 0},
+                        'rotation': {'x': 0, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
+                        'color': {'r': 1.0, 'g': 0.8, 'b': 0.4, 'a': 1.0},
+                        'intensity': 2.0, 'indirect_multiplier': 1.0,
+                        'range': 10.0,
+                        'mode': 'realtime', 'shadow_type': 'soft_shadows'
+                    }
+                ],
+                'objects': [
+                    {
+                        'id': 'pedestal', 'name': 'Pedestal', 'type': 'primitive', 'shape': 'cylinder',
+                        'position': {'x': 0, 'y': 0.5, 'z': 0}, 'rotation': {'x': 0, 'y': 0, 'z': 0},
+                        'scale': {'x': 1, 'y': 1, 'z': 1}
+                    }
                 ]
             }
         }".Replace("'", "\"");
