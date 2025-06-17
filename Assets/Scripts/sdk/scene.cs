@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace SceneSerialization
+namespace SceneDeserialization
 {
-    [System.Serializable]
     public class ColorRGBA
     {
         public float r;
@@ -17,7 +18,6 @@ namespace SceneSerialization
         }
     }
 
-    [System.Serializable]
     public class Vector3
     {
         public float x;
@@ -30,7 +30,6 @@ namespace SceneSerialization
         }
     }
 
-    [System.Serializable]
     public class Vector4
     {
         public float x;
@@ -74,7 +73,6 @@ namespace SceneSerialization
         Quad,
     }
 
-    [System.Serializable]
     public class SceneObject
     {
         public string id;
@@ -105,14 +103,12 @@ namespace SceneSerialization
         Cubed,
     }
 
-    [System.Serializable]
     public class Skybox
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public SkyboxType type { get; set; }
     }
 
-    [System.Serializable]
     public class GradientSkybox : Skybox
     {
         public ColorRGBA color1;
@@ -122,7 +118,6 @@ namespace SceneSerialization
         public float exponent;
     }
 
-    [System.Serializable]
     public class SunSkybox : Skybox
     {
         public ColorRGBA top_color;
@@ -147,7 +142,6 @@ namespace SceneSerialization
         public Vector4 sun_vector;
     }
 
-    [System.Serializable]
     public class CubedSkybox : Skybox
     {
         public ColorRGBA tint_color;
@@ -207,22 +201,6 @@ namespace SceneSerialization
         Disk,
     }
 
-    public enum LightType
-    {
-        [EnumMember(Value = "spot")]
-        Spot,
-
-        [EnumMember(Value = "directional")]
-        Directional,
-
-        [EnumMember(Value = "point")]
-        Point,
-
-        [EnumMember(Value = "area")]
-        Area,
-    }
-
-    [System.Serializable]
     public abstract class BaseLight
     {
         [JsonConverter(typeof(StringEnumConverter))]
@@ -240,15 +218,8 @@ namespace SceneSerialization
         public float intensity;
 
         public float indirect_multiplier;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public LightMode mode;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ShadowType shadow_type;
     }
 
-    [System.Serializable]
     public class SpotLight : BaseLight
     {
         public float range;
@@ -262,7 +233,6 @@ namespace SceneSerialization
         public ShadowType shadow_type;
     }
 
-    [System.Serializable]
     public class DirectionalLight : BaseLight
     {
         [JsonConverter(typeof(StringEnumConverter))]
@@ -272,7 +242,6 @@ namespace SceneSerialization
         public ShadowType shadow_type;
     }
 
-    [System.Serializable]
     public class PointLight : BaseLight
     {
         public float range;
@@ -284,7 +253,6 @@ namespace SceneSerialization
         public ShadowType shadow_type;
     }
 
-    [System.Serializable]
     public class AreaLight : BaseLight
     {
         [JsonConverter(typeof(StringEnumConverter))]
@@ -299,20 +267,18 @@ namespace SceneSerialization
         public float? radius;
     }
 
-    [System.Serializable]
     public class Scene
     {
         [JsonConverter(typeof(SkyboxConverter))]
         public Skybox skybox;
 
-        [JsonConverter(typeof(PolymorphicListConverter<BaseLight, LightConverter>))]
+        [JsonConverter(typeof(ListConverter<BaseLight, LightConverter>))]
         public List<BaseLight> lights;
 
         public List<SceneObject> objects;
     }
 
     // Redo with protobuf structures once it's finalized
-    [System.Serializable]
     public class FinalDecompositionOutput
     {
         public string action;
