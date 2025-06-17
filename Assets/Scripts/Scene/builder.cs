@@ -245,8 +245,7 @@ public class SceneBuilder : MonoBehaviour
 
                 if (isPrimitive && objData.color != null)
                 {
-                    MeshRenderer renderer = newObj.GetComponent<MeshRenderer>();
-                    if (renderer != null)
+                    if (newObj.TryGetComponent<MeshRenderer>(out var renderer))
                     {
                         Material newMaterial = renderer.material;
                         newMaterial.color = objData.color.ToUnityColor();
