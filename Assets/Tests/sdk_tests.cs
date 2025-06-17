@@ -116,7 +116,7 @@ public class MessagesTests
 public class SceneTests
 {
     [Test]
-    public void Test_Deserialize_FullScene()
+    public void TestDeserializeFullScene()
     {
         string json =
             @"{
@@ -199,7 +199,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_GradientSkybox()
+    public void TestDeserializeGradientSkybox()
     {
         string json =
             @"{
@@ -229,7 +229,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_SunSkybox()
+    public void TestDeserializeSunSkybox()
     {
         string json =
             @"{
@@ -266,7 +266,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_CubedSkybox()
+    public void TestDeserializeCubedSkybox()
     {
         string json =
             @"{
@@ -291,7 +291,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_SpotLight()
+    public void TestDeserializeSpotLight()
     {
         string json =
             @"{
@@ -329,7 +329,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_DirectionalLight()
+    public void TestDeserializeDirectionalLight()
     {
         string json =
             @"{
@@ -360,7 +360,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_PointLight()
+    public void TestDeserializePointLight()
     {
         string json =
             @"{
@@ -393,7 +393,7 @@ public class SceneTests
     }
 
     [Test]
-    public void Test_Deserialize_AreaLight()
+    public void TestDeserializeAreaLight()
     {
         string json =
             @"{
