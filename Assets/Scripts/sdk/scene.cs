@@ -85,6 +85,11 @@ namespace SceneDeserialization
         }
     }
 
+    public abstract class SceneComponent
+    {
+        public abstract string componentType { get; }
+    }
+
     public enum SceneObjectType
     {
         [EnumMember(Value = "dynamic")]
@@ -115,6 +120,22 @@ namespace SceneDeserialization
         Quad,
     }
 
+    public class PrimitiveComponent : SceneComponent
+    {
+        public override string componentType => "Primitive";
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ShapeType shape;
+        public ColorRGBA color;
+    }
+
+    public class DynamicComponent : SceneComponent
+    {
+        public override string componentType => "Dynamic";
+
+        public string id;
+    }
+
     public class SceneObject
     {
         public string id;
@@ -129,9 +150,9 @@ namespace SceneDeserialization
 
         public Vector3 scale;
 
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ShapeType? shape;
-        public ColorRGBA color;
+        public List<SceneComponent> components = new();
+
+        public List<SceneObject> children = new();
     }
 
     public enum SkyboxType
@@ -244,8 +265,10 @@ namespace SceneDeserialization
         Disk,
     }
 
-    public abstract class BaseLight
+    public abstract class BaseLight : SceneComponent
     {
+        public override string componentType => "Light";
+
         [JsonConverter(typeof(StringEnumConverter))]
         public LightType type { get; set; }
 
@@ -312,22 +335,8 @@ namespace SceneDeserialization
 
     public class Scene
     {
-        [JsonConverter(typeof(SkyboxConverter))]
+        public string name;
         public Skybox skybox;
-
-        [JsonConverter(typeof(ListConverter<BaseLight, LightConverter>))]
-        public List<BaseLight> lights;
-
         public List<SceneObject> objects;
-    }
-
-    // Redo with protobuf structures once it's finalized
-    public class FinalDecompositionOutput
-    {
-        public string action;
-
-        public string message;
-
-        public Scene final_scene_json;
     }
 }
