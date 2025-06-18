@@ -84,7 +84,7 @@ public class LightConverter : JsonCreationConverter<BaseLight>
         };
     }
 
-    public void MapBaseLightProperties<T>(T lightData, Light light)
+    public static void MapBaseLightProperties<T>(T lightData, Light light)
         where T : BaseLight
     {
         lightData.id = light.gameObject.GetInstanceID().ToString();
@@ -96,7 +96,7 @@ public class LightConverter : JsonCreationConverter<BaseLight>
         lightData.indirect_multiplier = light.bounceIntensity;
     }
 
-    public void MapLightModeAndShadows(dynamic lightData, Light light)
+    public static void MapLightModeAndShadows(dynamic lightData, Light light)
     {
         lightData.mode = light.lightmapBakeType switch
         {
@@ -130,7 +130,7 @@ public class SkyboxConverter : JsonCreationConverter<SceneDeserialization.Skybox
 
 public class ObjectConverter
 {
-    public bool IsPrimitive(GameObject obj)
+    public static bool IsPrimitive(GameObject obj)
     {
         MeshFilter mf = obj.GetComponent<MeshFilter>();
         if (mf == null || mf.sharedMesh == null)
@@ -145,7 +145,7 @@ public class ObjectConverter
             || meshName.StartsWith("Quad");
     }
 
-    public ShapeType? GetPrimitiveShape(GameObject obj)
+    public static ShapeType? GetPrimitiveShape(GameObject obj)
     {
         MeshFilter mf = obj.GetComponent<MeshFilter>();
         if (mf == null || mf.sharedMesh == null)

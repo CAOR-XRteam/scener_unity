@@ -69,7 +69,6 @@ public class SceneBuilder : MonoBehaviour
                 RenderSettings.skybox.SetFloat("_SunBeta", sun.sun_beta);
                 RenderSettings.skybox.SetVector("_SunVector", sun.sun_vector.ToUnityVector4());
                 RenderSettings.sun = null;
-                RenderSettings.ambientIntensity = sun.sky_intensity;
 
                 break;
 
