@@ -17,7 +17,6 @@ public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
 
     public override void WriteJson(JsonWriter writer, List<TBase> value, JsonSerializer serializer)
     {
-        // Complete with serialization logic?
         throw new NotImplementedException();
     }
 
@@ -74,7 +73,6 @@ public abstract class JsonCreationConverter<T> : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
     {
-        // Complete with serialization logic?
         throw new NotImplementedException();
     }
 }
