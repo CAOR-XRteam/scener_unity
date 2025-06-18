@@ -73,19 +73,14 @@ public class LightConverter : JsonCreationConverter<BaseLight>
     protected override BaseLight Create(Type objectType, JObject jObject)
     {
         var type = (string)jObject.Property("type");
-        switch (type)
+        return type switch
         {
-            case "spot":
-                return new SpotLight();
-            case "directional":
-                return new DirectionalLight();
-            case "point":
-                return new PointLight();
-            case "area":
-                return new AreaLight();
-            default:
-                throw new ArgumentException($"The light type {type} is not supported");
-        }
+            "spot" => new SpotLight(),
+            "directional" => new DirectionalLight(),
+            "point" => new PointLight(),
+            "area" => new AreaLight(),
+            _ => throw new ArgumentException($"The light type {type} is not supported"),
+        };
     }
 }
 
@@ -94,16 +89,12 @@ public class SkyboxConverter : JsonCreationConverter<Skybox>
     protected override Skybox Create(Type objectType, JObject jObject)
     {
         var type = (string)jObject.Property("type");
-        switch (type)
+        return type switch
         {
-            case "gradient":
-                return new GradientSkybox();
-            case "sun":
-                return new SunSkybox();
-            case "cubed":
-                return new CubedSkybox();
-            default:
-                throw new ArgumentException($"The skybox type {type} is not supported");
-        }
+            "gradient" => new GradientSkybox(),
+            "sun" => new SunSkybox(),
+            "cubed" => new CubedSkybox(),
+            _ => throw new ArgumentException($"The skybox type {type} is not supported"),
+        };
     }
 }

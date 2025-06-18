@@ -239,8 +239,10 @@ public class SceneBuilder : MonoBehaviour
             if (newObj != null)
             {
                 newObj.transform.SetParent(_generatedContentRoot);
-                newObj.transform.position = objData.position.ToUnityVector3();
-                newObj.transform.rotation = Quaternion.Euler(objData.rotation.ToUnityVector3());
+                newObj.transform.SetPositionAndRotation(
+                    objData.position.ToUnityVector3(),
+                    Quaternion.Euler(objData.rotation.ToUnityVector3())
+                );
                 newObj.transform.localScale = objData.scale.ToUnityVector3();
 
                 if (isPrimitive && objData.color != null)
