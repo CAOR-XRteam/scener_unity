@@ -95,7 +95,7 @@ public class LightConverter : JsonCreationConverter<BaseLight>
     public static void MapBaseLightProperties<T>(T lightData, Light light)
         where T : BaseLight
     {
-        lightData.id = light.gameObject.GetInstanceID().ToString();
+        lightData.id = light.gameObject.name;
         lightData.position = light.transform.position.ToVector3();
         lightData.rotation = light.transform.eulerAngles.ToVector3();
         lightData.scale = light.transform.localScale.ToVector3();
@@ -138,19 +138,48 @@ public class SkyboxConverter : JsonCreationConverter<SceneDeserialization.Skybox
 
 public class ObjectConverter
 {
-    public static bool IsPrimitive(GameObject obj)
+    public static bool IsPrimitive(GameObject obj, out ShapeType? shape)
     {
         MeshFilter mf = obj.GetComponent<MeshFilter>();
         if (mf == null || mf.sharedMesh == null)
+        {
+            shape = null;
             return false;
+        }
 
         string meshName = mf.sharedMesh.name;
-        return meshName.StartsWith("Cube")
-            || meshName.StartsWith("Sphere")
-            || meshName.StartsWith("Capsule")
-            || meshName.StartsWith("Cylinder")
-            || meshName.StartsWith("Plane")
-            || meshName.StartsWith("Quad");
+        if (meshName.StartsWith("Cube"))
+        {
+            shape = ShapeType.Cube;
+            return true;
+        }
+        if (meshName.StartsWith("Sphere"))
+        {
+            shape = ShapeType.Sphere;
+            return true;
+        }
+        if (meshName.StartsWith("Capsule"))
+        {
+            shape = ShapeType.Capsule;
+            return true;
+        }
+        if (meshName.StartsWith("Cylinder"))
+        {
+            shape = ShapeType.Cylinder;
+            return true;
+        }
+        if (meshName.StartsWith("Plane"))
+        {
+            shape = ShapeType.Plane;
+            return true;
+        }
+        if (meshName.StartsWith("Quad"))
+        {
+            shape = ShapeType.Quad;
+            return true;
+        }
+        shape = null;
+        return false;
     }
 
     public static ShapeType? GetPrimitiveShape(GameObject obj)

@@ -13,9 +13,9 @@ namespace SceneDeserialization
         public float b;
         public float? a;
 
-        public UnityEngine.Color ToUnityColor()
+        public Color ToUnityColor()
         {
-            return new UnityEngine.Color(r, g, b, a ?? 1.0f);
+            return new Color(r, g, b, a ?? 1.0f);
         }
     }
 
@@ -120,7 +120,7 @@ namespace SceneDeserialization
         Quad,
     }
 
-    public class PrimitiveComponent : SceneComponent
+    public class PrimitiveObject : SceneComponent
     {
         public override string componentType => "Primitive";
 
@@ -129,7 +129,7 @@ namespace SceneDeserialization
         public ColorRGBA color;
     }
 
-    public class DynamicComponent : SceneComponent
+    public class DynamicObject : SceneComponent
     {
         public override string componentType => "Dynamic";
 
@@ -139,7 +139,6 @@ namespace SceneDeserialization
     public class SceneObject
     {
         public string id;
-        public string name;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public SceneObjectType type;

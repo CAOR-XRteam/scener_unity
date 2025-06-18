@@ -47,21 +47,35 @@ using UnityEngine;
 
 public class SceneSerializer : MonoBehaviour
 {
-    [Tooltip("If set, only objects under this transform will be serialized.")]
-    public Transform sceneRootToSerialize;
-
-    [Header("JSON Output")]
-    [TextArea(10, 20)]
     public string generatedJson;
 
     [ContextMenu("Serialize Scene to JSON")]
     private void SerializeScene()
     {
-        Scene sceneData = new()
+        List<SceneObject> graph = new();
+        List<GameObject> topLevelObjects = new();
+
+        foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
         {
+            if (obj.transform.parent == null)
+            {
+                topLevelObjects.Add(obj);
+            }
+        }
+
+        foreach (var rootObj in topLevelObjects)
+        {
+            if (rootObj.activeInHierarchy && rootObj.hideFlags == HideFlags.None)
+            {
+                graph.Add(BuildSceneNode(rootObj));
+            }
+        }
+
+        Scene scene = new()
+        {
+            name = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
             skybox = MapSkybox(),
-            lights = MapLights(),
-            objects = MapObjects(),
+            objects = graph,
         };
 
         JsonSerializerSettings settings = new()
@@ -70,10 +84,59 @@ public class SceneSerializer : MonoBehaviour
             NullValueHandling = NullValueHandling.Ignore,
         };
 
-        generatedJson = JsonConvert.SerializeObject(sceneData, settings);
+        generatedJson = JsonConvert.SerializeObject(scene, settings);
         File.WriteAllText("Assets/Resources/scene.json", generatedJson);
 
         Debug.Log("Scene serialized successfully!");
+    }
+
+    private SceneObject BuildSceneNode(GameObject obj)
+    {
+        var node = new SceneObject
+        {
+            id = obj.name,
+            position = obj.transform.localPosition.ToVector3(),
+            rotation = obj.transform.localEulerAngles.ToVector3(),
+            scale = obj.transform.localScale.ToVector3(),
+            components = MapComponents(obj),
+        };
+
+        foreach (Transform child in obj.transform)
+        {
+            if (child.gameObject.activeInHierarchy)
+            {
+                node.children.Add(BuildSceneNode(child.gameObject));
+            }
+        }
+        return node;
+    }
+
+    private List<SceneComponent> MapComponents(GameObject obj)
+    {
+        var components = new List<SceneComponent>();
+
+        if (obj.TryGetComponent<Light>(out var light))
+        {
+            components.Add(MapLight(light));
+        }
+
+        if (ObjectConverter.IsPrimitive(obj, out ShapeType? shape))
+        {
+            var renderer = obj.GetComponent<MeshRenderer>();
+            components.Add(
+                new PrimitiveObject
+                {
+                    shape = shape.Value,
+                    color = renderer.material.color.ToColorRGBA(),
+                }
+            );
+        }
+        else if (obj.GetComponent<MeshFilter>() != null && !ObjectConverter.IsPrimitive(obj, out _))
+        {
+            components.Add(new DynamicObject { id = obj.name });
+        }
+
+        return components;
     }
 
     private SceneDeserialization.Skybox MapSkybox()
@@ -120,113 +183,93 @@ public class SceneSerializer : MonoBehaviour
         };
     }
 
-    private List<BaseLight> MapLights()
+    private BaseLight MapLight(Light light)
     {
-        var lightsList = new List<BaseLight>();
-        Light[] sceneLights;
-
-        if (sceneRootToSerialize != null)
-            sceneLights = sceneRootToSerialize.GetComponentsInChildren<Light>();
-        else
-            sceneLights = FindObjectsByType<Light>(FindObjectsSortMode.None);
-
-        foreach (var light in sceneLights)
+        BaseLight lightData = null;
+        switch (light.type)
         {
-            BaseLight lightData = null;
-            switch (light.type)
-            {
-                case UnityEngine.LightType.Directional:
-                    var directionalData = new DirectionalLight
-                    {
-                        type = SceneDeserialization.LightType.Directional,
-                    };
-                    LightConverter.MapLightModeAndShadows(directionalData, light);
-                    lightData = directionalData;
-                    break;
-                case UnityEngine.LightType.Point:
-                    var pointData = new PointLight
-                    {
-                        type = SceneDeserialization.LightType.Point,
-                        range = light.range,
-                    };
-                    LightConverter.MapLightModeAndShadows(pointData, light);
-                    lightData = pointData;
-                    break;
-                case UnityEngine.LightType.Spot:
-                    var spotData = new SpotLight
-                    {
-                        type = SceneDeserialization.LightType.Spot,
-                        range = light.range,
-                        spot_angle = light.spotAngle,
-                    };
-                    LightConverter.MapLightModeAndShadows(spotData, light);
-                    lightData = spotData;
-                    break;
-                case UnityEngine.LightType.Rectangle:
-                case UnityEngine.LightType.Disc:
-                    lightData = new AreaLight
-                    {
-                        type = SceneDeserialization.LightType.Area,
-                        shape =
-                            (light.type == UnityEngine.LightType.Rectangle)
-                                ? SceneDeserialization.LightShape.Rectangle
-                                : SceneDeserialization.LightShape.Disk,
-                        range = light.range,
-                        width = light.areaSize.x,
-                        height = light.areaSize.y,
-                    };
-                    break;
-            }
-
-            if (lightData != null)
-            {
-                LightConverter.MapBaseLightProperties(lightData, light);
-                lightsList.Add(lightData);
-            }
+            case UnityEngine.LightType.Directional:
+                var directionalData = new DirectionalLight
+                {
+                    type = SceneDeserialization.LightType.Directional,
+                };
+                LightConverter.MapLightModeAndShadows(directionalData, light);
+                lightData = directionalData;
+                break;
+            case UnityEngine.LightType.Point:
+                var pointData = new PointLight
+                {
+                    type = SceneDeserialization.LightType.Point,
+                    range = light.range,
+                };
+                LightConverter.MapLightModeAndShadows(pointData, light);
+                lightData = pointData;
+                break;
+            case UnityEngine.LightType.Spot:
+                var spotData = new SpotLight
+                {
+                    type = SceneDeserialization.LightType.Spot,
+                    range = light.range,
+                    spot_angle = light.spotAngle,
+                };
+                LightConverter.MapLightModeAndShadows(spotData, light);
+                lightData = spotData;
+                break;
+            case UnityEngine.LightType.Rectangle:
+            case UnityEngine.LightType.Disc:
+                lightData = new AreaLight
+                {
+                    type = SceneDeserialization.LightType.Area,
+                    shape =
+                        (light.type == UnityEngine.LightType.Rectangle)
+                            ? SceneDeserialization.LightShape.Rectangle
+                            : SceneDeserialization.LightShape.Disk,
+                    range = light.range,
+                    width = light.areaSize.x,
+                    height = light.areaSize.y,
+                };
+                break;
         }
-        return lightsList;
+
+        if (lightData != null)
+        {
+            LightConverter.MapBaseLightProperties(lightData, light);
+        }
+
+        return lightData;
     }
 
-    private List<SceneObject> MapObjects()
-    {
-        var objectsList = new List<SceneObject>();
-        MeshRenderer[] renderers;
+    // private List<SceneObject> MapObjects()
+    // {
+    //     var objectsList = new List<SceneObject>();
+    //     MeshRenderer[] renderers;
 
-        if (sceneRootToSerialize != null)
-            renderers = sceneRootToSerialize.GetComponentsInChildren<MeshRenderer>();
-        else
-            renderers = FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
+    //     renderers = FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
 
-        foreach (var renderer in renderers)
-        {
-            if (renderer.GetComponent<Light>() != null)
-                continue;
+    //     foreach (var renderer in renderers)
+    //     {
+    //         if (renderer.GetComponent<Light>() != null)
+    //             continue;
 
-            bool isPrimitive = ObjectConverter.IsPrimitive(renderer.gameObject);
+    //         bool isPrimitive = ObjectConverter.IsPrimitive(renderer.gameObject);
 
-            var objData = new SceneObject
-            {
-                id = renderer.gameObject.GetInstanceID().ToString(),
-                name = renderer.gameObject.name,
-                type = isPrimitive ? SceneObjectType.Primitive : SceneObjectType.Dynamic,
-                position = renderer.transform.position.ToVector3(),
-                rotation = renderer.transform.eulerAngles.ToVector3(),
-                scale = renderer.transform.localScale.ToVector3(),
-                color = renderer.material.color.ToColorRGBA(),
-            };
+    //         var objData = new SceneObject
+    //         {
+    //             id = renderer.gameObject.name.Split('_')[1],
+    //             type = isPrimitive ? SceneObjectType.Primitive : SceneObjectType.Dynamic,
+    //             position = renderer.transform.position.ToVector3(),
+    //             rotation = renderer.transform.eulerAngles.ToVector3(),
+    //             scale = renderer.transform.localScale.ToVector3(),
+    //             color = renderer.material.color.ToColorRGBA(),
+    //         };
 
-            if (isPrimitive)
-            {
-                objData.shape = ObjectConverter.GetPrimitiveShape(renderer.gameObject);
-            }
+    //         if (isPrimitive)
+    //         {
+    //             objData.shape = ObjectConverter.GetPrimitiveShape(renderer.gameObject);
+    //         }
 
-            if (!isPrimitive)
-            {
-                objData.name = renderer.gameObject.name;
-            }
-
-            objectsList.Add(objData);
-        }
-        return objectsList;
-    }
+    //         objectsList.Add(objData);
+    //     }
+    //     return objectsList;
+    // }
 }
