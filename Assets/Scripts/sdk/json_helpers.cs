@@ -10,6 +10,11 @@ public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
 {
     private readonly TConverter _itemConverter = new();
 
+    public override bool CanWrite
+    {
+        get { return false; }
+    }
+
     public override void WriteJson(JsonWriter writer, List<TBase> value, JsonSerializer serializer)
     {
         // Complete with serialization logic?
@@ -47,6 +52,11 @@ public abstract class JsonCreationConverter<T> : JsonConverter
     public override bool CanConvert(Type objectType)
     {
         return typeof(T).IsAssignableFrom(objectType);
+    }
+
+    public override bool CanWrite
+    {
+        get { return false; }
     }
 
     public override object ReadJson(

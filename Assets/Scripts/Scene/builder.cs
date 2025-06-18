@@ -57,18 +57,19 @@ public class SceneBuilder : MonoBehaviour
             case SkyboxType.Sun:
                 var sun = skyboxData as SunSkybox;
 
-                RenderSettings.skybox = new Material(Shader.Find("Skybox/Horizon With Sun"));
+                RenderSettings.skybox = new Material(Shader.Find("Skybox/Horizon With Sun Skybox"));
                 RenderSettings.skybox.SetColor("_SkyColor1", sun.top_color.ToUnityColor());
                 RenderSettings.skybox.SetFloat("_SkyExponent1", sun.top_exponent);
                 RenderSettings.skybox.SetColor("_SkyColor2", sun.horizon_color.ToUnityColor());
                 RenderSettings.skybox.SetColor("_SkyColor3", sun.bottom_color.ToUnityColor());
+                RenderSettings.skybox.SetFloat("_SkyExponent2", sun.bottom_exponent);
                 RenderSettings.skybox.SetFloat("_SkyIntensity", sun.sky_intensity);
                 RenderSettings.skybox.SetColor("_SunColor", sun.sun_color.ToUnityColor());
                 RenderSettings.skybox.SetFloat("_SunIntensity", sun.sun_intensity);
                 RenderSettings.skybox.SetFloat("_SunAlpha", sun.sun_alpha);
                 RenderSettings.skybox.SetFloat("_SunBeta", sun.sun_beta);
                 RenderSettings.skybox.SetVector("_SunVector", sun.sun_vector.ToUnityVector4());
-                RenderSettings.sun = null;
+                // RenderSettings.sun = null;
 
                 break;
 

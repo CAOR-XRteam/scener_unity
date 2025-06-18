@@ -84,13 +84,14 @@ public class SceneSerializer : MonoBehaviour
 
         return skyboxMat.shader.name switch
         {
-            "Skybox/Horizon With Sun" => new SunSkybox
+            "Skybox/Horizon With Sun Skybox" => new SunSkybox
             {
                 type = SkyboxType.Sun,
                 top_color = skyboxMat.GetColor("_SkyColor1").ToColorRGBA(),
                 top_exponent = skyboxMat.GetFloat("_SkyExponent1"),
                 horizon_color = skyboxMat.GetColor("_SkyColor2").ToColorRGBA(),
                 bottom_color = skyboxMat.GetColor("_SkyColor3").ToColorRGBA(),
+                bottom_exponent = skyboxMat.GetFloat("_SkyExponent2"),
                 sky_intensity = skyboxMat.GetFloat("_SkyIntensity"),
                 sun_color = skyboxMat.GetColor("_SunColor").ToColorRGBA(),
                 sun_intensity = skyboxMat.GetFloat("_SunIntensity"),
