@@ -75,7 +75,7 @@ public class SceneSerializer : MonoBehaviour
         {
             name = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
             skybox = MapSkybox(),
-            objects = graph,
+            graph = graph,
         };
 
         JsonSerializerSettings settings = new()

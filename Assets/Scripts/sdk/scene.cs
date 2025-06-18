@@ -87,7 +87,7 @@ namespace SceneDeserialization
 
     public abstract class SceneComponent
     {
-        public abstract string componentType { get; }
+        public abstract SceneObjectType componentType { get; }
     }
 
     public enum SceneObjectType
@@ -97,6 +97,9 @@ namespace SceneDeserialization
 
         [EnumMember(Value = "primitive")]
         Primitive,
+
+        [EnumMember(Value = "light")]
+        Light,
     }
 
     public enum ShapeType
@@ -122,7 +125,7 @@ namespace SceneDeserialization
 
     public class PrimitiveObject : SceneComponent
     {
-        public override string componentType => "Primitive";
+        public override SceneObjectType componentType => SceneObjectType.Primitive;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ShapeType shape;
@@ -131,7 +134,7 @@ namespace SceneDeserialization
 
     public class DynamicObject : SceneComponent
     {
-        public override string componentType => "Dynamic";
+        public override SceneObjectType componentType => SceneObjectType.Dynamic;
 
         public string id;
     }
@@ -139,9 +142,6 @@ namespace SceneDeserialization
     public class SceneObject
     {
         public string id;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public SceneObjectType type;
 
         public Vector3 position;
 
@@ -266,22 +266,12 @@ namespace SceneDeserialization
 
     public abstract class BaseLight : SceneComponent
     {
-        public override string componentType => "Light";
+        public override SceneObjectType componentType => SceneObjectType.Light;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public LightType type { get; set; }
-
-        public string id;
-
-        public Vector3 position;
-
-        public Vector3 rotation;
-
-        public Vector3 scale;
-
         public ColorRGBA color;
         public float intensity;
-
         public float indirect_multiplier;
     }
 
@@ -336,6 +326,6 @@ namespace SceneDeserialization
     {
         public string name;
         public Skybox skybox;
-        public List<SceneObject> objects;
+        public List<SceneObject> graph;
     }
 }
