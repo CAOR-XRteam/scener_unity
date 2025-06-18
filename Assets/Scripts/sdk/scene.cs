@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using UnityEngine;
 
 namespace SceneDeserialization
 {
@@ -18,6 +19,20 @@ namespace SceneDeserialization
         }
     }
 
+    public static class ColorRGBAExtensions
+    {
+        public static ColorRGBA ToColorRGBA(this Color color)
+        {
+            return new ColorRGBA
+            {
+                r = color.r,
+                g = color.g,
+                b = color.b,
+                a = color.a,
+            };
+        }
+    }
+
     public class Vector3
     {
         public float x;
@@ -27,6 +42,19 @@ namespace SceneDeserialization
         public UnityEngine.Vector3 ToUnityVector3()
         {
             return new UnityEngine.Vector3(x, y, z);
+        }
+    }
+
+    public static class Vector3Extensions
+    {
+        public static Vector3 ToVector3(this UnityEngine.Vector3 vector)
+        {
+            return new Vector3
+            {
+                x = vector.x,
+                y = vector.y,
+                z = vector.z,
+            };
         }
     }
 
@@ -40,6 +68,20 @@ namespace SceneDeserialization
         public UnityEngine.Vector4 ToUnityVector4()
         {
             return new UnityEngine.Vector4(x, y, z, w);
+        }
+    }
+
+    public static class Vector4Extensions
+    {
+        public static Vector4 ToVector4(this UnityEngine.Vector4 vector)
+        {
+            return new Vector4
+            {
+                x = vector.x,
+                y = vector.y,
+                z = vector.z,
+                w = vector.w,
+            };
         }
     }
 

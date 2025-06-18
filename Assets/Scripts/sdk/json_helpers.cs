@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SceneDeserialization;
+using UnityEngine;
 
 public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
     where TConverter : JsonConverter, new()
 {
-    private readonly TConverter _itemConverter = new TConverter();
+    private readonly TConverter _itemConverter = new();
 
     public override void WriteJson(JsonWriter writer, List<TBase> value, JsonSerializer serializer)
     {
@@ -27,7 +28,7 @@ public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
             return null;
 
         JArray array = JArray.Load(reader);
-        List<TBase> list = new List<TBase>(array.Count);
+        List<TBase> list = new(array.Count);
         foreach (JToken token in array)
         {
             list.Add(
@@ -82,11 +83,39 @@ public class LightConverter : JsonCreationConverter<BaseLight>
             _ => throw new ArgumentException($"The light type {type} is not supported"),
         };
     }
+
+    public void MapBaseLightProperties<T>(T lightData, Light light)
+        where T : BaseLight
+    {
+        lightData.id = light.gameObject.GetInstanceID().ToString();
+        lightData.position = light.transform.position.ToVector3();
+        lightData.rotation = light.transform.eulerAngles.ToVector3();
+        lightData.scale = light.transform.localScale.ToVector3();
+        lightData.color = light.color.ToColorRGBA();
+        lightData.intensity = light.intensity;
+        lightData.indirect_multiplier = light.bounceIntensity;
+    }
+
+    public void MapLightModeAndShadows(dynamic lightData, Light light)
+    {
+        lightData.mode = light.lightmapBakeType switch
+        {
+            LightmapBakeType.Baked => LightMode.Baked,
+            LightmapBakeType.Mixed => LightMode.Mixed,
+            _ => LightMode.Realtime,
+        };
+        lightData.shadow_type = light.shadows switch
+        {
+            LightShadows.None => ShadowType.NoShadows,
+            LightShadows.Hard => ShadowType.HardShadows,
+            _ => ShadowType.SoftShadows,
+        };
+    }
 }
 
-public class SkyboxConverter : JsonCreationConverter<Skybox>
+public class SkyboxConverter : JsonCreationConverter<SceneDeserialization.Skybox>
 {
-    protected override Skybox Create(Type objectType, JObject jObject)
+    protected override SceneDeserialization.Skybox Create(Type objectType, JObject jObject)
     {
         var type = (string)jObject.Property("type");
         return type switch
@@ -96,5 +125,39 @@ public class SkyboxConverter : JsonCreationConverter<Skybox>
             "cubed" => new CubedSkybox(),
             _ => throw new ArgumentException($"The skybox type {type} is not supported"),
         };
+    }
+}
+
+public class ObjectConverter
+{
+    public bool IsPrimitive(GameObject obj)
+    {
+        MeshFilter mf = obj.GetComponent<MeshFilter>();
+        if (mf == null || mf.sharedMesh == null)
+            return false;
+
+        string meshName = mf.sharedMesh.name;
+        return meshName.StartsWith("Cube")
+            || meshName.StartsWith("Sphere")
+            || meshName.StartsWith("Capsule")
+            || meshName.StartsWith("Cylinder")
+            || meshName.StartsWith("Plane")
+            || meshName.StartsWith("Quad");
+    }
+
+    public ShapeType? GetPrimitiveShape(GameObject obj)
+    {
+        MeshFilter mf = obj.GetComponent<MeshFilter>();
+        if (mf == null || mf.sharedMesh == null)
+            return null;
+
+        string meshName = mf.sharedMesh.name;
+        return meshName.StartsWith("Cube") ? ShapeType.Cube
+            : meshName.StartsWith("Sphere") ? ShapeType.Sphere
+            : meshName.StartsWith("Capsule") ? ShapeType.Capsule
+            : meshName.StartsWith("Cylinder") ? ShapeType.Cylinder
+            : meshName.StartsWith("Plane") ? ShapeType.Plane
+            : meshName.StartsWith("Quad") ? ShapeType.Quad
+            : null;
     }
 }
