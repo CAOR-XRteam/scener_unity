@@ -1,65 +1,47 @@
-// exporter.cs
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using SceneDeserialization;
 using UnityEngine;
 
-// namespace scener.scene
-// {
-//     public class SceneExporter : MonoBehaviour
-//     {
-//         public void ExportSceneToJson(string path)
-//         {
-//             //---------------------------
-
-//             //Create and fill current scene graph
-//             SceneGraph graph = new SceneGraph();
-//             graph.GraphCompletion();
-
-//             //Add scene name and timestamp at top of the json
-//             var exportData = new
-//             {
-//                 sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
-//                 timestamp = DateTime.Now.ToString("o"), // ISO 8601 format
-//                 graph = graph.graph,
-//             };
-
-//             //Serialize and export to json
-//             Json.write_on_file(exportData, path);
-//             Debug.Log($"Scene exported to: {path}");
-
-//             //---------------------------
-//         }
-
-//         void Start()
-//         {
-//             //---------------------------
-
-//             //For now just save in Assets folder
-//             string path = Path.Combine(Application.dataPath, "scene_export.json");
-//             this.ExportSceneToJson(path);
-
-//             //---------------------------
-//         }
-//     }
-// }
-
 public class SceneSerializer : MonoBehaviour
 {
     public string generatedJson;
 
-    [ContextMenu("Serialize Scene to JSON")]
-    private void SerializeScene()
+    private void SerializeScene(string scene_name = null)
     {
         List<SceneObject> graph = new();
         List<GameObject> topLevelObjects = new();
 
-        foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+        if (!string.IsNullOrEmpty(scene_name))
         {
-            if (obj.transform.parent == null)
+            GameObject rootObject = GameObject.Find(scene_name);
+
+            if (rootObject == null)
             {
-                topLevelObjects.Add(obj);
+                Debug.LogError(
+                    $"Could not find a GameObject named '{scene_name}' to use as a serialization root."
+                );
+                return;
+            }
+
+            Debug.Log($"Targeted serialization requested. Starting from root: '{scene_name}'.");
+
+            foreach (Transform child in rootObject.transform)
+            {
+                topLevelObjects.Add(child.gameObject);
+            }
+        }
+        else
+        {
+            Debug.Log("No specific root object provided. Serializing entire scene hierarchy.");
+
+            foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+            {
+                if (obj.transform.parent == null)
+                {
+                    topLevelObjects.Add(obj);
+                }
             }
         }
 
@@ -85,9 +67,19 @@ public class SceneSerializer : MonoBehaviour
         };
 
         generatedJson = JsonConvert.SerializeObject(scene, settings);
-        File.WriteAllText("Assets/Resources/scene.json", generatedJson);
+        if (scene_name == null || scene_name == "")
+        {
+            scene_name = "scene";
+        }
+        File.WriteAllText($"Assets/Resources/{scene_name}.json", generatedJson);
 
         Debug.Log("Scene serialized successfully!");
+    }
+
+    [ContextMenu("Serialize Scene from JSON")]
+    private void SerializeInEditor()
+    {
+        SerializeScene("Test Sun Scene");
     }
 
     private SceneObject BuildSceneNode(GameObject obj)
@@ -238,38 +230,4 @@ public class SceneSerializer : MonoBehaviour
 
         return lightData;
     }
-
-    // private List<SceneObject> MapObjects()
-    // {
-    //     var objectsList = new List<SceneObject>();
-    //     MeshRenderer[] renderers;
-
-    //     renderers = FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None);
-
-    //     foreach (var renderer in renderers)
-    //     {
-    //         if (renderer.GetComponent<Light>() != null)
-    //             continue;
-
-    //         bool isPrimitive = ObjectConverter.IsPrimitive(renderer.gameObject);
-
-    //         var objData = new SceneObject
-    //         {
-    //             id = renderer.gameObject.name.Split('_')[1],
-    //             type = isPrimitive ? SceneObjectType.Primitive : SceneObjectType.Dynamic,
-    //             position = renderer.transform.position.ToVector3(),
-    //             rotation = renderer.transform.eulerAngles.ToVector3(),
-    //             scale = renderer.transform.localScale.ToVector3(),
-    //             color = renderer.material.color.ToColorRGBA(),
-    //         };
-
-    //         if (isPrimitive)
-    //         {
-    //             objData.shape = ObjectConverter.GetPrimitiveShape(renderer.gameObject);
-    //         }
-
-    //         objectsList.Add(objData);
-    //     }
-    //     return objectsList;
-    // }
 }
