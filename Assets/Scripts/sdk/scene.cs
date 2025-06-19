@@ -87,6 +87,7 @@ namespace SceneDeserialization
 
     public abstract class SceneComponent
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         public abstract SceneObjectType componentType { get; }
     }
 
