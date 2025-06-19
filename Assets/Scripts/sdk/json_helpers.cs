@@ -77,6 +77,34 @@ public abstract class JsonCreationConverter<T> : JsonConverter
     }
 }
 
+public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
+{
+    protected override SceneComponent Create(Type objectType, JObject jObject)
+    {
+        var componentTypeValue = jObject["componentType"]?.ToString();
+
+        switch (componentTypeValue)
+        {
+            case "Primitive":
+                return new PrimitiveObject();
+            case "Dynamic":
+                return new DynamicObject();
+            case "Light":
+                var lightType = jObject["type"]?.ToString();
+                return lightType switch
+                {
+                    "spot" => new SpotLight(),
+                    "directional" => new DirectionalLight(),
+                    "point" => new PointLight(),
+                    "area" => new AreaLight(),
+                    _ => throw new ArgumentException($"Unknown light type: {lightType}"),
+                };
+            default:
+                throw new ArgumentException($"Unknown component type: {componentTypeValue}");
+        }
+    }
+}
+
 public class LightConverter : JsonCreationConverter<BaseLight>
 {
     protected override BaseLight Create(Type objectType, JObject jObject)
@@ -95,10 +123,6 @@ public class LightConverter : JsonCreationConverter<BaseLight>
     public static void MapBaseLightProperties<T>(T lightData, Light light)
         where T : BaseLight
     {
-        lightData.id = light.gameObject.name;
-        lightData.position = light.transform.position.ToVector3();
-        lightData.rotation = light.transform.eulerAngles.ToVector3();
-        lightData.scale = light.transform.localScale.ToVector3();
         lightData.color = light.color.ToColorRGBA();
         lightData.intensity = light.intensity;
         lightData.indirect_multiplier = light.bounceIntensity;

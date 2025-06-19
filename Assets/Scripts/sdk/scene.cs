@@ -149,6 +149,7 @@ namespace SceneDeserialization
 
         public Vector3 scale;
 
+        [JsonProperty(ItemConverterType = typeof(SceneComponentConverter))]
         public List<SceneComponent> components = new();
 
         public List<SceneObject> children = new();
@@ -325,6 +326,8 @@ namespace SceneDeserialization
     public class Scene
     {
         public string name;
+
+        [JsonConverter(typeof(SkyboxConverter))]
         public Skybox skybox;
         public List<SceneObject> graph;
     }
