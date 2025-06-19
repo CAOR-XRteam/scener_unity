@@ -54,10 +54,7 @@ public abstract class JsonCreationConverter<T> : JsonConverter
         return typeof(T).IsAssignableFrom(objectType);
     }
 
-    public override bool CanWrite
-    {
-        get { return false; }
-    }
+    public override bool CanWrite => false;
 
     public override object ReadJson(
         JsonReader reader,
@@ -82,7 +79,7 @@ public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
 {
     protected override SceneComponent Create(Type objectType, JObject jObject)
     {
-        var componentTypeValue = jObject["componentType"]?.ToString();
+        string componentTypeValue = jObject["componentType"]?.ToString();
 
         switch (componentTypeValue.ToLower())
         {
@@ -91,7 +88,7 @@ public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
             case "dynamic":
                 return new DynamicObject();
             case "light":
-                var lightType = jObject["type"]?.ToString();
+                string lightType = jObject["type"]?.ToString();
                 return lightType switch
                 {
                     "spot" => new SpotLight(),
@@ -137,7 +134,7 @@ public class SkyboxConverter : JsonCreationConverter<SceneDeserialization.Skybox
 {
     protected override SceneDeserialization.Skybox Create(Type objectType, JObject jObject)
     {
-        var type = (string)jObject.Property("type");
+        string type = (string)jObject.Property("type");
         return type switch
         {
             "gradient" => new GradientSkybox(),
