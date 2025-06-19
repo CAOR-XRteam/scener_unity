@@ -25,7 +25,7 @@ public class SceneSerializer : MonoBehaviour
                 return;
             }
 
-            Debug.Log($"Targeted serialization requested. Starting from root: '{scene_name}'.");
+            Debug.Log($"Serializing GameObject: '{scene_name}'.");
 
             foreach (Transform child in rootObject.transform)
             {
@@ -34,7 +34,7 @@ public class SceneSerializer : MonoBehaviour
         }
         else
         {
-            Debug.Log("No specific root object provided. Serializing entire scene hierarchy.");
+            Debug.Log("No specific root object provided. Serializing entire scene.");
 
             foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
             {
@@ -67,10 +67,12 @@ public class SceneSerializer : MonoBehaviour
         };
 
         generatedJson = JsonConvert.SerializeObject(scene, settings);
+
         if (scene_name == null || scene_name == "")
         {
             scene_name = "scene";
         }
+
         File.WriteAllText($"Assets/Resources/{scene_name}.json", generatedJson);
 
         Debug.Log("Scene serialized successfully!");

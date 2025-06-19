@@ -134,6 +134,7 @@ namespace SceneDeserialization
 
     public class DynamicObject : SceneComponent
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         public override SceneObjectType componentType => SceneObjectType.Dynamic;
 
         public string id;

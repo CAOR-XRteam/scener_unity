@@ -83,13 +83,13 @@ public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
     {
         var componentTypeValue = jObject["componentType"]?.ToString();
 
-        switch (componentTypeValue)
+        switch (componentTypeValue.ToLower())
         {
-            case "Primitive":
+            case "primitive":
                 return new PrimitiveObject();
-            case "Dynamic":
+            case "dynamic":
                 return new DynamicObject();
-            case "Light":
+            case "light":
                 var lightType = jObject["type"]?.ToString();
                 return lightType switch
                 {
