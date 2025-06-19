@@ -7,7 +7,6 @@ public class SceneBuilder : MonoBehaviour
 {
     private Transform _generatedContentRoot;
 
-    [ContextMenu("Build Scene From JSON")]
     public void BuildSceneFromJSON(string json)
     {
         try
