@@ -11,18 +11,15 @@ public class SceneBuilder : MonoBehaviour
     {
         try
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-            };
+            JsonSerializerSettings settings = new() { TypeNameHandling = TypeNameHandling.Auto };
 
-            var scene =
+            Scene scene =
                 JsonConvert.DeserializeObject<Scene>(json, settings)
                 ?? throw new System.Exception("Deserialization resulted in a null object.");
 
             ClearScene(scene.name);
             BuildSkybox(scene.skybox);
-            foreach (var node in scene.graph)
+            foreach (SceneObject node in scene.graph)
             {
                 CreateGameObject(node, _generatedContentRoot);
             }
@@ -50,7 +47,7 @@ public class SceneBuilder : MonoBehaviour
 
         if (node.children != null)
         {
-            foreach (var childNode in node.children)
+            foreach (SceneObject childNode in node.children)
             {
                 CreateGameObject(childNode, newObj.transform);
             }
@@ -60,9 +57,11 @@ public class SceneBuilder : MonoBehaviour
     private void BuildComponents(GameObject target, List<SceneComponent> components)
     {
         if (components == null)
+        {
             return;
+        }
 
-        foreach (var componentData in components)
+        foreach (SceneComponent componentData in components)
         {
             switch (componentData)
             {
@@ -75,32 +74,34 @@ public class SceneBuilder : MonoBehaviour
                 case BaseLight light:
                     BuildLight(target, light);
                     break;
+                default:
+                    break;
             }
         }
     }
 
     private void BuildPrimitive(GameObject target, PrimitiveObject data)
     {
-        PrimitiveType primitiveType = data.shape switch
-        {
-            ShapeType.Cube => PrimitiveType.Cube,
-            ShapeType.Sphere => PrimitiveType.Sphere,
-            ShapeType.Cylinder => PrimitiveType.Cylinder,
-            ShapeType.Capsule => PrimitiveType.Capsule,
-            ShapeType.Plane => PrimitiveType.Plane,
-            ShapeType.Quad => PrimitiveType.Quad,
-            _ => throw new System.NotImplementedException(),
-        };
-        GameObject tempPrimitive = GameObject.CreatePrimitive(primitiveType);
+        GameObject tempPrimitive = GameObject.CreatePrimitive(
+            data.shape switch
+            {
+                ShapeType.Cube => PrimitiveType.Cube,
+                ShapeType.Sphere => PrimitiveType.Sphere,
+                ShapeType.Cylinder => PrimitiveType.Cylinder,
+                ShapeType.Capsule => PrimitiveType.Capsule,
+                ShapeType.Plane => PrimitiveType.Plane,
+                ShapeType.Quad => PrimitiveType.Quad,
+                _ => throw new System.NotImplementedException(),
+            }
+        );
         target.AddComponent<MeshFilter>().sharedMesh = tempPrimitive
             .GetComponent<MeshFilter>()
             .sharedMesh;
-
-        target.AddComponent<MeshRenderer>();
+        _ = target.AddComponent<MeshRenderer>();
 
         DestroyImmediate(tempPrimitive);
 
-        var renderer = target.GetComponent<MeshRenderer>();
+        MeshRenderer renderer = target.GetComponent<MeshRenderer>();
 
         Material newMaterial = renderer.material;
         newMaterial.color = data.color.ToUnityColor();
@@ -111,7 +112,7 @@ public class SceneBuilder : MonoBehaviour
         GameObject modelAsset = Resources.Load<GameObject>(data.id);
         if (modelAsset != null)
         {
-            GameObject _ = Instantiate(modelAsset, target.transform);
+            _ = Instantiate(modelAsset, target.transform);
         }
         else
         {
@@ -132,12 +133,14 @@ public class SceneBuilder : MonoBehaviour
     private void BuildSkybox(SceneDeserialization.Skybox skyboxData)
     {
         if (skyboxData == null)
+        {
             return;
+        }
 
         switch (skyboxData.type)
         {
             case SkyboxType.Sun:
-                var sun = skyboxData as SunSkybox;
+                SunSkybox sun = skyboxData as SunSkybox;
 
                 RenderSettings.skybox = new Material(Shader.Find("Skybox/Horizon With Sun Skybox"));
                 RenderSettings.skybox.SetColor("_SkyColor1", sun.top_color.ToUnityColor());
@@ -151,12 +154,11 @@ public class SceneBuilder : MonoBehaviour
                 RenderSettings.skybox.SetFloat("_SunAlpha", sun.sun_alpha);
                 RenderSettings.skybox.SetFloat("_SunBeta", sun.sun_beta);
                 RenderSettings.skybox.SetVector("_SunVector", sun.sun_vector.ToUnityVector4());
-                // RenderSettings.sun = null;
 
                 break;
 
             case SkyboxType.Cubed:
-                var cubed = skyboxData as CubedSkybox;
+                CubedSkybox cubed = skyboxData as CubedSkybox;
 
                 Cubemap cubemap = Resources.Load<Cubemap>(cubed.cube_map);
                 if (cubemap != null)
@@ -174,7 +176,7 @@ public class SceneBuilder : MonoBehaviour
                 break;
 
             case SkyboxType.Gradient:
-                var grad = skyboxData as GradientSkybox;
+                GradientSkybox grad = skyboxData as GradientSkybox;
 
                 Shader gradientShader = Shader.Find("Skybox/Gradient Skybox");
 
@@ -187,12 +189,15 @@ public class SceneBuilder : MonoBehaviour
                 RenderSettings.skybox.SetFloat("_Exponent", grad.exponent);
 
                 break;
+
+            default:
+                break;
         }
     }
 
     private void BuildLight(GameObject target, BaseLight lightData)
     {
-        var light = target.AddComponent<Light>();
+        Light light = target.AddComponent<Light>();
 
         light.color = lightData.color.ToUnityColor();
         light.intensity = lightData.intensity;
@@ -201,25 +206,25 @@ public class SceneBuilder : MonoBehaviour
         switch (lightData.type)
         {
             case SceneDeserialization.LightType.Spot:
-                var spot = lightData as SpotLight;
+                SpotLight spot = lightData as SpotLight;
                 light.type = UnityEngine.LightType.Spot;
                 light.range = spot.range;
                 light.spotAngle = spot.spot_angle;
                 SetLightModeAndShadows(light, spot.mode, spot.shadow_type);
                 break;
             case SceneDeserialization.LightType.Directional:
-                var directional = lightData as DirectionalLight;
+                DirectionalLight directional = lightData as DirectionalLight;
                 light.type = UnityEngine.LightType.Directional;
                 SetLightModeAndShadows(light, directional.mode, directional.shadow_type);
                 break;
             case SceneDeserialization.LightType.Point:
-                var point = lightData as PointLight;
+                PointLight point = lightData as PointLight;
                 light.type = UnityEngine.LightType.Point;
                 light.range = point.range;
                 SetLightModeAndShadows(light, point.mode, point.shadow_type);
                 break;
             case SceneDeserialization.LightType.Area:
-                var area = lightData as AreaLight;
+                AreaLight area = lightData as AreaLight;
                 light.type = UnityEngine.LightType.Rectangle;
 
                 if (area.shape == SceneDeserialization.LightShape.Rectangle)
@@ -231,8 +236,9 @@ public class SceneBuilder : MonoBehaviour
                     light.type = UnityEngine.LightType.Disc;
                     light.areaSize = new Vector2(area.radius.Value, area.radius.Value);
                 }
-
                 light.lightmapBakeType = LightmapBakeType.Baked;
+                break;
+            default:
                 break;
         }
     }
