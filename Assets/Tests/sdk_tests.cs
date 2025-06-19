@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using SceneDeserialization;
 
-// TODO: unit tests
+// TODO: finalize unit tests
 
 public class MessagesTests
 {
