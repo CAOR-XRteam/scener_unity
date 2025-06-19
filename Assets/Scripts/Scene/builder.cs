@@ -70,7 +70,7 @@ public class SceneBuilder : MonoBehaviour
                     BuildPrimitive(target, primitive);
                     break;
                 case DynamicObject dynamic:
-                    BuildDynamicModel(target, dynamic);
+                    BuildDynamic(target, dynamic);
                     break;
                 case BaseLight light:
                     BuildLight(target, light);
@@ -106,7 +106,7 @@ public class SceneBuilder : MonoBehaviour
         newMaterial.color = data.color.ToUnityColor();
     }
 
-    private void BuildDynamicModel(GameObject target, DynamicObject data)
+    private void BuildDynamic(GameObject target, DynamicObject data)
     {
         GameObject modelAsset = Resources.Load<GameObject>(data.id);
         if (modelAsset != null)
