@@ -32,6 +32,16 @@ public class SceneBuilder : MonoBehaviour
         }
     }
 
+    private void ClearScene(string scene_name)
+    {
+        GameObject existingRoot = GameObject.Find(scene_name);
+        if (existingRoot != null)
+        {
+            Destroy(existingRoot);
+        }
+        _generatedContentRoot = new GameObject(scene_name).transform;
+    }
+
     private void CreateGameObject(SceneObject node, Transform parent)
     {
         GameObject newObj = new(node.id);
@@ -82,18 +92,7 @@ public class SceneBuilder : MonoBehaviour
 
     private void BuildPrimitive(GameObject target, PrimitiveObject data)
     {
-        GameObject tempPrimitive = GameObject.CreatePrimitive(
-            data.shape switch
-            {
-                ShapeType.Cube => PrimitiveType.Cube,
-                ShapeType.Sphere => PrimitiveType.Sphere,
-                ShapeType.Cylinder => PrimitiveType.Cylinder,
-                ShapeType.Capsule => PrimitiveType.Capsule,
-                ShapeType.Plane => PrimitiveType.Plane,
-                ShapeType.Quad => PrimitiveType.Quad,
-                _ => throw new System.NotImplementedException(),
-            }
-        );
+        GameObject tempPrimitive = GameObject.CreatePrimitive(data.shape.ToUnityPrimitiveShape());
         target.AddComponent<MeshFilter>().sharedMesh = tempPrimitive
             .GetComponent<MeshFilter>()
             .sharedMesh;
@@ -118,16 +117,6 @@ public class SceneBuilder : MonoBehaviour
         {
             Debug.LogWarning($"Could not find model asset '{data.id}' in Resources folder.");
         }
-    }
-
-    private void ClearScene(string scene_name)
-    {
-        GameObject existingRoot = GameObject.Find(scene_name);
-        if (existingRoot != null)
-        {
-            Destroy(existingRoot);
-        }
-        _generatedContentRoot = new GameObject(scene_name).transform;
     }
 
     private void BuildSkybox(SceneDeserialization.Skybox skyboxData)

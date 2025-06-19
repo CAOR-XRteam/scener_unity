@@ -40,6 +40,7 @@ public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
                     _itemConverter.ReadJson(token.CreateReader(), typeof(TBase), null, serializer)
             );
         }
+
         return list;
     }
 }
@@ -105,21 +106,8 @@ public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
     }
 }
 
-public class LightConverter : JsonCreationConverter<BaseLight>
+public class LightConverter
 {
-    protected override BaseLight Create(Type objectType, JObject jObject)
-    {
-        var type = (string)jObject.Property("type");
-        return type switch
-        {
-            "spot" => new SpotLight(),
-            "directional" => new DirectionalLight(),
-            "point" => new PointLight(),
-            "area" => new AreaLight(),
-            _ => throw new ArgumentException($"The light type {type} is not supported"),
-        };
-    }
-
     public static void MapBaseLightProperties<T>(T lightData, Light light)
         where T : BaseLight
     {
@@ -204,21 +192,5 @@ public class ObjectConverter
         }
         shape = null;
         return false;
-    }
-
-    public static ShapeType? GetPrimitiveShape(GameObject obj)
-    {
-        MeshFilter mf = obj.GetComponent<MeshFilter>();
-        if (mf == null || mf.sharedMesh == null)
-            return null;
-
-        string meshName = mf.sharedMesh.name;
-        return meshName.StartsWith("Cube") ? ShapeType.Cube
-            : meshName.StartsWith("Sphere") ? ShapeType.Sphere
-            : meshName.StartsWith("Capsule") ? ShapeType.Capsule
-            : meshName.StartsWith("Cylinder") ? ShapeType.Cylinder
-            : meshName.StartsWith("Plane") ? ShapeType.Plane
-            : meshName.StartsWith("Quad") ? ShapeType.Quad
-            : null;
     }
 }

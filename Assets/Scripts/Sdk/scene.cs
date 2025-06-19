@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -122,6 +123,23 @@ namespace SceneDeserialization
 
         [EnumMember(Value = "quad")]
         Quad,
+    }
+
+    public static class ShapeTypeExtensions
+    {
+        public static PrimitiveType ToUnityPrimitiveShape(this ShapeType shape)
+        {
+            return shape switch
+            {
+                ShapeType.Cube => PrimitiveType.Cube,
+                ShapeType.Sphere => PrimitiveType.Sphere,
+                ShapeType.Cylinder => PrimitiveType.Cylinder,
+                ShapeType.Capsule => PrimitiveType.Capsule,
+                ShapeType.Plane => PrimitiveType.Plane,
+                ShapeType.Quad => PrimitiveType.Quad,
+                _ => throw new NotImplementedException(),
+            };
+        }
     }
 
     public class PrimitiveObject : SceneComponent

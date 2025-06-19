@@ -36,7 +36,7 @@ public class SceneSerializer : MonoBehaviour
         {
             Debug.Log("No specific root object provided. Serializing entire scene.");
 
-            foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+            foreach (GameObject obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
             {
                 if (obj.transform.parent == null)
                 {
@@ -45,7 +45,7 @@ public class SceneSerializer : MonoBehaviour
             }
         }
 
-        foreach (var rootObj in topLevelObjects)
+        foreach (GameObject rootObj in topLevelObjects)
         {
             if (rootObj.activeInHierarchy && rootObj.hideFlags == HideFlags.None)
             {
@@ -68,7 +68,7 @@ public class SceneSerializer : MonoBehaviour
 
         generatedJson = JsonConvert.SerializeObject(scene, settings);
 
-        if (scene_name == null || scene_name == "")
+        if (scene_name is null or "")
         {
             scene_name = "scene";
         }
@@ -86,7 +86,7 @@ public class SceneSerializer : MonoBehaviour
 
     private SceneObject BuildSceneNode(GameObject obj)
     {
-        var node = new SceneObject
+        SceneObject node = new()
         {
             id = obj.name,
             position = obj.transform.localPosition.ToVector3(),
@@ -107,16 +107,16 @@ public class SceneSerializer : MonoBehaviour
 
     private List<SceneComponent> MapComponents(GameObject obj)
     {
-        var components = new List<SceneComponent>();
+        List<SceneComponent> components = new();
 
-        if (obj.TryGetComponent<Light>(out var light))
+        if (obj.TryGetComponent(out Light light))
         {
             components.Add(MapLight(light));
         }
 
         if (ObjectConverter.IsPrimitive(obj, out ShapeType? shape))
         {
-            var renderer = obj.GetComponent<MeshRenderer>();
+            MeshRenderer renderer = obj.GetComponent<MeshRenderer>();
             components.Add(
                 new PrimitiveObject
                 {
@@ -136,45 +136,44 @@ public class SceneSerializer : MonoBehaviour
     private SceneDeserialization.Skybox MapSkybox()
     {
         Material skyboxMat = RenderSettings.skybox;
-        if (skyboxMat == null)
-            return null;
-
-        return skyboxMat.shader.name switch
-        {
-            "Skybox/Horizon With Sun Skybox" => new SunSkybox
+        return skyboxMat == null
+            ? null
+            : skyboxMat.shader.name switch
             {
-                type = SkyboxType.Sun,
-                top_color = skyboxMat.GetColor("_SkyColor1").ToColorRGBA(),
-                top_exponent = skyboxMat.GetFloat("_SkyExponent1"),
-                horizon_color = skyboxMat.GetColor("_SkyColor2").ToColorRGBA(),
-                bottom_color = skyboxMat.GetColor("_SkyColor3").ToColorRGBA(),
-                bottom_exponent = skyboxMat.GetFloat("_SkyExponent2"),
-                sky_intensity = skyboxMat.GetFloat("_SkyIntensity"),
-                sun_color = skyboxMat.GetColor("_SunColor").ToColorRGBA(),
-                sun_intensity = skyboxMat.GetFloat("_SunIntensity"),
-                sun_alpha = skyboxMat.GetFloat("_SunAlpha"),
-                sun_beta = skyboxMat.GetFloat("_SunBeta"),
-                sun_vector = skyboxMat.GetVector("_SunVector").ToVector4(),
-            },
-            "Skybox/Cubemap" => new CubedSkybox
-            {
-                type = SkyboxType.Cubed,
-                tint_color = skyboxMat.GetColor("_Tint").ToColorRGBA(),
-                exposure = skyboxMat.GetFloat("_Exposure"),
-                rotation = skyboxMat.GetFloat("_Rotation"),
-                cube_map = skyboxMat.GetTexture("_Tex").name,
-            },
-            "Skybox/Gradient Skybox" => new GradientSkybox
-            {
-                type = SkyboxType.Gradient,
-                color1 = skyboxMat.GetColor("_Color1").ToColorRGBA(),
-                color2 = skyboxMat.GetColor("_Color2").ToColorRGBA(),
-                up_vector = skyboxMat.GetVector("_UpVector").ToVector4(),
-                intensity = skyboxMat.GetFloat("_Intensity"),
-                exponent = skyboxMat.GetFloat("_Exponent"),
-            },
-            _ => null,
-        };
+                "Skybox/Horizon With Sun Skybox" => new SunSkybox
+                {
+                    type = SkyboxType.Sun,
+                    top_color = skyboxMat.GetColor("_SkyColor1").ToColorRGBA(),
+                    top_exponent = skyboxMat.GetFloat("_SkyExponent1"),
+                    horizon_color = skyboxMat.GetColor("_SkyColor2").ToColorRGBA(),
+                    bottom_color = skyboxMat.GetColor("_SkyColor3").ToColorRGBA(),
+                    bottom_exponent = skyboxMat.GetFloat("_SkyExponent2"),
+                    sky_intensity = skyboxMat.GetFloat("_SkyIntensity"),
+                    sun_color = skyboxMat.GetColor("_SunColor").ToColorRGBA(),
+                    sun_intensity = skyboxMat.GetFloat("_SunIntensity"),
+                    sun_alpha = skyboxMat.GetFloat("_SunAlpha"),
+                    sun_beta = skyboxMat.GetFloat("_SunBeta"),
+                    sun_vector = skyboxMat.GetVector("_SunVector").ToVector4(),
+                },
+                "Skybox/Cubemap" => new CubedSkybox
+                {
+                    type = SkyboxType.Cubed,
+                    tint_color = skyboxMat.GetColor("_Tint").ToColorRGBA(),
+                    exposure = skyboxMat.GetFloat("_Exposure"),
+                    rotation = skyboxMat.GetFloat("_Rotation"),
+                    cube_map = skyboxMat.GetTexture("_Tex").name,
+                },
+                "Skybox/Gradient Skybox" => new GradientSkybox
+                {
+                    type = SkyboxType.Gradient,
+                    color1 = skyboxMat.GetColor("_Color1").ToColorRGBA(),
+                    color2 = skyboxMat.GetColor("_Color2").ToColorRGBA(),
+                    up_vector = skyboxMat.GetVector("_UpVector").ToVector4(),
+                    intensity = skyboxMat.GetFloat("_Intensity"),
+                    exponent = skyboxMat.GetFloat("_Exponent"),
+                },
+                _ => null,
+            };
     }
 
     private BaseLight MapLight(Light light)
@@ -183,7 +182,7 @@ public class SceneSerializer : MonoBehaviour
         switch (light.type)
         {
             case UnityEngine.LightType.Directional:
-                var directionalData = new DirectionalLight
+                DirectionalLight directionalData = new()
                 {
                     type = SceneDeserialization.LightType.Directional,
                 };
@@ -191,7 +190,7 @@ public class SceneSerializer : MonoBehaviour
                 lightData = directionalData;
                 break;
             case UnityEngine.LightType.Point:
-                var pointData = new PointLight
+                PointLight pointData = new()
                 {
                     type = SceneDeserialization.LightType.Point,
                     range = light.range,
@@ -200,7 +199,7 @@ public class SceneSerializer : MonoBehaviour
                 lightData = pointData;
                 break;
             case UnityEngine.LightType.Spot:
-                var spotData = new SpotLight
+                SpotLight spotData = new()
                 {
                     type = SceneDeserialization.LightType.Spot,
                     range = light.range,
@@ -222,6 +221,8 @@ public class SceneSerializer : MonoBehaviour
                     width = light.areaSize.x,
                     height = light.areaSize.y,
                 };
+                break;
+            default:
                 break;
         }
 
