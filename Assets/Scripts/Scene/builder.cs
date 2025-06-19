@@ -257,7 +257,7 @@ public class SceneBuilder : MonoBehaviour
     }
 
     [ContextMenu("Test Scene: Sun Skybox with Primitives and Dynamic Model")]
-    private void TestScene_SunAndMultipleObjects()
+    private void TestScene_Sun()
     {
         string json = @"{
             'name': 'Test Sun Scene',
@@ -276,18 +276,18 @@ public class SceneBuilder : MonoBehaviour
                     'position': {'x': 0, 'y': 0, 'z': 0}, 'rotation': {'x': 50, 'y': -30, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
                     'components': [
                         {
-                            'componentType': 'Light',
+                            'componentType': 'light',
                             'type': 'directional', 'color': {'r': 1.0, 'g': 0.95, 'b': 0.85}, 'intensity': 1.1,
                             'indirect_multiplier': 1.0, 'mode': 'realtime', 'shadow_type': 'soft_shadows'
                         }
                     ]
                 },
                 {
-                    'id': 'light2_container', 'name': 'Point Light Source',
+                    'id': 'light2', 'name': 'Point Light Source',
                     'position': {'x': 5, 'y': 2, 'z': 3}, 'rotation': {'x': 0, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
                     'components': [
                         {
-                            'componentType': 'Light',
+                            'componentType': 'light',
                             'type': 'point', 'color': {'r': 1.0, 'g': 0.5, 'b': 0.2}, 'intensity': 2.5,
                             'indirect_multiplier': 1.0, 'range': 15.0, 'mode': 'mixed', 'shadow_type': 'hard_shadows'
                         }
@@ -308,17 +308,17 @@ public class SceneBuilder : MonoBehaviour
                     'position': {'x': 0, 'y': 1, 'z': 5}, 'rotation': {'x': 0, 'y': 25, 'z': 0}, 'scale': {'x': 2, 'y': 2, 'z': 2},
                     'components': [
                         {
-                            'componentType': 'Primitive',
+                            'componentType': 'primitive',
                             'shape': 'cube', 'color': {'r': 0.8, 'g': 0.1, 'b': 0.1}
                         }
                     ]
                 },
                 {
-                    'id': 'theatre_container', 'name': 'Theatre Container',
+                    'id': 'theatre', 'name': 'Theatre Container',
                     'position': {'x': -5, 'y': 0, 'z': 10}, 'rotation': {'x': 0, 'y': 180, 'z': 0}, 'scale': {'x': 5, 'y': 5, 'z': 5},
                     'components': [
                         {
-                            'componentType': 'Dynamic',
+                            'componentType': 'dynamic',
                             'id': 'theatre'
                         }
                     ]
@@ -330,7 +330,7 @@ public class SceneBuilder : MonoBehaviour
     }
 
     [ContextMenu("Test Scene: Gradient Sky with Area Light")]
-    private void TestScene_GradientAndAreaLight()
+    private void TestScene_Gradient()
     {
         string json = @"{
             'name': 'Test Gradient Scene',
@@ -342,12 +342,12 @@ public class SceneBuilder : MonoBehaviour
             },
             'graph': [
                 {
-                    'id': 'area_light_source', 'name': 'Ceiling Area Light',
+                    'id': 'area1', 'name': 'Ceiling Area Light',
                     'position': {'x': 0, 'y': 4, 'z': 0}, 'rotation': {'x': 90, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
                     'components': [
                         {
                             'type': 'area', 'shape': 'rectangle', 'color': {'r': 1.0, 'g': 0.9, 'b': 0.9},
-                            'intensity': 3.0, 'indirect_multiplier': 1.0, 'range': 10.0, 'width': 5.0, 'height': 3.0,'componentType': 'Light',
+                            'intensity': 3.0, 'indirect_multiplier': 1.0, 'range': 10.0, 'width': 5.0, 'height': 3.0,'componentType': 'light',
                         }
                     ]
                 },
@@ -356,7 +356,7 @@ public class SceneBuilder : MonoBehaviour
                     'position': {'x': 0, 'y': 0, 'z': 0}, 'rotation': {'x': 0, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
                     'components': [
                         {
-                            'shape': 'plane', 'color': {'r': 0.9, 'g': 0.9, 'b': 0.9}, 'componentType': 'Primitive',
+                            'shape': 'plane', 'color': {'r': 0.9, 'g': 0.9, 'b': 0.9}, 'componentType': 'primitive',
                         }
                     ]
                 },
@@ -365,7 +365,7 @@ public class SceneBuilder : MonoBehaviour
                     'position': {'x': 0, 'y': 2.5, 'z': 5}, 'rotation': {'x': 0, 'y': 0, 'z': 0}, 'scale': {'x': 10, 'y': 5, 'z': 1},
                     'components': [
                         {
-                            'shape': 'quad', 'color': {'r': 0.1, 'g': 0.1, 'b': 0.15}, 'componentType': 'Primitive',
+                            'shape': 'quad', 'color': {'r': 0.1, 'g': 0.1, 'b': 0.15}, 'componentType': 'primitive',
                         }
                     ]
                 }
@@ -376,10 +376,10 @@ public class SceneBuilder : MonoBehaviour
     }
 
     [ContextMenu("Test Scene: Minimal Dark Room")]
-    private void TestScene_MinimalDarkRoom()
+    private void TestScene_Cube()
     {
         string json = @"{
-            'name': 'Test Dark Room',
+            'name': 'Test Cube Skybox',
             'timestamp': '2023-10-27T12:00:00Z',
             'skybox': {
                 'type': 'cubed', 'tint_color': {'r': 0, 'g': 0, 'b': 0},
@@ -387,12 +387,12 @@ public class SceneBuilder : MonoBehaviour
             },
             'graph': [
                 {
-                    'id': 'point1_source', 'name': 'Single Bulb',
+                    'id': 'point1', 'name': 'Single Bulb',
                     'position': {'x': 0, 'y': 2, 'z': 0}, 'rotation': {'x': 0, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
                     'components': [
                         {
                             'type': 'point', 'color': {'r': 1.0, 'g': 0.8, 'b': 0.4}, 'intensity': 2.0,
-                            'indirect_multiplier': 1.0, 'range': 10.0, 'mode': 'realtime', 'shadow_type': 'soft_shadows', 'componentType': 'Light',
+                            'indirect_multiplier': 1.0, 'range': 10.0, 'mode': 'realtime', 'shadow_type': 'soft_shadows', 'componentType': 'light',
                         }
                     ]
                 },
@@ -401,7 +401,7 @@ public class SceneBuilder : MonoBehaviour
                     'position': {'x': 0, 'y': 0.5, 'z': 0}, 'rotation': {'x': 0, 'y': 0, 'z': 0}, 'scale': {'x': 1, 'y': 1, 'z': 1},
                     'components': [
                         {
-                            'shape': 'cylinder', 'color': {'r': 0.6, 'g': 0.6, 'b': 0.6}, 'componentType': 'Primitive',
+                            'shape': 'cylinder', 'color': {'r': 0.6, 'g': 0.6, 'b': 0.6}, 'componentType': 'primitive',
                         }
                     ]
                 }
