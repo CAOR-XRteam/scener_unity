@@ -88,7 +88,7 @@ namespace SceneDeserialization
     public abstract class SceneComponent
     {
         [JsonConverter(typeof(StringEnumConverter))]
-        public abstract SceneObjectType componentType { get; }
+        public abstract SceneObjectType component_type { get; }
     }
 
     public enum SceneObjectType
@@ -126,7 +126,7 @@ namespace SceneDeserialization
 
     public class PrimitiveObject : SceneComponent
     {
-        public override SceneObjectType componentType => SceneObjectType.Primitive;
+        public override SceneObjectType component_type => SceneObjectType.Primitive;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public ShapeType shape;
@@ -136,7 +136,7 @@ namespace SceneDeserialization
     public class DynamicObject : SceneComponent
     {
         [JsonConverter(typeof(StringEnumConverter))]
-        public override SceneObjectType componentType => SceneObjectType.Dynamic;
+        public override SceneObjectType component_type => SceneObjectType.Dynamic;
 
         public string id;
     }
@@ -269,7 +269,7 @@ namespace SceneDeserialization
 
     public abstract class BaseLight : SceneComponent
     {
-        public override SceneObjectType componentType => SceneObjectType.Light;
+        public override SceneObjectType component_type => SceneObjectType.Light;
 
         [JsonConverter(typeof(StringEnumConverter))]
         public LightType type { get; set; }
