@@ -6,7 +6,6 @@ using UnityEngine;
 public class SceneBuilder : MonoBehaviour
 {
     private Transform _generatedContentRoot;
-    private const string ROOT_NAME = "GENERATED SCENE";
 
     [ContextMenu("Build Scene From JSON")]
     public void BuildSceneFromJSON(string json)
