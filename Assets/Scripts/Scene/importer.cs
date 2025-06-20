@@ -111,14 +111,25 @@ public class SceneBuilder : MonoBehaviour
         GameObject modelAsset = Resources.Load<GameObject>(data.id);
         if (modelAsset != null)
         {
-            GameObject tmp = Instantiate(modelAsset, target.transform);
-            for (int i = tmp.transform.childCount - 1; i >= 0; i--)
-            {
-                Transform child = tmp.transform.GetChild(i);
-                child.SetParent(target.transform, worldPositionStays: false);
-            }
+            // With the commented code below, it keeps the original hierarchy of unity when loading a 3D object (theathe gameobject that contains geometry gameobject with mesh and materials)
 
-            Destroy(tmp);
+            // GameObject tmp = Instantiate(modelAsset, target.transform);
+            // for (int i = tmp.transform.childCount - 1; i >= 0; i--)
+            // {
+            //     Transform child = tmp.transform.GetChild(i);
+            //     child.SetParent(target.transform, worldPositionStays: false);
+            // }
+
+            // Destroy(tmp);
+
+            // With this code, it flattens the hierarchy and only keeps the mesh and materials of the model asset
+
+            MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
+            MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
+
+            target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
+            target.AddComponent<MeshRenderer>().sharedMaterials =
+                sourceMeshRenderer.sharedMaterials;
         }
         else
         {
