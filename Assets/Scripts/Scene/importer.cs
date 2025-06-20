@@ -111,7 +111,14 @@ public class SceneBuilder : MonoBehaviour
         GameObject modelAsset = Resources.Load<GameObject>(data.id);
         if (modelAsset != null)
         {
-            _ = Instantiate(modelAsset, target.transform);
+            GameObject tmp = Instantiate(modelAsset, target.transform);
+            for (int i = tmp.transform.childCount - 1; i >= 0; i--)
+            {
+                Transform child = tmp.transform.GetChild(i);
+                child.SetParent(target.transform, worldPositionStays: false);
+            }
+
+            Destroy(tmp);
         }
         else
         {
@@ -307,7 +314,7 @@ public class SceneBuilder : MonoBehaviour
                     ]
                 },
                 {
-                    'id': 'theatre', 'name': 'Theatre Container',
+                    'id': 'theatre', 'name': 'TheatreContainer',
                     'position': {'x': -5, 'y': 0, 'z': 10}, 'rotation': {'x': 0, 'y': 180, 'z': 0}, 'scale': {'x': 5, 'y': 5, 'z': 5},
                     'components': [
                         {
