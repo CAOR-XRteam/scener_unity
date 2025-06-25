@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using NativeWebSocket;
 using Newtonsoft.Json;
+using Sdk.Messages;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -89,7 +90,7 @@ namespace scener.ws
         }
 
         public async System.Threading.Tasks.Task SendMessage(
-            OutputType type = OutputType.Text,
+            OutcomingMessageType type = OutcomingMessageType.Text,
             string text = "",
             byte[] bytes = null
         )

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using SceneDeserialization;
+using Sdk.SceneDeserialization;
 using UnityEngine;
 
 public class SceneBuilder : MonoBehaviour
@@ -137,7 +137,7 @@ public class SceneBuilder : MonoBehaviour
         }
     }
 
-    private void BuildSkybox(SceneDeserialization.Skybox skyboxData)
+    private void BuildSkybox(Sdk.SceneDeserialization.Skybox skyboxData)
     {
         if (skyboxData == null)
         {
@@ -212,33 +212,33 @@ public class SceneBuilder : MonoBehaviour
 
         switch (lightData.type)
         {
-            case SceneDeserialization.LightType.Spot:
+            case Sdk.SceneDeserialization.LightType.Spot:
                 SpotLight spot = lightData as SpotLight;
                 light.type = UnityEngine.LightType.Spot;
                 light.range = spot.range;
                 light.spotAngle = spot.spot_angle;
                 SetLightModeAndShadows(light, spot.mode, spot.shadow_type);
                 break;
-            case SceneDeserialization.LightType.Directional:
+            case Sdk.SceneDeserialization.LightType.Directional:
                 DirectionalLight directional = lightData as DirectionalLight;
                 light.type = UnityEngine.LightType.Directional;
                 SetLightModeAndShadows(light, directional.mode, directional.shadow_type);
                 break;
-            case SceneDeserialization.LightType.Point:
+            case Sdk.SceneDeserialization.LightType.Point:
                 PointLight point = lightData as PointLight;
                 light.type = UnityEngine.LightType.Point;
                 light.range = point.range;
                 SetLightModeAndShadows(light, point.mode, point.shadow_type);
                 break;
-            case SceneDeserialization.LightType.Area:
+            case Sdk.SceneDeserialization.LightType.Area:
                 AreaLight area = lightData as AreaLight;
                 light.type = UnityEngine.LightType.Rectangle;
 
-                if (area.shape == SceneDeserialization.LightShape.Rectangle)
+                if (area.shape == Sdk.SceneDeserialization.LightShape.Rectangle)
                 {
                     light.areaSize = new Vector2(area.width ?? 1, area.height ?? 1);
                 }
-                else if (area.shape == SceneDeserialization.LightShape.Disk)
+                else if (area.shape == Sdk.SceneDeserialization.LightShape.Disk)
                 {
                     light.type = UnityEngine.LightType.Disc;
                     light.areaSize = new Vector2(area.radius.Value, area.radius.Value);

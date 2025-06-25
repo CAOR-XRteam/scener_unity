@@ -1,8 +1,6 @@
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
-namespace scener.ws
+namespace Sdk.Messages
 {
     public enum Action
     {
@@ -25,19 +23,7 @@ namespace scener.ws
         error,
     };
 
-    public class IncomingMessage
-    {
-        public Status status;
-
-        public int code;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public Action action;
-
-        public string message;
-    }
-
-    public enum OutputType
+    public enum OutcomingMessageType
     {
         [EnumMember(Value = "text")]
         Text,
@@ -49,18 +35,30 @@ namespace scener.ws
         Gesture,
     }
 
+    public enum IncomingMessageType
+    {
+        [EnumMember(Value = "thinking_process")]
+        ThinkingProcess,
+
+        [EnumMember(Value = "unrelated_response")]
+        UnrelatedResponse,
+
+        [EnumMember(Value = "image_generation")]
+        GenerateImage,
+
+        [EnumMember(Value = "3d_object_generation")]
+        Generate3DObject,
+
+        [EnumMember(Value = "3d_scene_generation")]
+        Generate3DScene,
+
+        [EnumMember(Value = "converted_speech")]
+        ConvertedSpeech,
+    }
+
     public enum Command
     {
         [EnumMember(Value = "chat")]
         Chat,
-    }
-
-    public class OutgoingMessageMeta
-    {
-        [JsonConverter(typeof(StringEnumConverter))]
-        public Command command;
-
-        [JsonConverter(typeof(StringEnumConverter))]
-        public OutputType type;
     }
 }

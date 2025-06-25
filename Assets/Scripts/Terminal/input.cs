@@ -1,4 +1,5 @@
 using scener.ws;
+using Sdk.Messages;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -47,7 +48,7 @@ namespace ui.terminal
 
             if (!string.IsNullOrEmpty(message))
             {
-                await WsClient.instance.SendMessage(OutputType.Text, message);
+                await WsClient.instance.SendMessage(OutcomingMessageType.Text, message);
 
                 terminalDisplay.AddMessageToChat("<b>[You]</b>: " + message);
 

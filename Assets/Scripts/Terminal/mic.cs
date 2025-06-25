@@ -1,5 +1,6 @@
 using scener.input;
 using scener.ws;
+using Sdk.Messages;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static scener.input.VoiceInput;
@@ -69,7 +70,11 @@ namespace ui.terminal
 
             byte[] data = ConvertToWav(pos, record_clip);
 
-            await WsClient.instance.SendMessage(type: OutputType.Audio, text: "", bytes: data);
+            await WsClient.instance.SendMessage(
+                type: OutcomingMessageType.Audio,
+                text: "",
+                bytes: data
+            );
 
             //---------------------------
         }

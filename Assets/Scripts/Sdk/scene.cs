@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using UnityEngine;
 
-namespace SceneDeserialization
+namespace Sdk.SceneDeserialization
 {
     public class ColorRGBA
     {

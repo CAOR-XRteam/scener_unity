@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Sdk.Messages;
 using ui.terminal;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -20,7 +22,43 @@ namespace scener.ws
             {
                 Debug.LogWarning("TerminalLabel not found in scene.");
             }
-            terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+            switch (Enum.Parse<IncomingMessageType>(msg.Type))
+            {
+                case IncomingMessageType.UnrelatedResponse:
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+                    break;
+
+                case IncomingMessageType.GenerateImage:
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+                    TerminalImage terminalImage = FindFirstObjectByType<TerminalImage>();
+                    if (terminalImage != null)
+                    {
+                        terminalImage.LoadAndDisplayImages(
+                            new List<byte[]> { msg.Data.ToByteArray() }
+                        );
+                    }
+                    else
+                    {
+                        Debug.LogWarning("TerminalImage not found in scene.");
+                    }
+                    break;
+
+                case IncomingMessageType.ConvertedSpeech:
+                    terminal.AddMessageToChat("<b>[You]</b>: " + msg.Text);
+                    break;
+
+                case IncomingMessageType.Generate3DObject:
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+                    // Handle 3D object generation
+                    break;
+                case IncomingMessageType.Generate3DScene:
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+                    // Handle 3D scene generation
+                    break;
+                default:
+                    Debug.LogWarning($"Unknown message type: {msg.Type}");
+                    break;
+            }
 
             //---------------------------
         }
