@@ -1,39 +1,39 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using System.Collections.Generic;
 
-
-namespace ui.terminal {
-
-public class TerminalImage : MonoBehaviour
+namespace ui.terminal
 {
-    public VisualElement imageContainer;
-    private int expectedImages = 0;
-    private bool awaitingImages = false;
-    private readonly List<Texture2D> receivedImages = new();
-  
-    void DisplayImages(List<Texture2D> images){
-        //---------------------------
+    public class TerminalImage : MonoBehaviour
+    {
+        public VisualElement imageContainer;
+        private int expectedImages = 0;
+        private bool awaitingImages = false;
+        private readonly List<Texture2D> receivedImages = new();
 
-        foreach (var tex in images){
-            var image = new Image
+        void DisplayImages(List<Texture2D> images)
+        {
+            //---------------------------
+
+            foreach (var tex in images)
             {
-                image = tex,
-                scaleMode = ScaleMode.ScaleToFit,
-                style =
+                var image = new Image
                 {
-                    width = 64,
-                    height = 64,
-                    marginTop = 5,
-                    marginBottom = 5,
-                },
-            };
+                    image = tex,
+                    scaleMode = ScaleMode.ScaleToFit,
+                    style =
+                    {
+                        width = 64,
+                        height = 64,
+                        marginTop = 5,
+                        marginBottom = 5,
+                    },
+                };
 
-            imageContainer.Add(image);
+                imageContainer.Add(image);
+            }
+
+            //---------------------------
         }
-
-        //---------------------------
     }
-}
-
 }

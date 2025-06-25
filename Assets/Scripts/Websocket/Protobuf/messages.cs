@@ -2,67 +2,65 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-
-namespace scener.ws {
-
-public enum Action
+namespace scener.ws
 {
-    [EnumMember(Value = "thinking_process")]
-    ThinkingProcess,
+    public enum Action
+    {
+        [EnumMember(Value = "thinking_process")]
+        ThinkingProcess,
 
-    [EnumMember(Value = "agent_response")]
-    AgentResponse,
+        [EnumMember(Value = "agent_response")]
+        AgentResponse,
 
-    [EnumMember(Value = "image_generation")]
-    GenerateImage,
+        [EnumMember(Value = "image_generation")]
+        GenerateImage,
 
-    [EnumMember(Value = "converted_speech")]
-    ConvertedSpeech,
-}
+        [EnumMember(Value = "converted_speech")]
+        ConvertedSpeech,
+    }
 
-public enum Status
-{
-    stream,
-    error,
-};
+    public enum Status
+    {
+        stream,
+        error,
+    };
 
-public class IncomingMessage
-{
-    public Status status;
+    public class IncomingMessage
+    {
+        public Status status;
 
-    public int code;
+        public int code;
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public Action action;
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Action action;
 
-    public string message;
-}
+        public string message;
+    }
 
-public enum OutputType
-{
-    [EnumMember(Value = "text")]
-    Text,
+    public enum OutputType
+    {
+        [EnumMember(Value = "text")]
+        Text,
 
-    [EnumMember(Value = "audio")]
-    Audio,
+        [EnumMember(Value = "audio")]
+        Audio,
 
-    [EnumMember(Value = "gesture")]
-    Gesture,
-}
+        [EnumMember(Value = "gesture")]
+        Gesture,
+    }
 
-public enum Command
-{
-    [EnumMember(Value = "chat")]
-    Chat,
-}
+    public enum Command
+    {
+        [EnumMember(Value = "chat")]
+        Chat,
+    }
 
-public class OutgoingMessageMeta
-{
-    [JsonConverter(typeof(StringEnumConverter))]
-    public Command command;
+    public class OutgoingMessageMeta
+    {
+        [JsonConverter(typeof(StringEnumConverter))]
+        public Command command;
 
-    [JsonConverter(typeof(StringEnumConverter))]
-    public OutputType type;
-}
-
+        [JsonConverter(typeof(StringEnumConverter))]
+        public OutputType type;
+    }
 }
