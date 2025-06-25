@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Sdk.Messages
+namespace Scener.Sdk
 {
     public enum Action
     {

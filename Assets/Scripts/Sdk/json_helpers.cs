@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Sdk.SceneDeserialization;
+using Scener.Sdk;
 using UnityEngine;
 
 public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
@@ -130,9 +130,9 @@ public class LightConverter
     }
 }
 
-public class SkyboxConverter : JsonCreationConverter<Sdk.SceneDeserialization.Skybox>
+public class SkyboxConverter : JsonCreationConverter<Scener.Sdk.Skybox>
 {
-    protected override Sdk.SceneDeserialization.Skybox Create(Type objectType, JObject jObject)
+    protected override Scener.Sdk.Skybox Create(Type objectType, JObject jObject)
     {
         string type = (string)jObject.Property("type");
         return type switch

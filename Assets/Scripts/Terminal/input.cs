@@ -1,5 +1,5 @@
-using scener.ws;
-using Sdk.Messages;
+using Scener.Sdk;
+using Scener.Ws;
 using UnityEngine;
 using UnityEngine.UIElements;
 

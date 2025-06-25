@@ -1,21 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using NativeWebSocket;
-using Newtonsoft.Json;
-using Sdk.Messages;
+using Scener.Sdk;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace scener.ws
+namespace Scener.Ws
 {
     public class WsClient : MonoBehaviour
     {
         //Parameters
-        public static WsClient instance { get; private set; } //Singleton instance
-        private NativeWebSocket.WebSocket ws;
+        public static WsClient instance { get; private set; } // Singleton instance
+        private WebSocket ws;
 
         // Automatic functions
         void Awake()
@@ -78,7 +73,7 @@ namespace scener.ws
                 Debug.LogWarning("WsMessage not found in scene.");
             }
 
-            ws = new NativeWebSocket.WebSocket("ws://localhost:8765");
+            ws = new WebSocket("ws://localhost:8765");
             ws.OnOpen += () => Debug.Log("Connection opened!");
             ws.OnError += e => Debug.Log("Error: " + e);
             ws.OnClose += e => Debug.Log("Connection closed!");
@@ -89,7 +84,7 @@ namespace scener.ws
             //---------------------------
         }
 
-        public async System.Threading.Tasks.Task SendMessage(
+        public async Task SendMessage(
             OutcomingMessageType type = OutcomingMessageType.Text,
             string text = "",
             byte[] bytes = null

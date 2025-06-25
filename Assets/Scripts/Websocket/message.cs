@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Sdk.Messages;
+using Scener.Sdk;
 using ui.terminal;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace scener.ws
+namespace Scener.Ws
 {
     public class WsMessage : MonoBehaviour
     {
