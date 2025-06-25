@@ -88,18 +88,8 @@ namespace scener.ws
             //---------------------------
         }
 
-        void onMessage(byte[] bytes)
-        {
-            //---------------------------
-
-            var msg = Content.Parser.ParseFrom(bytes);
-            Debug.Log($"Response: {msg.Text}\n");
-
-            //---------------------------
-        }
-
         public async System.Threading.Tasks.Task SendMessage(
-            string type = "chat",
+            OutputType type = OutputType.Text,
             string text = "",
             byte[] bytes = null
         )
@@ -111,7 +101,7 @@ namespace scener.ws
                 // Fill protobuf message
                 var msg = new Content
                 {
-                    Type = type,
+                    Type = type.ToString(),
                     Text = text,
                     Data = ByteString.CopyFrom(bytes ?? new byte[0]),
                     Status = 200,

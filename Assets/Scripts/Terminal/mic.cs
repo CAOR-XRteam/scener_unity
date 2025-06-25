@@ -1,5 +1,8 @@
+using scener.input;
+using scener.ws;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static scener.input.VoiceInput;
 
 namespace ui.terminal
 {
@@ -17,31 +20,31 @@ namespace ui.terminal
             //---------------------------
 
             //Search UI elements
-            var root = GetComponent<UIDocument>().rootVisualElement;
-            button_mic = root.Q("terminal").Q<VisualElement>("box_input").Q<Button>("button_mic");
+            var root = FindFirstObjectByType<UIDocument>().rootVisualElement;
+            button_mic = root.Q<Button>("button_mic");
             mic_device = Microphone.devices[0];
-            button_mic.clicked += callback_button;
+            button_mic.clicked += CallbackButton;
 
             //---------------------------
         }
 
-        void callback_button()
+        private void CallbackButton()
         {
             //---------------------------
 
             if (!is_recording)
             {
-                run_recording();
+                RunRecording();
             }
             else
             {
-                stop_recording();
+                StopRecording();
             }
 
             //---------------------------
         }
 
-        void run_recording()
+        private void RunRecording()
         {
             //---------------------------
 
@@ -55,7 +58,7 @@ namespace ui.terminal
             //---------------------------
         }
 
-        void stop_recording()
+        private async void StopRecording()
         {
             //---------------------------
 
@@ -64,14 +67,9 @@ namespace ui.terminal
             Microphone.End(mic_device);
             is_recording = false;
 
-            //byte[] data = VoiceInput.ConvertToWav(pos, record_clip);
+            byte[] data = ConvertToWav(pos, record_clip);
 
-            /*await WebSocketClient.instance.SendTextMessage(
-                JsonConvert.SerializeObject(
-                    new OutgoingMessageMeta { command = Command.Chat, type = OutputType.Audio }
-                )
-            );
-            await WebSocketClient.instance.SendBytesMessage(data);*/
+            await WsClient.instance.SendMessage(type: OutputType.Audio, text: "", bytes: data);
 
             //---------------------------
         }

@@ -17,19 +17,17 @@ namespace ui.terminal
             //Search UI elements
             terminalDisplay = FindFirstObjectByType<TerminalLabel>();
             var root = FindFirstObjectByType<UIDocument>().rootVisualElement;
-            field_text = root.Q("terminal")
-                .Q<VisualElement>("box_input")
-                .Q<TextField>("field_text");
-            button_send = root.Q("terminal").Q<VisualElement>("box_input").Q<Button>("button_send");
+            field_text = root.Q<TextField>("field_text");
+            button_send = root.Q<Button>("button_send");
 
             // Register callback
-            field_text.RegisterCallback<KeyDownEvent>(OnTextFieldKeyDown);
-            button_send.clicked += OnSendButtonClick;
+            field_text.RegisterCallback<KeyDownEvent>(OnChatInputKeyDown);
+            button_send.clicked += CallbackButton;
 
             //---------------------------
         }
 
-        private void OnTextFieldKeyDown(KeyDownEvent evt)
+        private void OnChatInputKeyDown(KeyDownEvent evt)
         {
             if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
             {
@@ -38,7 +36,7 @@ namespace ui.terminal
             }
         }
 
-        private void OnSendButtonClick()
+        private void CallbackButton()
         {
             SendMessageAndClear();
         }
@@ -49,7 +47,7 @@ namespace ui.terminal
 
             if (!string.IsNullOrEmpty(message))
             {
-                await WsClient.instance.SendMessage("chat", message);
+                await WsClient.instance.SendMessage(OutputType.Text, message);
 
                 terminalDisplay.AddMessageToChat("<b>[You]</b>: " + message);
 
