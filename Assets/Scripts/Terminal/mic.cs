@@ -1,6 +1,6 @@
 using scener.input;
-using scener.ws;
-using Sdk.Messages;
+using Scener.Sdk;
+using Scener.Ws;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static scener.input.VoiceInput;
