@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using Sdk.SceneDeserialization;
+using Scener.Sdk;
 using UnityEngine;
 
 public class SceneSerializer : MonoBehaviour
@@ -133,7 +133,7 @@ public class SceneSerializer : MonoBehaviour
         return components;
     }
 
-    private Sdk.SceneDeserialization.Skybox MapSkybox()
+    private Scener.Sdk.Skybox MapSkybox()
     {
         Material skyboxMat = RenderSettings.skybox;
         return skyboxMat == null
@@ -184,7 +184,7 @@ public class SceneSerializer : MonoBehaviour
             case UnityEngine.LightType.Directional:
                 DirectionalLight directionalData = new()
                 {
-                    type = Sdk.SceneDeserialization.LightType.Directional,
+                    type = Scener.Sdk.LightType.Directional,
                 };
                 LightConverter.MapLightModeAndShadows(directionalData, light);
                 lightData = directionalData;
@@ -192,7 +192,7 @@ public class SceneSerializer : MonoBehaviour
             case UnityEngine.LightType.Point:
                 PointLight pointData = new()
                 {
-                    type = Sdk.SceneDeserialization.LightType.Point,
+                    type = Scener.Sdk.LightType.Point,
                     range = light.range,
                 };
                 LightConverter.MapLightModeAndShadows(pointData, light);
@@ -201,7 +201,7 @@ public class SceneSerializer : MonoBehaviour
             case UnityEngine.LightType.Spot:
                 SpotLight spotData = new()
                 {
-                    type = Sdk.SceneDeserialization.LightType.Spot,
+                    type = Scener.Sdk.LightType.Spot,
                     range = light.range,
                     spot_angle = light.spotAngle,
                 };
@@ -212,11 +212,11 @@ public class SceneSerializer : MonoBehaviour
             case UnityEngine.LightType.Disc:
                 lightData = new AreaLight
                 {
-                    type = Sdk.SceneDeserialization.LightType.Area,
+                    type = Scener.Sdk.LightType.Area,
                     shape =
                         (light.type == UnityEngine.LightType.Rectangle)
-                            ? Sdk.SceneDeserialization.LightShape.Rectangle
-                            : Sdk.SceneDeserialization.LightShape.Disk,
+                            ? Scener.Sdk.LightShape.Rectangle
+                            : Scener.Sdk.LightShape.Disk,
                     range = light.range,
                     width = light.areaSize.x,
                     height = light.areaSize.y,
