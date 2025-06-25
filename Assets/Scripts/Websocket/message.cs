@@ -41,7 +41,7 @@ namespace Scener.Ws
                     }
                     break;
 
-                case IncomingMessageType.ConvertedSpeech:
+                case IncomingMessageType.ConverteSpeech:
                     terminal.AddMessageToChat("<b>[You]</b>: " + msg.Text);
                     break;
 

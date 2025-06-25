@@ -37,8 +37,8 @@ namespace Scener.Sdk
         [EnumMember(Value = "3d_scene_generation")]
         Generate3DScene,
 
-        [EnumMember(Value = "converted_speech")]
-        ConvertedSpeech,
+        [EnumMember(Value = "converte_speech")]
+        ConverteSpeech,
     }
 
     public enum Command
