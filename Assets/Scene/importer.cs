@@ -32,6 +32,11 @@ public class SceneBuilder : MonoBehaviour
         }
     }
 
+    public void Build3DObjectFromBinary()
+    {
+        // TODO
+    }
+
     private void ClearScene(string scene_name)
     {
         GameObject existingRoot = GameObject.Find(scene_name);
