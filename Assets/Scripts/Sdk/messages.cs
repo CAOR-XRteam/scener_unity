@@ -2,21 +2,6 @@ using System.Runtime.Serialization;
 
 namespace Scener.Sdk
 {
-    public enum Action
-    {
-        [EnumMember(Value = "thinking_process")]
-        ThinkingProcess,
-
-        [EnumMember(Value = "agent_response")]
-        AgentResponse,
-
-        [EnumMember(Value = "image_generation")]
-        GenerateImage,
-
-        [EnumMember(Value = "converted_speech")]
-        ConvertedSpeech,
-    }
-
     public enum Status
     {
         stream,
