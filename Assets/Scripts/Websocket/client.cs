@@ -109,11 +109,13 @@ namespace scener.ws
             if (ws != null && ws.State == WebSocketState.Open)
             {
                 // Fill protobuf message
-                var msg = new Content();
-                msg.Type = type;
-                msg.Text = text;
-                msg.Data = ByteString.CopyFrom(bytes ?? new byte[0]);
-                msg.Status = 200;
+                var msg = new Content
+                {
+                    Type = type,
+                    Text = text,
+                    Data = ByteString.CopyFrom(bytes ?? new byte[0]),
+                    Status = 200,
+                };
 
                 //Binarize and send it
                 byte[] data = msg.ToByteArray();
