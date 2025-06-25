@@ -8,12 +8,14 @@ namespace ui.terminal
     {
         private TextField field_text;
         private Button button_send;
+        public TerminalLabel terminalDisplay;
 
         void Start()
         {
             //---------------------------
 
             //Search UI elements
+            terminalDisplay = FindFirstObjectByType<TerminalLabel>();
             var root = FindFirstObjectByType<UIDocument>().rootVisualElement;
             field_text = root.Q("terminal")
                 .Q<VisualElement>("box_input")
@@ -21,66 +23,49 @@ namespace ui.terminal
             button_send = root.Q("terminal").Q<VisualElement>("box_input").Q<Button>("button_send");
 
             // Register callback
-            field_text.RegisterCallback<KeyUpEvent>(callback_field_text);
-            button_send.clicked += callback_button_send;
+            field_text.RegisterCallback<KeyDownEvent>(OnTextFieldKeyDown);
+            button_send.clicked += OnSendButtonClick;
 
             //---------------------------
         }
 
-        void callback_field_text(KeyUpEvent evt)
+        private void OnTextFieldKeyDown(KeyDownEvent evt)
         {
-            // Called when text field user input
-            //---------------------------
-
             if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
             {
-                string message = field_text.value.Trim();
-                if (string.IsNullOrEmpty(message))
-                    return;
-
-                TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
-                terminal.AddMessageToChat("<b>[You]</b>: " + message);
-
                 evt.StopPropagation();
-                clear_text_field();
+                SendMessageAndClear();
             }
-
-            //---------------------------
         }
 
-        async void callback_button_send()
+        private void OnSendButtonClick()
+        {
+            SendMessageAndClear();
+        }
+
+        private async void SendMessageAndClear()
         {
             string message = field_text.value.Trim();
-            //---------------------------
 
             if (!string.IsNullOrEmpty(message))
             {
-                //Send message
                 await WsClient.instance.SendMessage("chat", message);
 
-                //Write message into the terminal chat
-                TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
-                terminal.AddMessageToChat("<b>[You]</b>: " + message);
-                clear_text_field();
-                field_text.Focus(); //Refocus text field
-            }
+                terminalDisplay.AddMessageToChat("<b>[You]</b>: " + message);
 
-            //---------------------------
+                ClearTextField();
+                field_text.Focus();
+            }
         }
 
-        public void clear_text_field()
+        public void ClearTextField()
         {
-            //---------------------------
-
-            // Clear input in next frame to avoid caret issues
             field_text
                 .schedule.Execute(() =>
                 {
                     field_text.value = "";
                 })
                 .ExecuteLater(1);
-
-            //---------------------------
         }
     }
 }

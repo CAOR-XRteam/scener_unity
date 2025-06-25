@@ -81,7 +81,7 @@ namespace scener.ws
             ws.OnOpen += () => Debug.Log("Connection opened!");
             ws.OnError += e => Debug.Log("Error: " + e);
             ws.OnClose += e => Debug.Log("Connection closed!");
-            ws.OnMessage += (bytes) => ws_message.process_message(bytes);
+            ws.OnMessage += (bytes) => ws_message.ProcessMessage(bytes);
 
             await ws.Connect();
 

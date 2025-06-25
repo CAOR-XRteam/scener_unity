@@ -8,7 +8,7 @@ namespace scener.ws
 {
     public class WsMessage : MonoBehaviour
     {
-        public void process_message(byte[] bytes)
+        public void ProcessMessage(byte[] bytes)
         {
             //---------------------------
 
