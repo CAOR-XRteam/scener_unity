@@ -12,49 +12,44 @@ namespace Scener.Ws
         {
             //---------------------------
 
-            var msg = Content.Parser.ParseFrom(bytes);
-            Debug.Log($"Response: {msg.Text}\n");
+            var protoContent = Content.Parser.ParseFrom(bytes);
+            IIncomingMessage message = IncomingMessageFactory.FromProto(protoContent);
 
             TerminalLabel terminal = FindFirstObjectByType<TerminalLabel>();
             if (terminal == null)
             {
                 Debug.LogWarning("TerminalLabel not found in scene.");
             }
-            switch (Enum.Parse<IncomingMessageType>(msg.Type))
-            {
-                case IncomingMessageType.UnrelatedResponse:
-                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
-                    break;
 
-                case IncomingMessageType.GenerateImage:
-                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+            switch (message)
+            {
+                case IncomingUnrelatedResponseMessage msg:
+                    Debug.Log($"Received unrelated response: {msg}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg);
+                    break;
+                case IncomingConvertSpeechMessage msg:
+                    Debug.Log($"Received convert speech message: {msg}");
+                    terminal.AddMessageToChat("<b>[You]</b>: " + msg);
+                    break;
+                case IncomingGenerateImageMessage msg:
+                    Debug.Log($"Received generate image message: {msg.ResponseText}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
                     TerminalImage terminalImage = FindFirstObjectByType<TerminalImage>();
                     if (terminalImage != null)
                     {
-                        terminalImage.LoadAndDisplayImages(
-                            new List<byte[]> { msg.Data.ToByteArray() }
-                        );
+                        terminalImage.LoadAndDisplayImages(msg.Data);
                     }
                     else
                     {
                         Debug.LogWarning("TerminalImage not found in scene.");
                     }
                     break;
-
-                case IncomingMessageType.ConvertSpeech:
-                    terminal.AddMessageToChat("<b>[You]</b>: " + msg.Text);
-                    break;
-
-                case IncomingMessageType.Generate3DObject:
-                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
-                    // Handle 3D object generation
-                    break;
-                case IncomingMessageType.Generate3DScene:
-                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
-                    // Handle 3D scene generation
+                case IncomingErrorMessage msg:
+                    Debug.LogError($"Error message received: {msg.Status} {msg.ErrorText}");
+                    terminal.AddMessageToChat($"<b>[Agent]</b>: {msg.Status} {msg.ErrorText}");
                     break;
                 default:
-                    Debug.LogWarning($"Unknown message type: {msg.Type}");
+                    Debug.Log("Not implemented");
                     break;
             }
 

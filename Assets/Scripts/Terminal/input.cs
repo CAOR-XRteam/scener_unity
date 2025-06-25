@@ -48,7 +48,9 @@ namespace ui.terminal
 
             if (!string.IsNullOrEmpty(message))
             {
-                await WsClient.instance.SendMessage(OutcomingMessageType.Text, message);
+                var textMessage = new OutgoingTextMessage(message);
+
+                await WsClient.instance.SendMessage(textMessage.ToProto());
 
                 terminalDisplay.AddMessageToChat("<b>[You]</b>: " + message);
 

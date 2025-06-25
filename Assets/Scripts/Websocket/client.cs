@@ -84,29 +84,16 @@ namespace Scener.Ws
             //---------------------------
         }
 
-        public async Task SendMessage(
-            OutcomingMessageType type = OutcomingMessageType.Text,
-            string text = "",
-            byte[] bytes = null
-        )
+        public async Task SendMessage(Content protoMessage)
         {
             //---------------------------
 
             if (ws != null && ws.State == WebSocketState.Open)
             {
-                // Fill protobuf message
-                var msg = new Content
-                {
-                    Type = type.ToString(),
-                    Text = text,
-                    Data = ByteString.CopyFrom(bytes ?? new byte[0]),
-                    Status = 200,
-                };
-
                 //Binarize and send it
-                byte[] data = msg.ToByteArray();
+                byte[] data = protoMessage.ToByteArray();
                 await ws.Send(data);
-                Debug.Log($"Sent message: {msg.Text}");
+                Debug.Log($"Sent message: {protoMessage.Text}");
             }
             else
             {

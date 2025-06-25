@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Scener.Sdk;
@@ -189,5 +191,25 @@ public class ObjectConverter
         }
         shape = null;
         return false;
+    }
+}
+
+public static class EnumExtensions
+{
+    public static string ToEnumString<T>(this T enumValue)
+        where T : struct, IConvertible
+    {
+        var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
+        if (memberInfo == null)
+        {
+            return enumValue.ToString();
+        }
+
+        var attribute = memberInfo
+            .GetCustomAttributes(typeof(EnumMemberAttribute), false)
+            .OfType<EnumMemberAttribute>()
+            .FirstOrDefault();
+
+        return attribute?.Value ?? enumValue.ToString();
     }
 }
