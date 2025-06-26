@@ -25,11 +25,11 @@ namespace Scener.Ws
             {
                 case IncomingUnrelatedResponseMessage msg:
                     Debug.Log($"Received unrelated response: {msg}");
-                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg);
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
                     break;
                 case IncomingConvertSpeechMessage msg:
                     Debug.Log($"Received convert speech message: {msg}");
-                    terminal.AddMessageToChat("<b>[You]</b>: " + msg);
+                    terminal.AddMessageToChat("<b>[You]</b>: " + msg.ResponseText);
                     break;
                 case IncomingGenerateImageMessage msg:
                     Debug.Log($"Received generate image message: {msg.ResponseText}");
