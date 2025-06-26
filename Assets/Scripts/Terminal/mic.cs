@@ -71,7 +71,7 @@ namespace ui.terminal
             byte[] data = ConvertToWav(pos, record_clip);
             var audioMessage = new OutgoingAudioMessage(data);
 
-            await WsClient.instance.SendMessage(audioMessage.ToProto());
+            await WsClient.instance.SendMessage(audioMessage);
 
             //---------------------------
         }

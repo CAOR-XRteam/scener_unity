@@ -84,12 +84,13 @@ namespace Scener.Ws
             //---------------------------
         }
 
-        public async Task SendMessage(Content protoMessage)
+        public async Task SendMessage(IOutgoingMessage outgoingMessage)
         {
             //---------------------------
 
             if (ws != null && ws.State == WebSocketState.Open)
             {
+                var protoMessage = outgoingMessage.ToProto();
                 //Binarize and send it
                 byte[] data = protoMessage.ToByteArray();
                 await ws.Send(data);

@@ -50,7 +50,7 @@ namespace ui.terminal
             {
                 var textMessage = new OutgoingTextMessage(message);
 
-                await WsClient.instance.SendMessage(textMessage.ToProto());
+                await WsClient.instance.SendMessage(textMessage);
 
                 terminalDisplay.AddMessageToChat("<b>[You]</b>: " + message);
 
