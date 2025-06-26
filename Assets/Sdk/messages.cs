@@ -100,7 +100,7 @@ namespace Scener.Sdk
         {
             if (protoContent.Status != 200)
             {
-                return new IncomingErrorMessage(protoContent.Status, protoContent.Text);
+                return new IncomingErrorMessage(protoContent.Status, $"Error: {protoContent.Text}");
             }
 
             return protoContent.Type switch
