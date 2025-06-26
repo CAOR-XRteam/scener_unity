@@ -70,12 +70,13 @@ namespace Scener.Sdk
     {
         public Content ToProto()
         {
-            return new Content
+            var content = new Content
             {
                 Type = OutgoingMessageType.Audio.ToEnumString(),
-                Data = ByteString.CopyFrom(this.AudioData),
                 Status = 200,
             };
+            content.Data.Add(ByteString.CopyFrom(this.AudioData));
+            return content;
         }
     }
 
@@ -108,15 +109,15 @@ namespace Scener.Sdk
                 "unrelated_response" => new IncomingUnrelatedResponseMessage(protoContent.Text),
                 "generate_image" => new IncomingGenerateImageMessage(
                     protoContent.Text,
-                    new List<byte[]> { protoContent.Data.ToByteArray() }
+                    protoContent.Data.Select(bs => bs.ToByteArray()).ToList()
                 ),
                 "3d_object_generation" => new IncomingGenerate3DObjectMessage(
                     protoContent.Text,
-                    new List<byte[]> { protoContent.Data.ToByteArray() }
+                    protoContent.Data.Select(bs => bs.ToByteArray()).ToList()
                 ),
                 "3d_scene_generation" => new IncomingGenerate3DSceneMessage(
                     protoContent.Text,
-                    new List<byte[]> { protoContent.Data.ToByteArray() }
+                    protoContent.Data.Select(bs => bs.ToByteArray()).ToList()
                 ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
                 _ => new IncomingUnknownMessage(protoContent.Type),

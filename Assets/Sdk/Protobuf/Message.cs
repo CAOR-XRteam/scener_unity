@@ -23,7 +23,7 @@ public static partial class MessageReflection {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
           "Cg1tZXNzYWdlLnByb3RvIlIKB0NvbnRlbnQSDAoEdHlwZRgBIAEoCRIMCgR0",
-          "ZXh0GAIgASgJEgwKBGRhdGEYAyABKAwSDgoGc3RhdHVzGAQgASgFEg0KBWVy",
+          "ZXh0GAIgASgJEgwKBGRhdGEYAyADKAwSDgoGc3RhdHVzGAQgASgFEg0KBWVy",
           "cm9yGAUgASgJYgZwcm90bzM="));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
@@ -71,7 +71,7 @@ public sealed partial class Content : pb::IMessage<Content>
   public Content(Content other) : this() {
     type_ = other.type_;
     text_ = other.text_;
-    data_ = other.data_;
+    data_ = other.data_.Clone();
     status_ = other.status_;
     error_ = other.error_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -115,17 +115,16 @@ public sealed partial class Content : pb::IMessage<Content>
 
   /// <summary>Field number for the "data" field.</summary>
   public const int DataFieldNumber = 3;
-  private pb::ByteString data_ = pb::ByteString.Empty;
+  private static readonly pb::FieldCodec<pb::ByteString> _repeated_data_codec
+      = pb::FieldCodec.ForBytes(26);
+  private readonly pbc::RepeatedField<pb::ByteString> data_ = new pbc::RepeatedField<pb::ByteString>();
   /// <summary>
   /// (optionnal) Contain binary data stuff
   /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pb::ByteString Data {
+  public pbc::RepeatedField<pb::ByteString> Data {
     get { return data_; }
-    set {
-      data_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-    }
   }
 
   /// <summary>Field number for the "status" field.</summary>
@@ -175,7 +174,7 @@ public sealed partial class Content : pb::IMessage<Content>
     }
     if (Type != other.Type) return false;
     if (Text != other.Text) return false;
-    if (Data != other.Data) return false;
+    if(!data_.Equals(other.data_)) return false;
     if (Status != other.Status) return false;
     if (Error != other.Error) return false;
     return Equals(_unknownFields, other._unknownFields);
@@ -187,7 +186,7 @@ public sealed partial class Content : pb::IMessage<Content>
     int hash = 1;
     if (Type.Length != 0) hash ^= Type.GetHashCode();
     if (Text.Length != 0) hash ^= Text.GetHashCode();
-    if (Data.Length != 0) hash ^= Data.GetHashCode();
+    hash ^= data_.GetHashCode();
     if (Status != 0) hash ^= Status.GetHashCode();
     if (Error.Length != 0) hash ^= Error.GetHashCode();
     if (_unknownFields != null) {
@@ -216,10 +215,7 @@ public sealed partial class Content : pb::IMessage<Content>
       output.WriteRawTag(18);
       output.WriteString(Text);
     }
-    if (Data.Length != 0) {
-      output.WriteRawTag(26);
-      output.WriteBytes(Data);
-    }
+    data_.WriteTo(output, _repeated_data_codec);
     if (Status != 0) {
       output.WriteRawTag(32);
       output.WriteInt32(Status);
@@ -246,10 +242,7 @@ public sealed partial class Content : pb::IMessage<Content>
       output.WriteRawTag(18);
       output.WriteString(Text);
     }
-    if (Data.Length != 0) {
-      output.WriteRawTag(26);
-      output.WriteBytes(Data);
-    }
+    data_.WriteTo(ref output, _repeated_data_codec);
     if (Status != 0) {
       output.WriteRawTag(32);
       output.WriteInt32(Status);
@@ -274,9 +267,7 @@ public sealed partial class Content : pb::IMessage<Content>
     if (Text.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Text);
     }
-    if (Data.Length != 0) {
-      size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
-    }
+    size += data_.CalculateSize(_repeated_data_codec);
     if (Status != 0) {
       size += 1 + pb::CodedOutputStream.ComputeInt32Size(Status);
     }
@@ -301,9 +292,7 @@ public sealed partial class Content : pb::IMessage<Content>
     if (other.Text.Length != 0) {
       Text = other.Text;
     }
-    if (other.Data.Length != 0) {
-      Data = other.Data;
-    }
+    data_.Add(other.data_);
     if (other.Status != 0) {
       Status = other.Status;
     }
@@ -334,7 +323,7 @@ public sealed partial class Content : pb::IMessage<Content>
           break;
         }
         case 26: {
-          Data = input.ReadBytes();
+          data_.AddEntriesFrom(input, _repeated_data_codec);
           break;
         }
         case 32: {
@@ -369,7 +358,7 @@ public sealed partial class Content : pb::IMessage<Content>
           break;
         }
         case 26: {
-          Data = input.ReadBytes();
+          data_.AddEntriesFrom(ref input, _repeated_data_codec);
           break;
         }
         case 32: {
