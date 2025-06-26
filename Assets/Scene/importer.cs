@@ -32,9 +32,23 @@ public class SceneBuilder : MonoBehaviour
         }
     }
 
-    public void Build3DObjectFromBinary()
+    public void Build3DObjectFromBinary(string asset_id)
     {
-        // TODO
+        GameObject target = new GameObject(asset_id);
+        GameObject modelAsset = Resources.Load<GameObject>(asset_id);
+        if (modelAsset != null)
+        {
+            MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
+            MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
+
+            target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
+            target.AddComponent<MeshRenderer>().sharedMaterials =
+                sourceMeshRenderer.sharedMaterials;
+        }
+        else
+        {
+            Debug.LogWarning($"Could not find 3D object asset '{asset_id}' in Resources folder.");
+        }
     }
 
     private void ClearScene(string scene_name)
@@ -205,6 +219,12 @@ public class SceneBuilder : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    [ContextMenu("Test 3D Object")]
+    public void Build3DObjectEditor()
+    {
+        Build3DObjectFromBinary("theatre");
     }
 
     private void BuildLight(GameObject target, BaseLight lightData)
