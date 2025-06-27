@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Scener.Sdk;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -20,19 +21,19 @@ namespace Ui.Terminal
             //---------------------------
         }
 
-        public void LoadAndDisplayImages(List<byte[]> imageBytesList)
+        public void LoadAndDisplayImages(List<AppMediaAsset> imageList)
         {
             // Load images from bytes and display them
             //---------------------------
 
-            foreach (var bytes in imageBytesList)
+            foreach (var image in imageList)
             {
-                LoadImageFromBytes(bytes);
+                LoadImageFromBytes(image.Data);
             }
 
             DisplayImages(receivedImages);
 
-            Debug.Log($"Loaded {receivedImages.Count} images from {imageBytesList.Count}.");
+            Debug.Log($"Loaded {receivedImages.Count} images from {imageList.Count}.");
 
             //---------------------------
         }

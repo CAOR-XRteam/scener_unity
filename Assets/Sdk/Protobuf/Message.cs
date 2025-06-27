@@ -22,19 +22,285 @@ public static partial class MessageReflection {
   static MessageReflection() {
     byte[] descriptorData = global::System.Convert.FromBase64String(
         string.Concat(
-          "Cg1tZXNzYWdlLnByb3RvIlIKB0NvbnRlbnQSDAoEdHlwZRgBIAEoCRIMCgR0",
-          "ZXh0GAIgASgJEgwKBGRhdGEYAyADKAwSDgoGc3RhdHVzGAQgASgFEg0KBWVy",
-          "cm9yGAUgASgJYgZwcm90bzM="));
+          "Cg1tZXNzYWdlLnByb3RvIjgKCk1lZGlhQXNzZXQSCgoCaWQYASABKAkSDAoE",
+          "ZGF0YRgCIAEoDBIQCghmaWxlbmFtZRgDIAEoCSJzCgdDb250ZW50EgwKBHR5",
+          "cGUYASABKAkSDAoEdGV4dBgCIAEoCRIbCgZhc3NldHMYAyADKAsyCy5NZWRp",
+          "YUFzc2V0Eg4KBnN0YXR1cxgEIAEoBRINCgVlcnJvchgFIAEoCRIQCghtZXRh",
+          "ZGF0YRgGIAEoCWIGcHJvdG8z"));
     descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
         new pbr::FileDescriptor[] { },
         new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-          new pbr::GeneratedClrTypeInfo(typeof(global::Content), global::Content.Parser, new[]{ "Type", "Text", "Data", "Status", "Error" }, null, null, null, null)
+          new pbr::GeneratedClrTypeInfo(typeof(global::MediaAsset), global::MediaAsset.Parser, new[]{ "Id", "Data", "Filename" }, null, null, null, null),
+          new pbr::GeneratedClrTypeInfo(typeof(global::Content), global::Content.Parser, new[]{ "Type", "Text", "Assets", "Status", "Error", "Metadata" }, null, null, null, null)
         }));
   }
   #endregion
 
 }
 #region Messages
+public sealed partial class MediaAsset : pb::IMessage<MediaAsset>
+#if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    , pb::IBufferMessage
+#endif
+{
+  private static readonly pb::MessageParser<MediaAsset> _parser = new pb::MessageParser<MediaAsset>(() => new MediaAsset());
+  private pb::UnknownFieldSet _unknownFields;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pb::MessageParser<MediaAsset> Parser { get { return _parser; } }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public static pbr::MessageDescriptor Descriptor {
+    get { return global::MessageReflection.Descriptor.MessageTypes[0]; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  pbr::MessageDescriptor pb::IMessage.Descriptor {
+    get { return Descriptor; }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MediaAsset() {
+    OnConstruction();
+  }
+
+  partial void OnConstruction();
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MediaAsset(MediaAsset other) : this() {
+    id_ = other.id_;
+    data_ = other.data_;
+    filename_ = other.filename_;
+    _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public MediaAsset Clone() {
+    return new MediaAsset(this);
+  }
+
+  /// <summary>Field number for the "id" field.</summary>
+  public const int IdFieldNumber = 1;
+  private string id_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Id {
+    get { return id_; }
+    set {
+      id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "data" field.</summary>
+  public const int DataFieldNumber = 2;
+  private pb::ByteString data_ = pb::ByteString.Empty;
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public pb::ByteString Data {
+    get { return data_; }
+    set {
+      data_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "filename" field.</summary>
+  public const int FilenameFieldNumber = 3;
+  private string filename_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Filename {
+    get { return filename_; }
+    set {
+      filename_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override bool Equals(object other) {
+    return Equals(other as MediaAsset);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public bool Equals(MediaAsset other) {
+    if (ReferenceEquals(other, null)) {
+      return false;
+    }
+    if (ReferenceEquals(other, this)) {
+      return true;
+    }
+    if (Id != other.Id) return false;
+    if (Data != other.Data) return false;
+    if (Filename != other.Filename) return false;
+    return Equals(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override int GetHashCode() {
+    int hash = 1;
+    if (Id.Length != 0) hash ^= Id.GetHashCode();
+    if (Data.Length != 0) hash ^= Data.GetHashCode();
+    if (Filename.Length != 0) hash ^= Filename.GetHashCode();
+    if (_unknownFields != null) {
+      hash ^= _unknownFields.GetHashCode();
+    }
+    return hash;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public override string ToString() {
+    return pb::JsonFormatter.ToDiagnosticString(this);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void WriteTo(pb::CodedOutputStream output) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    output.WriteRawMessage(this);
+  #else
+    if (Id.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(Id);
+    }
+    if (Data.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteBytes(Data);
+    }
+    if (Filename.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(Filename);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(output);
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+    if (Id.Length != 0) {
+      output.WriteRawTag(10);
+      output.WriteString(Id);
+    }
+    if (Data.Length != 0) {
+      output.WriteRawTag(18);
+      output.WriteBytes(Data);
+    }
+    if (Filename.Length != 0) {
+      output.WriteRawTag(26);
+      output.WriteString(Filename);
+    }
+    if (_unknownFields != null) {
+      _unknownFields.WriteTo(ref output);
+    }
+  }
+  #endif
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public int CalculateSize() {
+    int size = 0;
+    if (Id.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+    }
+    if (Data.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeBytesSize(Data);
+    }
+    if (Filename.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Filename);
+    }
+    if (_unknownFields != null) {
+      size += _unknownFields.CalculateSize();
+    }
+    return size;
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(MediaAsset other) {
+    if (other == null) {
+      return;
+    }
+    if (other.Id.Length != 0) {
+      Id = other.Id;
+    }
+    if (other.Data.Length != 0) {
+      Data = other.Data;
+    }
+    if (other.Filename.Length != 0) {
+      Filename = other.Filename;
+    }
+    _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+  }
+
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public void MergeFrom(pb::CodedInputStream input) {
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    input.ReadRawMessage(this);
+  #else
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+          break;
+        case 10: {
+          Id = input.ReadString();
+          break;
+        }
+        case 18: {
+          Data = input.ReadBytes();
+          break;
+        }
+        case 26: {
+          Filename = input.ReadString();
+          break;
+        }
+      }
+    }
+  #endif
+  }
+
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+    uint tag;
+    while ((tag = input.ReadTag()) != 0) {
+      switch(tag) {
+        default:
+          _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+          break;
+        case 10: {
+          Id = input.ReadString();
+          break;
+        }
+        case 18: {
+          Data = input.ReadBytes();
+          break;
+        }
+        case 26: {
+          Filename = input.ReadString();
+          break;
+        }
+      }
+    }
+  }
+  #endif
+
+}
+
 public sealed partial class Content : pb::IMessage<Content>
 #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     , pb::IBufferMessage
@@ -49,7 +315,7 @@ public sealed partial class Content : pb::IMessage<Content>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public static pbr::MessageDescriptor Descriptor {
-    get { return global::MessageReflection.Descriptor.MessageTypes[0]; }
+    get { return global::MessageReflection.Descriptor.MessageTypes[1]; }
   }
 
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -71,9 +337,10 @@ public sealed partial class Content : pb::IMessage<Content>
   public Content(Content other) : this() {
     type_ = other.type_;
     text_ = other.text_;
-    data_ = other.data_.Clone();
+    assets_ = other.assets_.Clone();
     status_ = other.status_;
     error_ = other.error_;
+    metadata_ = other.metadata_;
     _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
   }
 
@@ -86,9 +353,6 @@ public sealed partial class Content : pb::IMessage<Content>
   /// <summary>Field number for the "type" field.</summary>
   public const int TypeFieldNumber = 1;
   private string type_ = "";
-  /// <summary>
-  /// Declare the type of message
-  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public string Type {
@@ -101,9 +365,6 @@ public sealed partial class Content : pb::IMessage<Content>
   /// <summary>Field number for the "text" field.</summary>
   public const int TextFieldNumber = 2;
   private string text_ = "";
-  /// <summary>
-  /// (optionnal) Contain json or text stuff
-  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public string Text {
@@ -113,26 +374,20 @@ public sealed partial class Content : pb::IMessage<Content>
     }
   }
 
-  /// <summary>Field number for the "data" field.</summary>
-  public const int DataFieldNumber = 3;
-  private static readonly pb::FieldCodec<pb::ByteString> _repeated_data_codec
-      = pb::FieldCodec.ForBytes(26);
-  private readonly pbc::RepeatedField<pb::ByteString> data_ = new pbc::RepeatedField<pb::ByteString>();
-  /// <summary>
-  /// (optionnal) Contain binary data stuff
-  /// </summary>
+  /// <summary>Field number for the "assets" field.</summary>
+  public const int AssetsFieldNumber = 3;
+  private static readonly pb::FieldCodec<global::MediaAsset> _repeated_assets_codec
+      = pb::FieldCodec.ForMessage(26, global::MediaAsset.Parser);
+  private readonly pbc::RepeatedField<global::MediaAsset> assets_ = new pbc::RepeatedField<global::MediaAsset>();
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-  public pbc::RepeatedField<pb::ByteString> Data {
-    get { return data_; }
+  public pbc::RepeatedField<global::MediaAsset> Assets {
+    get { return assets_; }
   }
 
   /// <summary>Field number for the "status" field.</summary>
   public const int StatusFieldNumber = 4;
   private int status_;
-  /// <summary>
-  /// ex: 200, 404, 500
-  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public int Status {
@@ -145,15 +400,24 @@ public sealed partial class Content : pb::IMessage<Content>
   /// <summary>Field number for the "error" field.</summary>
   public const int ErrorFieldNumber = 5;
   private string error_ = "";
-  /// <summary>
-  /// (optionnal) explain error
-  /// </summary>
   [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
   [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
   public string Error {
     get { return error_; }
     set {
       error_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+    }
+  }
+
+  /// <summary>Field number for the "metadata" field.</summary>
+  public const int MetadataFieldNumber = 6;
+  private string metadata_ = "";
+  [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+  [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+  public string Metadata {
+    get { return metadata_; }
+    set {
+      metadata_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
     }
   }
 
@@ -174,9 +438,10 @@ public sealed partial class Content : pb::IMessage<Content>
     }
     if (Type != other.Type) return false;
     if (Text != other.Text) return false;
-    if(!data_.Equals(other.data_)) return false;
+    if(!assets_.Equals(other.assets_)) return false;
     if (Status != other.Status) return false;
     if (Error != other.Error) return false;
+    if (Metadata != other.Metadata) return false;
     return Equals(_unknownFields, other._unknownFields);
   }
 
@@ -186,9 +451,10 @@ public sealed partial class Content : pb::IMessage<Content>
     int hash = 1;
     if (Type.Length != 0) hash ^= Type.GetHashCode();
     if (Text.Length != 0) hash ^= Text.GetHashCode();
-    hash ^= data_.GetHashCode();
+    hash ^= assets_.GetHashCode();
     if (Status != 0) hash ^= Status.GetHashCode();
     if (Error.Length != 0) hash ^= Error.GetHashCode();
+    if (Metadata.Length != 0) hash ^= Metadata.GetHashCode();
     if (_unknownFields != null) {
       hash ^= _unknownFields.GetHashCode();
     }
@@ -215,7 +481,7 @@ public sealed partial class Content : pb::IMessage<Content>
       output.WriteRawTag(18);
       output.WriteString(Text);
     }
-    data_.WriteTo(output, _repeated_data_codec);
+    assets_.WriteTo(output, _repeated_assets_codec);
     if (Status != 0) {
       output.WriteRawTag(32);
       output.WriteInt32(Status);
@@ -223,6 +489,10 @@ public sealed partial class Content : pb::IMessage<Content>
     if (Error.Length != 0) {
       output.WriteRawTag(42);
       output.WriteString(Error);
+    }
+    if (Metadata.Length != 0) {
+      output.WriteRawTag(50);
+      output.WriteString(Metadata);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(output);
@@ -242,7 +512,7 @@ public sealed partial class Content : pb::IMessage<Content>
       output.WriteRawTag(18);
       output.WriteString(Text);
     }
-    data_.WriteTo(ref output, _repeated_data_codec);
+    assets_.WriteTo(ref output, _repeated_assets_codec);
     if (Status != 0) {
       output.WriteRawTag(32);
       output.WriteInt32(Status);
@@ -250,6 +520,10 @@ public sealed partial class Content : pb::IMessage<Content>
     if (Error.Length != 0) {
       output.WriteRawTag(42);
       output.WriteString(Error);
+    }
+    if (Metadata.Length != 0) {
+      output.WriteRawTag(50);
+      output.WriteString(Metadata);
     }
     if (_unknownFields != null) {
       _unknownFields.WriteTo(ref output);
@@ -267,12 +541,15 @@ public sealed partial class Content : pb::IMessage<Content>
     if (Text.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Text);
     }
-    size += data_.CalculateSize(_repeated_data_codec);
+    size += assets_.CalculateSize(_repeated_assets_codec);
     if (Status != 0) {
       size += 1 + pb::CodedOutputStream.ComputeInt32Size(Status);
     }
     if (Error.Length != 0) {
       size += 1 + pb::CodedOutputStream.ComputeStringSize(Error);
+    }
+    if (Metadata.Length != 0) {
+      size += 1 + pb::CodedOutputStream.ComputeStringSize(Metadata);
     }
     if (_unknownFields != null) {
       size += _unknownFields.CalculateSize();
@@ -292,12 +569,15 @@ public sealed partial class Content : pb::IMessage<Content>
     if (other.Text.Length != 0) {
       Text = other.Text;
     }
-    data_.Add(other.data_);
+    assets_.Add(other.assets_);
     if (other.Status != 0) {
       Status = other.Status;
     }
     if (other.Error.Length != 0) {
       Error = other.Error;
+    }
+    if (other.Metadata.Length != 0) {
+      Metadata = other.Metadata;
     }
     _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
   }
@@ -323,7 +603,7 @@ public sealed partial class Content : pb::IMessage<Content>
           break;
         }
         case 26: {
-          data_.AddEntriesFrom(input, _repeated_data_codec);
+          assets_.AddEntriesFrom(input, _repeated_assets_codec);
           break;
         }
         case 32: {
@@ -332,6 +612,10 @@ public sealed partial class Content : pb::IMessage<Content>
         }
         case 42: {
           Error = input.ReadString();
+          break;
+        }
+        case 50: {
+          Metadata = input.ReadString();
           break;
         }
       }
@@ -358,7 +642,7 @@ public sealed partial class Content : pb::IMessage<Content>
           break;
         }
         case 26: {
-          data_.AddEntriesFrom(ref input, _repeated_data_codec);
+          assets_.AddEntriesFrom(ref input, _repeated_assets_codec);
           break;
         }
         case 32: {
@@ -367,6 +651,10 @@ public sealed partial class Content : pb::IMessage<Content>
         }
         case 42: {
           Error = input.ReadString();
+          break;
+        }
+        case 50: {
+          Metadata = input.ReadString();
           break;
         }
       }

@@ -75,7 +75,14 @@ namespace Scener.Sdk
                 Type = OutgoingMessageType.Audio.ToEnumString(),
                 Status = 200,
             };
-            content.Data.Add(ByteString.CopyFrom(this.AudioData));
+            var audioAsset = new MediaAsset
+            {
+                Id = "user_voice_recording",
+                Data = ByteString.CopyFrom(this.AudioData),
+                Filename = "voice.wav",
+            };
+            content.Assets.Add(audioAsset);
+
             return content;
         }
     }
@@ -109,15 +116,33 @@ namespace Scener.Sdk
                 "unrelated_response" => new IncomingUnrelatedResponseMessage(protoContent.Text),
                 "generate_image" => new IncomingGenerateImageMessage(
                     protoContent.Text,
-                    protoContent.Data.Select(bs => bs.ToByteArray()).ToList()
+                    protoContent
+                        .Assets.Select(asset => new AppMediaAsset(
+                            asset.Id,
+                            asset.Filename,
+                            asset.Data.ToByteArray()
+                        ))
+                        .ToList()
                 ),
                 "3d_object_generation" => new IncomingGenerate3DObjectMessage(
                     protoContent.Text,
-                    protoContent.Data.Select(bs => bs.ToByteArray()).ToList()
+                    protoContent
+                        .Assets.Select(asset => new AppMediaAsset(
+                            asset.Id,
+                            asset.Filename,
+                            asset.Data.ToByteArray()
+                        ))
+                        .ToList()
                 ),
                 "3d_scene_generation" => new IncomingGenerate3DSceneMessage(
                     protoContent.Text,
-                    protoContent.Data.Select(bs => bs.ToByteArray()).ToList()
+                    protoContent
+                        .Assets.Select(asset => new AppMediaAsset(
+                            asset.Id,
+                            asset.Filename,
+                            asset.Data.ToByteArray()
+                        ))
+                        .ToList()
                 ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
                 _ => new IncomingUnknownMessage(protoContent.Type),
@@ -125,15 +150,17 @@ namespace Scener.Sdk
         }
     }
 
+    public record AppMediaAsset(string Id, string Filename, byte[] Data);
+
     public record IncomingUnrelatedResponseMessage(string ResponseText) : IIncomingMessage;
 
-    public record IncomingGenerateImageMessage(string ResponseText, List<byte[]> Data)
+    public record IncomingGenerateImageMessage(string ResponseText, List<AppMediaAsset> Data)
         : IIncomingMessage;
 
-    public record IncomingGenerate3DObjectMessage(string ResponseText, List<byte[]> Data)
+    public record IncomingGenerate3DObjectMessage(string ResponseText, List<AppMediaAsset> Data)
         : IIncomingMessage;
 
-    public record IncomingGenerate3DSceneMessage(string ResponseText, List<byte[]> Data)
+    public record IncomingGenerate3DSceneMessage(string ResponseText, List<AppMediaAsset> Data)
         : IIncomingMessage;
 
     public record IncomingConvertSpeechMessage(string ResponseText) : IIncomingMessage;
