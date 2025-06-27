@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static scener.input.VoiceInput;
 
-namespace ui.terminal
+namespace Ui.Terminal
 {
     public class TerminalMic : MonoBehaviour
     {

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ui.terminal
+namespace Ui.Terminal
 {
     public class TerminalLabel : MonoBehaviour
     {

@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
 using Scener.Sdk;
-using ui.terminal;
+using Ui.Terminal;
 using UnityEngine;
 
 namespace Scener.Ws
@@ -19,6 +17,7 @@ namespace Scener.Ws
             if (terminal == null)
             {
                 Debug.LogWarning("TerminalLabel not found in scene.");
+                return;
             }
 
             switch (message)
@@ -44,9 +43,15 @@ namespace Scener.Ws
                         Debug.LogWarning("TerminalImage not found in scene.");
                     }
                     break;
+                case IncomingGenerate3DObjectMessage:
+                    break;
+                case IncomingGenerate3DSceneMessage:
+                    break;
                 case IncomingErrorMessage msg:
                     Debug.LogError($"Error message received: {msg.Status} {msg.ErrorText}");
-                    terminal.AddMessageToChat($"<b>[Agent]</b>: {msg.Status} {msg.ErrorText}");
+                    terminal.AddMessageToChat(
+                        $"<b>Error occured</b>: {msg.Status} {msg.ErrorText}"
+                    );
                     break;
                 default:
                     Debug.Log("Not implemented");

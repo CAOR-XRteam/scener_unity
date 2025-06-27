@@ -3,7 +3,7 @@ using Scener.Ws;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ui.terminal
+namespace Ui.Terminal
 {
     public class TerminalInput : MonoBehaviour
     {
