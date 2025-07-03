@@ -81,7 +81,7 @@ public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
 {
     protected override SceneComponent Create(Type objectType, JObject jObject)
     {
-        string componentTypeValue = jObject["componentType"]?.ToString();
+        string componentTypeValue = jObject["component_type"]?.ToString();
 
         switch (componentTypeValue.ToLower())
         {

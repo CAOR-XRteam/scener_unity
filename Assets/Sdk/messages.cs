@@ -35,13 +35,13 @@ namespace Scener.Sdk
         [EnumMember(Value = "unrelated_response")]
         UnrelatedResponse,
 
-        [EnumMember(Value = "image_generation")]
+        [EnumMember(Value = "generate_image")]
         GenerateImage,
 
-        [EnumMember(Value = "3d_object_generation")]
+        [EnumMember(Value = "generate_3d_object")]
         Generate3DObject,
 
-        [EnumMember(Value = "3d_scene_generation")]
+        [EnumMember(Value = "generate_3d_scene")]
         Generate3DScene,
 
         [EnumMember(Value = "convert_speech")]
@@ -124,7 +124,7 @@ namespace Scener.Sdk
                         ))
                         .ToList()
                 ),
-                "3d_object_generation" => new IncomingGenerate3DObjectMessage(
+                "generate_3d_object" => new IncomingGenerate3DObjectMessage(
                     protoContent.Text,
                     protoContent
                         .Assets.Select(asset => new AppMediaAsset(
@@ -134,8 +134,9 @@ namespace Scener.Sdk
                         ))
                         .ToList()
                 ),
-                "3d_scene_generation" => new IncomingGenerate3DSceneMessage(
+                "generate_3d_scene" => new IncomingGenerate3DSceneMessage(
                     protoContent.Text,
+                    protoContent.Metadata,
                     protoContent
                         .Assets.Select(asset => new AppMediaAsset(
                             asset.Id,
@@ -160,8 +161,11 @@ namespace Scener.Sdk
     public record IncomingGenerate3DObjectMessage(string ResponseText, List<AppMediaAsset> Data)
         : IIncomingMessage;
 
-    public record IncomingGenerate3DSceneMessage(string ResponseText, List<AppMediaAsset> Data)
-        : IIncomingMessage;
+    public record IncomingGenerate3DSceneMessage(
+        string ResponseText,
+        string Scene,
+        List<AppMediaAsset> Data
+    ) : IIncomingMessage;
 
     public record IncomingConvertSpeechMessage(string ResponseText) : IIncomingMessage;
 

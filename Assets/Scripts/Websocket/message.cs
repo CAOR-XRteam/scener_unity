@@ -1,3 +1,6 @@
+using System.IO;
+using System.Threading.Tasks;
+using Scener.Importer;
 using Scener.Sdk;
 using Ui.Terminal;
 using UnityEngine;
@@ -6,7 +9,7 @@ namespace Scener.Ws
 {
     public class WsMessage : MonoBehaviour
     {
-        public void ProcessMessage(byte[] bytes)
+        public async Task ProcessMessage(byte[] bytes)
         {
             //---------------------------
 
@@ -43,9 +46,54 @@ namespace Scener.Ws
                         Debug.LogWarning("TerminalImage not found in scene.");
                     }
                     break;
-                case IncomingGenerate3DObjectMessage:
+                case IncomingGenerate3DObjectMessage msg:
+                    Debug.Log($"Received generate 3D object message: {msg.ResponseText}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
+                    ModelInstantiator modelInstantiator =
+                        FindFirstObjectByType<ModelInstantiator>();
+                    if (modelInstantiator != null)
+                    {
+                        modelInstantiator.LoadAndPlaceModel(msg.Data[0]);
+                    }
+                    else
+                    {
+                        Debug.LogError("ModelInstantiator service not found in scene.");
+                    }
                     break;
-                case IncomingGenerate3DSceneMessage:
+                case IncomingGenerate3DSceneMessage msg:
+                    Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
+
+                    string resourcesPath = Path.Combine(Application.dataPath, "Resources");
+                    foreach (var obj in msg.Data)
+                    {
+                        string fullPath = Path.Combine(resourcesPath, obj.Filename);
+
+                        try
+                        {
+                            await File.WriteAllBytesAsync(fullPath, obj.Data);
+
+                            Debug.Log($"Successfully saved GLB file to: {fullPath}");
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogError(
+                                $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
+                            );
+                        }
+                    }
+                    UnityEditor.AssetDatabase.Refresh();
+                    Debug.Log("AssetDatabase refreshed to import new models.");
+
+                    SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
+                    if (sceneBuilder != null)
+                    {
+                        sceneBuilder.BuildSceneFromJSON(msg.Scene);
+                    }
+                    else
+                    {
+                        Debug.LogError("SceneBuilder not found in scene.");
+                    }
                     break;
                 case IncomingErrorMessage msg:
                     Debug.LogError($"Error message received: {msg.Status} {msg.ErrorText}");

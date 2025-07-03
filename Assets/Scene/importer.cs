@@ -3,299 +3,313 @@ using Newtonsoft.Json;
 using Scener.Sdk;
 using UnityEngine;
 
-public class SceneBuilder : MonoBehaviour
+namespace Scener.Importer
 {
-    private Transform _generatedContentRoot;
-
-    public void BuildSceneFromJSON(string json)
+    public class SceneBuilder : MonoBehaviour
     {
-        try
+        private Transform _generatedContentRoot;
+
+        public void BuildSceneFromJSON(string json)
         {
-            JsonSerializerSettings settings = new() { TypeNameHandling = TypeNameHandling.Auto };
-
-            Scene scene =
-                JsonConvert.DeserializeObject<Scene>(json, settings)
-                ?? throw new System.Exception("Deserialization resulted in a null object.");
-
-            ClearScene(scene.name);
-            BuildSkybox(scene.skybox);
-            foreach (SceneObject node in scene.graph)
+            try
             {
-                CreateGameObject(node, _generatedContentRoot);
+                JsonSerializerSettings settings = new()
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                };
+                Debug.Log($"Recevied raw scene: {json}");
+                Scene scene =
+                    JsonConvert.DeserializeObject<Scene>(json, settings)
+                    ?? throw new System.Exception("Deserialization resulted in a null object.");
+
+                Debug.Log($"Converted scene: {scene.name}, {scene.graph}, {scene.skybox}");
+                ClearScene(scene.name);
+                BuildSkybox(scene.skybox);
+                foreach (SceneObject node in scene.graph)
+                {
+                    CreateGameObject(node, _generatedContentRoot);
+                }
+
+                Debug.Log("Scene graph built successfully!");
             }
-
-            Debug.Log("Scene graph built successfully!");
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError($"Error building scene from JSON: {e.Message}\n{e.StackTrace}");
-        }
-    }
-
-    public void Build3DObjectFromBinary(string asset_id)
-    {
-        GameObject target = new GameObject(asset_id);
-        GameObject modelAsset = Resources.Load<GameObject>(asset_id);
-        if (modelAsset != null)
-        {
-            MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
-            MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
-
-            target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
-            target.AddComponent<MeshRenderer>().sharedMaterials =
-                sourceMeshRenderer.sharedMaterials;
-        }
-        else
-        {
-            Debug.LogWarning($"Could not find 3D object asset '{asset_id}' in Resources folder.");
-        }
-    }
-
-    private void ClearScene(string scene_name)
-    {
-        GameObject existingRoot = GameObject.Find(scene_name);
-        if (existingRoot != null)
-        {
-            Destroy(existingRoot);
-        }
-        _generatedContentRoot = new GameObject(scene_name).transform;
-    }
-
-    private void CreateGameObject(SceneObject node, Transform parent)
-    {
-        GameObject newObj = new(node.id);
-        newObj.transform.SetParent(parent);
-
-        newObj.transform.SetLocalPositionAndRotation(
-            node.position.ToUnityVector3(),
-            Quaternion.Euler(node.rotation.ToUnityVector3())
-        );
-        newObj.transform.localScale = node.scale.ToUnityVector3();
-
-        BuildComponents(newObj, node.components);
-
-        if (node.children != null)
-        {
-            foreach (SceneObject childNode in node.children)
+            catch (System.Exception e)
             {
-                CreateGameObject(childNode, newObj.transform);
+                Debug.LogError($"Error building scene from JSON: {e.Message}\n{e.StackTrace}");
             }
         }
-    }
 
-    private void BuildComponents(GameObject target, List<SceneComponent> components)
-    {
-        if (components == null)
+        public void Build3DObjectFromBinary(string asset_id)
         {
-            return;
+            GameObject target = new GameObject(asset_id);
+            GameObject modelAsset = Resources.Load<GameObject>(asset_id);
+            if (modelAsset != null)
+            {
+                MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
+                MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
+
+                target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
+                target.AddComponent<MeshRenderer>().sharedMaterials =
+                    sourceMeshRenderer.sharedMaterials;
+            }
+            else
+            {
+                Debug.LogWarning(
+                    $"Could not find 3D object asset '{asset_id}' in Resources folder."
+                );
+            }
         }
 
-        foreach (SceneComponent componentData in components)
+        private void ClearScene(string scene_name)
         {
-            switch (componentData)
+            GameObject existingRoot = GameObject.Find(scene_name);
+            if (existingRoot != null)
             {
-                case PrimitiveObject primitive:
-                    BuildPrimitive(target, primitive);
+                Destroy(existingRoot);
+            }
+            _generatedContentRoot = new GameObject(scene_name).transform;
+        }
+
+        private void CreateGameObject(SceneObject node, Transform parent)
+        {
+            GameObject newObj = new(node.id);
+            newObj.transform.SetParent(parent);
+
+            newObj.transform.SetLocalPositionAndRotation(
+                node.position.ToUnityVector3(),
+                Quaternion.Euler(node.rotation.ToUnityVector3())
+            );
+            newObj.transform.localScale = node.scale.ToUnityVector3();
+
+            BuildComponents(newObj, node.components);
+
+            if (node.children != null)
+            {
+                foreach (SceneObject childNode in node.children)
+                {
+                    CreateGameObject(childNode, newObj.transform);
+                }
+            }
+        }
+
+        private void BuildComponents(GameObject target, List<SceneComponent> components)
+        {
+            if (components == null)
+            {
+                return;
+            }
+
+            foreach (SceneComponent componentData in components)
+            {
+                switch (componentData)
+                {
+                    case PrimitiveObject primitive:
+                        BuildPrimitive(target, primitive);
+                        break;
+                    case DynamicObject dynamic:
+                        BuildDynamic(target, dynamic);
+                        break;
+                    case BaseLight light:
+                        BuildLight(target, light);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        private void BuildPrimitive(GameObject target, PrimitiveObject data)
+        {
+            GameObject tempPrimitive = GameObject.CreatePrimitive(
+                data.shape.ToUnityPrimitiveShape()
+            );
+            target.AddComponent<MeshFilter>().sharedMesh = tempPrimitive
+                .GetComponent<MeshFilter>()
+                .sharedMesh;
+            _ = target.AddComponent<MeshRenderer>();
+
+            DestroyImmediate(tempPrimitive);
+
+            MeshRenderer renderer = target.GetComponent<MeshRenderer>();
+
+            Material newMaterial = renderer.material;
+            newMaterial.color = data.color.ToUnityColor();
+        }
+
+        private void BuildDynamic(GameObject target, DynamicObject data)
+        {
+            GameObject modelAsset = Resources.Load<GameObject>(data.id);
+            if (modelAsset != null)
+            {
+                // With the commented code below, it keeps the original hierarchy of unity when loading a 3D object (theathe gameobject that contains geometry gameobject with mesh and materials)
+
+                // GameObject tmp = Instantiate(modelAsset, target.transform);
+                // for (int i = tmp.transform.childCount - 1; i >= 0; i--)
+                // {
+                //     Transform child = tmp.transform.GetChild(i);
+                //     child.SetParent(target.transform, worldPositionStays: false);
+                // }
+
+                // Destroy(tmp);
+
+                // With this code, it flattens the hierarchy and only keeps the mesh and materials of the model asset
+
+                MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
+                MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
+
+                target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
+                target.AddComponent<MeshRenderer>().sharedMaterials =
+                    sourceMeshRenderer.sharedMaterials;
+            }
+            else
+            {
+                Debug.LogWarning($"Could not find model asset '{data.id}' in Resources folder.");
+            }
+        }
+
+        private void BuildSkybox(Scener.Sdk.Skybox skyboxData)
+        {
+            if (skyboxData == null)
+            {
+                return;
+            }
+
+            switch (skyboxData.type)
+            {
+                case SkyboxType.Sun:
+                    SunSkybox sun = skyboxData as SunSkybox;
+
+                    RenderSettings.skybox = new Material(
+                        Shader.Find("Skybox/Horizon With Sun Skybox")
+                    );
+                    RenderSettings.skybox.SetColor("_SkyColor1", sun.top_color.ToUnityColor());
+                    RenderSettings.skybox.SetFloat("_SkyExponent1", sun.top_exponent);
+                    RenderSettings.skybox.SetColor("_SkyColor2", sun.horizon_color.ToUnityColor());
+                    RenderSettings.skybox.SetColor("_SkyColor3", sun.bottom_color.ToUnityColor());
+                    RenderSettings.skybox.SetFloat("_SkyExponent2", sun.bottom_exponent);
+                    RenderSettings.skybox.SetFloat("_SkyIntensity", sun.sky_intensity);
+                    RenderSettings.skybox.SetColor("_SunColor", sun.sun_color.ToUnityColor());
+                    RenderSettings.skybox.SetFloat("_SunIntensity", sun.sun_intensity);
+                    RenderSettings.skybox.SetFloat("_SunAlpha", sun.sun_alpha);
+                    RenderSettings.skybox.SetFloat("_SunBeta", sun.sun_beta);
+                    RenderSettings.skybox.SetVector("_SunVector", sun.sun_vector.ToUnityVector4());
+
                     break;
-                case DynamicObject dynamic:
-                    BuildDynamic(target, dynamic);
+
+                case SkyboxType.Cubed:
+                    CubedSkybox cubed = skyboxData as CubedSkybox;
+
+                    Cubemap cubemap = Resources.Load<Cubemap>(cubed.cube_map);
+                    if (cubemap != null)
+                    {
+                        RenderSettings.skybox = new Material(Shader.Find("Skybox/Cubemap"));
+                        RenderSettings.skybox.SetTexture("_Tex", cubemap);
+                        RenderSettings.skybox.SetColor("_Tint", cubed.tint_color.ToUnityColor());
+                        RenderSettings.skybox.SetFloat("_Exposure", cubed.exposure);
+                        RenderSettings.skybox.SetFloat("_Rotation", cubed.rotation);
+                    }
+                    else
+                    {
+                        Debug.LogWarning(
+                            $"Cubemap '{cubed.cube_map}' not found in Resources folder."
+                        );
+                    }
                     break;
-                case BaseLight light:
-                    BuildLight(target, light);
+
+                case SkyboxType.Gradient:
+                    GradientSkybox grad = skyboxData as GradientSkybox;
+
+                    Shader gradientShader = Shader.Find("Skybox/Gradient Skybox");
+
+                    RenderSettings.skybox = new Material(gradientShader);
+
+                    RenderSettings.skybox.SetColor("_Color1", grad.color1.ToUnityColor());
+                    RenderSettings.skybox.SetColor("_Color2", grad.color2.ToUnityColor());
+                    RenderSettings.skybox.SetVector("_UpVector", grad.up_vector.ToUnityVector4());
+                    RenderSettings.skybox.SetFloat("_Intensity", grad.intensity);
+                    RenderSettings.skybox.SetFloat("_Exponent", grad.exponent);
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        [ContextMenu("Test 3D Object")]
+        public void Build3DObjectEditor()
+        {
+            Build3DObjectFromBinary("theatre");
+        }
+
+        private void BuildLight(GameObject target, BaseLight lightData)
+        {
+            Light light = target.AddComponent<Light>();
+
+            light.color = lightData.color.ToUnityColor();
+            light.intensity = lightData.intensity;
+            light.bounceIntensity = lightData.indirect_multiplier;
+
+            switch (lightData.type)
+            {
+                case Scener.Sdk.LightType.Spot:
+                    SpotLight spot = lightData as SpotLight;
+                    light.type = UnityEngine.LightType.Spot;
+                    light.range = spot.range;
+                    light.spotAngle = spot.spot_angle;
+                    SetLightModeAndShadows(light, spot.mode, spot.shadow_type);
+                    break;
+                case Scener.Sdk.LightType.Directional:
+                    DirectionalLight directional = lightData as DirectionalLight;
+                    light.type = UnityEngine.LightType.Directional;
+                    SetLightModeAndShadows(light, directional.mode, directional.shadow_type);
+                    break;
+                case Scener.Sdk.LightType.Point:
+                    PointLight point = lightData as PointLight;
+                    light.type = UnityEngine.LightType.Point;
+                    light.range = point.range;
+                    SetLightModeAndShadows(light, point.mode, point.shadow_type);
+                    break;
+                case Scener.Sdk.LightType.Area:
+                    AreaLight area = lightData as AreaLight;
+                    light.type = UnityEngine.LightType.Rectangle;
+
+                    if (area.shape == Scener.Sdk.LightShape.Rectangle)
+                    {
+                        light.areaSize = new Vector2(area.width ?? 1, area.height ?? 1);
+                    }
+                    else if (area.shape == Scener.Sdk.LightShape.Disk)
+                    {
+                        light.type = UnityEngine.LightType.Disc;
+                        light.areaSize = new Vector2(area.radius.Value, area.radius.Value);
+                    }
+                    light.lightmapBakeType = LightmapBakeType.Baked;
                     break;
                 default:
                     break;
             }
         }
-    }
 
-    private void BuildPrimitive(GameObject target, PrimitiveObject data)
-    {
-        GameObject tempPrimitive = GameObject.CreatePrimitive(data.shape.ToUnityPrimitiveShape());
-        target.AddComponent<MeshFilter>().sharedMesh = tempPrimitive
-            .GetComponent<MeshFilter>()
-            .sharedMesh;
-        _ = target.AddComponent<MeshRenderer>();
-
-        DestroyImmediate(tempPrimitive);
-
-        MeshRenderer renderer = target.GetComponent<MeshRenderer>();
-
-        Material newMaterial = renderer.material;
-        newMaterial.color = data.color.ToUnityColor();
-    }
-
-    private void BuildDynamic(GameObject target, DynamicObject data)
-    {
-        GameObject modelAsset = Resources.Load<GameObject>(data.id);
-        if (modelAsset != null)
+        private void SetLightModeAndShadows(Light light, LightMode mode, ShadowType shadowType)
         {
-            // With the commented code below, it keeps the original hierarchy of unity when loading a 3D object (theathe gameobject that contains geometry gameobject with mesh and materials)
+            light.lightmapBakeType = mode switch
+            {
+                LightMode.Baked => LightmapBakeType.Baked,
+                LightMode.Mixed => LightmapBakeType.Mixed,
+                _ => LightmapBakeType.Realtime,
+            };
 
-            // GameObject tmp = Instantiate(modelAsset, target.transform);
-            // for (int i = tmp.transform.childCount - 1; i >= 0; i--)
-            // {
-            //     Transform child = tmp.transform.GetChild(i);
-            //     child.SetParent(target.transform, worldPositionStays: false);
-            // }
-
-            // Destroy(tmp);
-
-            // With this code, it flattens the hierarchy and only keeps the mesh and materials of the model asset
-
-            MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
-            MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
-
-            target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
-            target.AddComponent<MeshRenderer>().sharedMaterials =
-                sourceMeshRenderer.sharedMaterials;
-        }
-        else
-        {
-            Debug.LogWarning($"Could not find model asset '{data.id}' in Resources folder.");
-        }
-    }
-
-    private void BuildSkybox(Scener.Sdk.Skybox skyboxData)
-    {
-        if (skyboxData == null)
-        {
-            return;
+            light.shadows = shadowType switch
+            {
+                ShadowType.NoShadows => LightShadows.None,
+                ShadowType.HardShadows => LightShadows.Hard,
+                _ => LightShadows.Soft,
+            };
         }
 
-        switch (skyboxData.type)
+        [ContextMenu("Test Scene: Sun Skybox with Primitives and Dynamic Model")]
+        private void TestScene_Sun()
         {
-            case SkyboxType.Sun:
-                SunSkybox sun = skyboxData as SunSkybox;
-
-                RenderSettings.skybox = new Material(Shader.Find("Skybox/Horizon With Sun Skybox"));
-                RenderSettings.skybox.SetColor("_SkyColor1", sun.top_color.ToUnityColor());
-                RenderSettings.skybox.SetFloat("_SkyExponent1", sun.top_exponent);
-                RenderSettings.skybox.SetColor("_SkyColor2", sun.horizon_color.ToUnityColor());
-                RenderSettings.skybox.SetColor("_SkyColor3", sun.bottom_color.ToUnityColor());
-                RenderSettings.skybox.SetFloat("_SkyExponent2", sun.bottom_exponent);
-                RenderSettings.skybox.SetFloat("_SkyIntensity", sun.sky_intensity);
-                RenderSettings.skybox.SetColor("_SunColor", sun.sun_color.ToUnityColor());
-                RenderSettings.skybox.SetFloat("_SunIntensity", sun.sun_intensity);
-                RenderSettings.skybox.SetFloat("_SunAlpha", sun.sun_alpha);
-                RenderSettings.skybox.SetFloat("_SunBeta", sun.sun_beta);
-                RenderSettings.skybox.SetVector("_SunVector", sun.sun_vector.ToUnityVector4());
-
-                break;
-
-            case SkyboxType.Cubed:
-                CubedSkybox cubed = skyboxData as CubedSkybox;
-
-                Cubemap cubemap = Resources.Load<Cubemap>(cubed.cube_map);
-                if (cubemap != null)
-                {
-                    RenderSettings.skybox = new Material(Shader.Find("Skybox/Cubemap"));
-                    RenderSettings.skybox.SetTexture("_Tex", cubemap);
-                    RenderSettings.skybox.SetColor("_Tint", cubed.tint_color.ToUnityColor());
-                    RenderSettings.skybox.SetFloat("_Exposure", cubed.exposure);
-                    RenderSettings.skybox.SetFloat("_Rotation", cubed.rotation);
-                }
-                else
-                {
-                    Debug.LogWarning($"Cubemap '{cubed.cube_map}' not found in Resources folder.");
-                }
-                break;
-
-            case SkyboxType.Gradient:
-                GradientSkybox grad = skyboxData as GradientSkybox;
-
-                Shader gradientShader = Shader.Find("Skybox/Gradient Skybox");
-
-                RenderSettings.skybox = new Material(gradientShader);
-
-                RenderSettings.skybox.SetColor("_Color1", grad.color1.ToUnityColor());
-                RenderSettings.skybox.SetColor("_Color2", grad.color2.ToUnityColor());
-                RenderSettings.skybox.SetVector("_UpVector", grad.up_vector.ToUnityVector4());
-                RenderSettings.skybox.SetFloat("_Intensity", grad.intensity);
-                RenderSettings.skybox.SetFloat("_Exponent", grad.exponent);
-
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    [ContextMenu("Test 3D Object")]
-    public void Build3DObjectEditor()
-    {
-        Build3DObjectFromBinary("theatre");
-    }
-
-    private void BuildLight(GameObject target, BaseLight lightData)
-    {
-        Light light = target.AddComponent<Light>();
-
-        light.color = lightData.color.ToUnityColor();
-        light.intensity = lightData.intensity;
-        light.bounceIntensity = lightData.indirect_multiplier;
-
-        switch (lightData.type)
-        {
-            case Scener.Sdk.LightType.Spot:
-                SpotLight spot = lightData as SpotLight;
-                light.type = UnityEngine.LightType.Spot;
-                light.range = spot.range;
-                light.spotAngle = spot.spot_angle;
-                SetLightModeAndShadows(light, spot.mode, spot.shadow_type);
-                break;
-            case Scener.Sdk.LightType.Directional:
-                DirectionalLight directional = lightData as DirectionalLight;
-                light.type = UnityEngine.LightType.Directional;
-                SetLightModeAndShadows(light, directional.mode, directional.shadow_type);
-                break;
-            case Scener.Sdk.LightType.Point:
-                PointLight point = lightData as PointLight;
-                light.type = UnityEngine.LightType.Point;
-                light.range = point.range;
-                SetLightModeAndShadows(light, point.mode, point.shadow_type);
-                break;
-            case Scener.Sdk.LightType.Area:
-                AreaLight area = lightData as AreaLight;
-                light.type = UnityEngine.LightType.Rectangle;
-
-                if (area.shape == Scener.Sdk.LightShape.Rectangle)
-                {
-                    light.areaSize = new Vector2(area.width ?? 1, area.height ?? 1);
-                }
-                else if (area.shape == Scener.Sdk.LightShape.Disk)
-                {
-                    light.type = UnityEngine.LightType.Disc;
-                    light.areaSize = new Vector2(area.radius.Value, area.radius.Value);
-                }
-                light.lightmapBakeType = LightmapBakeType.Baked;
-                break;
-            default:
-                break;
-        }
-    }
-
-    private void SetLightModeAndShadows(Light light, LightMode mode, ShadowType shadowType)
-    {
-        light.lightmapBakeType = mode switch
-        {
-            LightMode.Baked => LightmapBakeType.Baked,
-            LightMode.Mixed => LightmapBakeType.Mixed,
-            _ => LightmapBakeType.Realtime,
-        };
-
-        light.shadows = shadowType switch
-        {
-            ShadowType.NoShadows => LightShadows.None,
-            ShadowType.HardShadows => LightShadows.Hard,
-            _ => LightShadows.Soft,
-        };
-    }
-
-    [ContextMenu("Test Scene: Sun Skybox with Primitives and Dynamic Model")]
-    private void TestScene_Sun()
-    {
-        string json = @"{
+            string json = @"{
             'name': 'Test Sun Scene',
             'timestamp': '2023-10-27T10:00:00Z',
             'skybox': {
@@ -362,13 +376,13 @@ public class SceneBuilder : MonoBehaviour
             ]
         }".Replace("'", "\"");
 
-        BuildSceneFromJSON(json);
-    }
+            BuildSceneFromJSON(json);
+        }
 
-    [ContextMenu("Test Scene: Gradient Sky with Area Light")]
-    private void TestScene_Gradient()
-    {
-        string json = @"{
+        [ContextMenu("Test Scene: Gradient Sky with Area Light")]
+        private void TestScene_Gradient()
+        {
+            string json = @"{
             'name': 'Test Gradient Scene',
             'timestamp': '2023-10-27T11:00:00Z',
             'skybox': {
@@ -408,13 +422,13 @@ public class SceneBuilder : MonoBehaviour
             ]
         }".Replace("'", "\"");
 
-        BuildSceneFromJSON(json);
-    }
+            BuildSceneFromJSON(json);
+        }
 
-    [ContextMenu("Test Scene: Minimal Dark Room")]
-    private void TestScene_Cube()
-    {
-        string json = @"{
+        [ContextMenu("Test Scene: Minimal Dark Room")]
+        private void TestScene_Cube()
+        {
+            string json = @"{
             'name': 'Test Cube Skybox',
             'timestamp': '2023-10-27T12:00:00Z',
             'skybox': {
@@ -444,6 +458,7 @@ public class SceneBuilder : MonoBehaviour
             ]
         }".Replace("'", "\"");
 
-        BuildSceneFromJSON(json);
+            BuildSceneFromJSON(json);
+        }
     }
 }

@@ -627,6 +627,7 @@ GameObject:
   - component: {fileID: 699463194}
   - component: {fileID: 699463193}
   - component: {fileID: 699463196}
+  - component: {fileID: 699463197}
   m_Layer: 0
   m_Name: Terminal
   m_TagString: Untagged
@@ -699,6 +700,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mic_device: 
+--- !u!114 &699463197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 699463191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4a98b49434fa39abababc6acffffe53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &884086086
 GameObject:
   m_ObjectHideFlags: 0
