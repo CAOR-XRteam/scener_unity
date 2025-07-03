@@ -17,12 +17,11 @@ namespace Scener.Importer
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
                 };
-                Debug.Log($"Recevied raw scene: {json}");
+
                 Scene scene =
                     JsonConvert.DeserializeObject<Scene>(json, settings)
                     ?? throw new System.Exception("Deserialization resulted in a null object.");
 
-                Debug.Log($"Converted scene: {scene.name}, {scene.graph}, {scene.skybox}");
                 ClearScene(scene.name);
                 BuildSkybox(scene.skybox);
                 foreach (SceneObject node in scene.graph)
