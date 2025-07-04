@@ -50,13 +50,24 @@ namespace Scener.Importer
         private void CreateGameObject(SceneObject node, Transform parent)
         {
             GameObject newObj = new(node.id);
-            newObj.transform.SetParent(parent);
+            newObj.transform.SetParent(parent, worldPositionStays: false);
 
-            newObj.transform.SetLocalPositionAndRotation(
-                node.position.ToUnityVector3(),
-                Quaternion.Euler(node.rotation.ToUnityVector3())
+            // newObj.transform.SetLocalPositionAndRotation(
+            //     node.position.ToUnityVector3(),
+            //     Quaternion.Euler(node.rotation.ToUnityVector3())
+            // );
+            newObj.transform.position = node.position.ToUnityVector3();
+            newObj.transform.localRotation = Quaternion.Euler(node.rotation.ToUnityVector3());
+
+            UnityEngine.Vector3 parentWorldScale = parent.lossyScale;
+
+            UnityEngine.Vector3 requiredLocalScale = new(
+                node.scale.x / parentWorldScale.x,
+                node.scale.y / parentWorldScale.y,
+                node.scale.z / parentWorldScale.z
             );
-            newObj.transform.localScale = node.scale.ToUnityVector3();
+
+            newObj.transform.localScale = requiredLocalScale;
 
             BuildComponents(newObj, node.components);
 
