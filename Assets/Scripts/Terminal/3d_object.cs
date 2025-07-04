@@ -9,7 +9,7 @@ namespace Ui.Terminal
     {
         private GameObject currentModel;
 
-        public async void LoadAndPlaceModel(AppMediaAsset modelAsset)
+        public void LoadAndPlaceModel(AppMediaAsset modelAsset)
         {
             if (currentModel != null)
             {
@@ -23,40 +23,42 @@ namespace Ui.Terminal
                 return;
             }
 
-            Debug.Log("Attempting to load GLB model from byte data...");
+            LoadFromGLBBytes(modelAsset);
+        }
 
+        private async void LoadFromGLBBytes(AppMediaAsset modelAsset)
+        {
             var gltf = new GltfImport();
+
+            Debug.Log("Attempting to load GLB model from memory...");
+
             try
             {
                 bool success = await gltf.Load(modelAsset.Data);
-
                 if (success)
                 {
-                    success = await gltf.InstantiateMainSceneAsync(transform);
+                    GameObject currentModel = new($"{modelAsset.Id}");
+                    success = await gltf.InstantiateMainSceneAsync(currentModel.transform);
 
                     if (success)
                     {
-                        currentModel = transform.GetChild(transform.childCount - 1).gameObject;
-                        currentModel.name = $"{modelAsset.Id}";
                         PlaceModelInCenter(currentModel);
-
                         Debug.Log($"Successfully loaded and placed model: {currentModel.name}");
                     }
                     else
                     {
-                        Debug.LogError("glTFast failed to instantiate the gameobject.");
+                        Debug.LogError("Failed to instantiate GLB scene.");
+                        Destroy(currentModel);
                     }
                 }
                 else
                 {
-                    Debug.LogError("glTFast failed to load the GLB data.");
+                    Debug.LogError("Failed to load GLB bytes.");
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogError(
-                    $"An error occurred during GLB loading: {e.Message}\n{e.StackTrace}"
-                );
+                Debug.LogError($"Exception during GLB load: {e.Message}\n{e.StackTrace}");
             }
         }
 
