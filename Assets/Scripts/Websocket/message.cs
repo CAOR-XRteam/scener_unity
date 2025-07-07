@@ -4,6 +4,7 @@ using Scener.Exporter;
 using Scener.Importer;
 using Scener.Sdk;
 using Ui.Terminal;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 
 namespace Scener.Ws
@@ -87,15 +88,27 @@ namespace Scener.Ws
                     Debug.Log("AssetDatabase refreshed to import new models.");
 
                     SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
-                    SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
+
                     if (sceneBuilder != null)
                     {
                         sceneBuilder.BuildSceneFromJSON(msg.Scene);
-                        sceneSerializer.SerializeScene();
                     }
                     else
                     {
                         Debug.LogError("SceneBuilder not found in scene.");
+                    }
+                    break;
+                case IncomingRequestContextMessage:
+                    SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
+                    if (sceneSerializer != null)
+                    {
+                        var json_scene = sceneSerializer.SerializeScene();
+                        var contextMessage = new OutgoingRequestContextMessage(json_scene);
+                        await WsClient.instance.SendMessage(contextMessage);
+                    }
+                    else
+                    {
+                        Debug.LogError("SceneSerializer not found in scene.");
                     }
                     break;
                 case IncomingModify3DSceneMessage:
