@@ -146,6 +146,7 @@ namespace Scener.Sdk
                         .ToList()
                 ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
+                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Text),
                 _ => new IncomingUnknownMessage(protoContent.Type),
             };
         }
