@@ -7,6 +7,11 @@ using UnityEngine;
 
 namespace Scener.Sdk
 {
+    public class SceneMarker : MonoBehaviour
+    {
+        public string sceneName;
+    }
+
     public class ColorRGBA
     {
         public float r;

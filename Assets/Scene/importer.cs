@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Scener.Sdk;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Scener.Importer
@@ -45,6 +46,8 @@ namespace Scener.Importer
                 Destroy(existingRoot);
             }
             _generatedContentRoot = new GameObject(scene_name).transform;
+            var marker = _generatedContentRoot.AddComponent<SceneMarker>();
+            marker.sceneName = scene_name;
         }
 
         private void CreateGameObject(SceneObject node, Transform parent)

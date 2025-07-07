@@ -10,41 +10,27 @@ namespace Scener.Exporter
     {
         public string generatedJson;
 
-        private void SerializeScene(string scene_name = null)
+        public string SerializeScene()
         {
             List<SceneObject> graph = new();
             List<GameObject> topLevelObjects = new();
 
-            if (!string.IsNullOrEmpty(scene_name))
+            SceneMarker sceneRoot = FindFirstObjectByType<SceneMarker>();
+
+            if (sceneRoot == null)
             {
-                GameObject rootObject = GameObject.Find(scene_name);
-
-                if (rootObject == null)
-                {
-                    Debug.LogError(
-                        $"Could not find a GameObject named '{scene_name}' to use as a serialization root."
-                    );
-                    return;
-                }
-
-                Debug.Log($"Serializing GameObject: '{scene_name}'.");
-
-                foreach (Transform child in rootObject.transform)
-                {
-                    topLevelObjects.Add(child.gameObject);
-                }
+                Debug.LogError(
+                    "Could not find any GameObject with a SceneRootMarker component. Cannot serialize."
+                );
+                return null;
             }
-            else
-            {
-                Debug.Log("No specific root object provided. Serializing entire scene.");
 
-                foreach (GameObject obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
-                {
-                    if (obj.transform.parent == null)
-                    {
-                        topLevelObjects.Add(obj);
-                    }
-                }
+            GameObject rootObject = sceneRoot.gameObject;
+            Debug.Log($"Serializing scene from root object: '{rootObject.name}'");
+
+            foreach (Transform child in rootObject.transform)
+            {
+                topLevelObjects.Add(child.gameObject);
             }
 
             foreach (GameObject rootObj in topLevelObjects)
@@ -57,7 +43,7 @@ namespace Scener.Exporter
 
             Scene scene = new()
             {
-                name = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
+                name = rootObject.name,
                 skybox = MapSkybox(),
                 graph = graph,
             };
@@ -70,20 +56,11 @@ namespace Scener.Exporter
 
             generatedJson = JsonConvert.SerializeObject(scene, settings);
 
-            if (scene_name is null or "")
-            {
-                scene_name = "scene";
-            }
-
-            File.WriteAllText($"Assets/Resources/{scene_name}.json", generatedJson);
+            // File.WriteAllText($"Assets/Resources/{rootObject.name}.json", generatedJson);
 
             Debug.Log("Scene serialized successfully!");
-        }
 
-        [ContextMenu("Serialize Scene from JSON")]
-        private void SerializeInEditor()
-        {
-            SerializeScene("Test Sun Scene");
+            return generatedJson;
         }
 
         private SceneObject BuildSceneNode(GameObject obj)

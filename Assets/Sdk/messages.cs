@@ -145,8 +145,19 @@ namespace Scener.Sdk
                         ))
                         .ToList()
                 ),
+                "modify_3d_scene" => new IncomingModify3DSceneMessage(
+                    protoContent.Text,
+                    protoContent.Metadata,
+                    protoContent
+                        .Assets.Select(asset => new AppMediaAsset(
+                            asset.Id,
+                            asset.Filename,
+                            asset.Data.ToByteArray()
+                        ))
+                        .ToList()
+                ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
-                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Text),
+                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Error),
                 _ => new IncomingUnknownMessage(protoContent.Type),
             };
         }
@@ -163,6 +174,12 @@ namespace Scener.Sdk
         : IIncomingMessage;
 
     public record IncomingGenerate3DSceneMessage(
+        string ResponseText,
+        string Scene,
+        List<AppMediaAsset> Data
+    ) : IIncomingMessage;
+
+    public record IncomingModify3DSceneMessage(
         string ResponseText,
         string Scene,
         List<AppMediaAsset> Data

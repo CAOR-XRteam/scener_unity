@@ -1,3 +1,4 @@
+using Scener.Exporter;
 using Scener.Sdk;
 using Scener.Ws;
 using UnityEngine;
@@ -10,6 +11,7 @@ namespace Ui.Terminal
         private TextField field_text;
         private Button button_send;
         public TerminalLabel terminalDisplay;
+        public SceneSerializer sceneSerializer;
 
         void Start()
         {
@@ -24,6 +26,8 @@ namespace Ui.Terminal
             // Register callback
             field_text.RegisterCallback<KeyDownEvent>(OnChatInputKeyDown);
             button_send.clicked += CallbackButton;
+
+            sceneSerializer = FindFirstObjectByType<SceneSerializer>();
 
             //---------------------------
         }

@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Scener.Exporter;
 using Scener.Importer;
 using Scener.Sdk;
 using Ui.Terminal;
@@ -86,14 +87,18 @@ namespace Scener.Ws
                     Debug.Log("AssetDatabase refreshed to import new models.");
 
                     SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
+                    SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
                     if (sceneBuilder != null)
                     {
                         sceneBuilder.BuildSceneFromJSON(msg.Scene);
+                        sceneSerializer.SerializeScene();
                     }
                     else
                     {
                         Debug.LogError("SceneBuilder not found in scene.");
                     }
+                    break;
+                case IncomingModify3DSceneMessage:
                     break;
                 case IncomingErrorMessage msg:
                     Debug.LogError($"Error message received: {msg.Status} {msg.ErrorText}");
