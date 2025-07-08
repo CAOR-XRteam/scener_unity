@@ -16,6 +16,7 @@ namespace Scener.Importer
                 JsonSerializerSettings settings = new()
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
+                    NullValueHandling = NullValueHandling.Ignore,
                 };
 
                 Scene patch =
@@ -137,6 +138,7 @@ namespace Scener.Importer
                 JsonSerializerSettings settings = new()
                 {
                     TypeNameHandling = TypeNameHandling.Auto,
+                    NullValueHandling = NullValueHandling.Ignore,
                 };
 
                 Scene scene =
