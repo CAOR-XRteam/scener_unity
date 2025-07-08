@@ -68,6 +68,7 @@ namespace Scener.Exporter
             SceneObject node = new()
             {
                 id = obj.name,
+                parent_id = obj.transform.parent.name,
                 position = obj.transform.localPosition.ToVector3(),
                 rotation = obj.transform.localEulerAngles.ToVector3(),
                 scale = obj.transform.localScale.ToVector3(),

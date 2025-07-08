@@ -167,6 +167,7 @@ namespace Scener.Sdk
     public class SceneObject
     {
         public string id;
+        public string parent_id;
 
         public Vector3 position;
 
