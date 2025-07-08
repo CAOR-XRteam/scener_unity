@@ -45,21 +45,47 @@ namespace Scener.Importer
                 {
                     foreach (SceneObject op in patch.graph)
                     {
+                        Transform parentTransform = _generatedContentRoot;
+                        if (!string.IsNullOrEmpty(op.parent_id))
+                        {
+                            GameObject parentObject = FindObjectInScene(op.parent_id);
+                            if (parentObject != null)
+                            {
+                                parentTransform = parentObject.transform;
+                            }
+                            else
+                            {
+                                Debug.LogWarning(
+                                    $"Could not find specified parent '{op.parent_id}' for object '{op.id}'. Attaching to scene root instead."
+                                );
+                            }
+                        }
+
                         GameObject targetObject = FindObjectInScene(op.id);
 
                         if (targetObject != null)
                         {
                             Debug.Log($"Updating existing object: {op.id}");
+                            if (targetObject.transform.parent != parentTransform)
+                            {
+                                Debug.Log(
+                                    $"Changing parent of '{op.id}' to '{parentTransform.name}'."
+                                );
+                                targetObject.transform.SetParent(
+                                    parentTransform,
+                                    worldPositionStays: true
+                                );
+                            }
                             UpdateGameObject(targetObject, op);
                         }
                         else
                         {
                             Debug.Log($"Adding new object: {op.id}");
-                            CreateGameObject(op, _generatedContentRoot);
+                            CreateGameObject(op, parentTransform);
                         }
                     }
+                    Debug.Log("Scene graph built successfully!");
                 }
-                Debug.Log("Scene graph built successfully!");
             }
             catch (System.Exception e)
             {
