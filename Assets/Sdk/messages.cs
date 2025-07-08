@@ -177,7 +177,7 @@ namespace Scener.Sdk
                 ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
                 "request_context" => new IncomingRequestContextMessage(),
-                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Error),
+                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Text),
                 _ => new IncomingUnknownMessage(protoContent.Type),
             };
         }
