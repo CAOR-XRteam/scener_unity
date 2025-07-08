@@ -19,10 +19,10 @@ namespace Scener.Exporter
 
             if (sceneRoot == null)
             {
-                Debug.LogError(
-                    "Could not find any GameObject with a SceneRootMarker component. Cannot serialize."
+                Debug.LogError("Could not find SceneMarker component. Cannot serialize.");
+                throw new System.Exception(
+                    "Could not find SceneMarker component. Cannot serialize."
                 );
-                return null;
             }
 
             GameObject rootObject = sceneRoot.gameObject;

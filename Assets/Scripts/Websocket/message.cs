@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Scener.Exporter;
@@ -24,6 +25,9 @@ namespace Scener.Ws
                 Debug.LogWarning("TerminalLabel not found in scene.");
                 return;
             }
+
+            string resourcesPath = Path.Combine(Application.dataPath, "Resources");
+            SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
 
             switch (message)
             {
@@ -66,7 +70,6 @@ namespace Scener.Ws
                     Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
                     terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
 
-                    string resourcesPath = Path.Combine(Application.dataPath, "Resources");
                     foreach (var obj in msg.Data)
                     {
                         string fullPath = Path.Combine(resourcesPath, obj.Filename);
@@ -77,7 +80,7 @@ namespace Scener.Ws
 
                             Debug.Log($"Successfully saved GLB file to: {fullPath}");
                         }
-                        catch (System.Exception e)
+                        catch (Exception e)
                         {
                             Debug.LogError(
                                 $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
@@ -86,8 +89,6 @@ namespace Scener.Ws
                     }
                     UnityEditor.AssetDatabase.Refresh();
                     Debug.Log("AssetDatabase refreshed to import new models.");
-
-                    SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
 
                     if (sceneBuilder != null)
                     {
@@ -102,16 +103,62 @@ namespace Scener.Ws
                     SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
                     if (sceneSerializer != null)
                     {
-                        var json_scene = sceneSerializer.SerializeScene();
-                        var contextMessage = new OutgoingRequestContextMessage(json_scene);
-                        await WsClient.instance.SendMessage(contextMessage);
+                        try
+                        {
+                            var json_scene = sceneSerializer.SerializeScene();
+                            var contextMessage = new OutgoingRequestContextMessage(json_scene);
+                            await WsClient.instance.SendMessage(contextMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError("Failed to serialize scene: " + ex.Message);
+                            terminal.AddMessageToChat(
+                                $"<b>Error occured</b>: {500} {"No scene found"}"
+                            );
+                            break;
+                        }
                     }
                     else
                     {
                         Debug.LogError("SceneSerializer not found in scene.");
+                        terminal.AddMessageToChat(
+                            $"<b>Error occured</b>: {500} {"No scene found"}"
+                        );
+                        break;
                     }
                     break;
-                case IncomingModify3DSceneMessage:
+                case IncomingModify3DSceneMessage msg:
+                    Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
+
+                    foreach (var obj in msg.Data)
+                    {
+                        string fullPath = Path.Combine(resourcesPath, obj.Filename);
+
+                        try
+                        {
+                            await File.WriteAllBytesAsync(fullPath, obj.Data);
+
+                            Debug.Log($"Successfully saved GLB file to: {fullPath}");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(
+                                $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
+                            );
+                        }
+                    }
+                    UnityEditor.AssetDatabase.Refresh();
+                    Debug.Log("AssetDatabase refreshed to import new models.");
+
+                    if (sceneBuilder != null)
+                    {
+                        sceneBuilder.ModifySceneFromJSON(msg.Scene);
+                    }
+                    else
+                    {
+                        Debug.LogError("SceneBuilder not found in scene.");
+                    }
                     break;
                 case IncomingErrorMessage msg:
                     Debug.LogError($"Error message received: {msg.Status} {msg.ErrorText}");
