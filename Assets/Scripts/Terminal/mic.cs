@@ -1,4 +1,3 @@
-using scener.input;
 using Scener.Sdk;
 using Scener.Ws;
 using UnityEngine;

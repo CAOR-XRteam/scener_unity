@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using GLTFast;
 using Scener.Sdk;
 using UnityEngine;

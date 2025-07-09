@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using Newtonsoft.Json;
 using Scener.Sdk;
 using UnityEngine;
