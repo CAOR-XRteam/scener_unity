@@ -9,125 +9,125 @@ namespace Scener.Importer
 {
     public class SceneBuilder : MonoBehaviour
     {
-        public void ModifySceneFromJSON(string json)
-        {
-            try
-            {
-                JsonSerializerSettings settings = new()
-                {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    NullValueHandling = NullValueHandling.Ignore,
-                };
+        // public void ModifySceneFromJSON(string json)
+        // {
+        //     try
+        //     {
+        //         JsonSerializerSettings settings = new()
+        //         {
+        //             TypeNameHandling = TypeNameHandling.Auto,
+        //             NullValueHandling = NullValueHandling.Ignore,
+        //         };
 
-                Scene patch =
-                    JsonConvert.DeserializeObject<Scene>(json, settings)
-                    ?? throw new System.Exception("Deserialization resulted in a null object.");
+        //         Scene patch =
+        //             JsonConvert.DeserializeObject<Scene>(json, settings)
+        //             ?? throw new System.Exception("Deserialization resulted in a null object.");
 
-                if (_generatedContentRoot == null)
-                {
-                    var marker = FindAnyObjectByType<SceneMarker>();
-                    if (marker != null)
-                    {
-                        _generatedContentRoot = marker.transform;
-                    }
-                    else
-                    {
-                        Debug.LogError("Cannot modify scene: scene root not found.");
-                        return;
-                    }
-                }
-                if (patch.skybox != null)
-                {
-                    Debug.Log("Applying skybox update.");
-                    BuildSkybox(patch.skybox);
-                }
+        //         if (_generatedContentRoot == null)
+        //         {
+        //             var marker = FindAnyObjectByType<SceneMarker>();
+        //             if (marker != null)
+        //             {
+        //                 _generatedContentRoot = marker.transform;
+        //             }
+        //             else
+        //             {
+        //                 Debug.LogError("Cannot modify scene: scene root not found.");
+        //                 return;
+        //             }
+        //         }
+        //         if (patch.skybox != null)
+        //         {
+        //             Debug.Log("Applying skybox update.");
+        //             BuildSkybox(patch.skybox);
+        //         }
 
-                if (patch.graph != null)
-                {
-                    foreach (SceneObject op in patch.graph)
-                    {
-                        Transform parentTransform = _generatedContentRoot;
-                        if (!string.IsNullOrEmpty(op.parent_id))
-                        {
-                            GameObject parentObject = FindObjectInScene(op.parent_id);
-                            if (parentObject != null)
-                            {
-                                parentTransform = parentObject.transform;
-                            }
-                            else
-                            {
-                                Debug.LogWarning(
-                                    $"Could not find specified parent '{op.parent_id}' for object '{op.id}'. Attaching to scene root instead."
-                                );
-                            }
-                        }
+        //         if (patch.graph != null)
+        //         {
+        //             foreach (SceneObject op in patch.graph)
+        //             {
+        //                 Transform parentTransform = _generatedContentRoot;
+        //                 if (!string.IsNullOrEmpty(op.parent_id))
+        //                 {
+        //                     GameObject parentObject = FindObjectInScene(op.parent_id);
+        //                     if (parentObject != null)
+        //                     {
+        //                         parentTransform = parentObject.transform;
+        //                     }
+        //                     else
+        //                     {
+        //                         Debug.LogWarning(
+        //                             $"Could not find specified parent '{op.parent_id}' for object '{op.id}'. Attaching to scene root instead."
+        //                         );
+        //                     }
+        //                 }
 
-                        GameObject targetObject = FindObjectInScene(op.id);
+        //                 GameObject targetObject = FindObjectInScene(op.id);
 
-                        if (targetObject != null)
-                        {
-                            Debug.Log($"Updating existing object: {op.id}");
-                            if (targetObject.transform.parent != parentTransform)
-                            {
-                                Debug.Log(
-                                    $"Changing parent of '{op.id}' to '{parentTransform.name}'."
-                                );
-                                targetObject.transform.SetParent(
-                                    parentTransform,
-                                    worldPositionStays: true
-                                );
-                            }
-                            UpdateGameObject(targetObject, op);
-                        }
-                        else
-                        {
-                            Debug.Log($"Adding new object: {op.id}");
-                            CreateGameObject(op, parentTransform);
-                        }
-                    }
-                    Debug.Log("Scene graph built successfully!");
-                }
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"Error updating scene from JSON: {e.Message}\n{e.StackTrace}");
-            }
-        }
+        //                 if (targetObject != null)
+        //                 {
+        //                     Debug.Log($"Updating existing object: {op.id}");
+        //                     if (targetObject.transform.parent != parentTransform)
+        //                     {
+        //                         Debug.Log(
+        //                             $"Changing parent of '{op.id}' to '{parentTransform.name}'."
+        //                         );
+        //                         targetObject.transform.SetParent(
+        //                             parentTransform,
+        //                             worldPositionStays: true
+        //                         );
+        //                     }
+        //                     UpdateGameObject(targetObject, op);
+        //                 }
+        //                 else
+        //                 {
+        //                     Debug.Log($"Adding new object: {op.id}");
+        //                     CreateGameObject(op, parentTransform);
+        //                 }
+        //             }
+        //             Debug.Log("Scene graph built successfully!");
+        //         }
+        //     }
+        //     catch (System.Exception e)
+        //     {
+        //         Debug.LogError($"Error updating scene from JSON: {e.Message}\n{e.StackTrace}");
+        //     }
+        // }
 
-        private GameObject FindObjectInScene(string objectId)
-        {
-            if (_generatedContentRoot == null)
-                return null;
+        // private GameObject FindObjectInScene(string objectId)
+        // {
+        //     if (_generatedContentRoot == null)
+        //         return null;
 
-            Transform result = _generatedContentRoot
-                .GetComponentsInChildren<Transform>(true)
-                .FirstOrDefault(t => t.gameObject.name == objectId);
+        //     Transform result = _generatedContentRoot
+        //         .GetComponentsInChildren<Transform>(true)
+        //         .FirstOrDefault(t => t.gameObject.name == objectId);
 
-            return result?.gameObject;
-        }
+        //     return result?.gameObject;
+        // }
 
-        private void UpdateGameObject(GameObject target, SceneObject data)
-        {
-            target.transform.position = data.position.ToUnityVector3();
-            target.transform.localRotation = Quaternion.Euler(data.rotation.ToUnityVector3());
+        // private void UpdateGameObject(GameObject target, SceneObject data)
+        // {
+        //     target.transform.position = data.position.ToUnityVector3();
+        //     target.transform.localRotation = Quaternion.Euler(data.rotation.ToUnityVector3());
 
-            UnityEngine.Vector3 parentWorldScale = target.transform.parent.lossyScale;
-            UnityEngine.Vector3 requiredLocalScale = new(
-                data.scale.x / parentWorldScale.x,
-                data.scale.y / parentWorldScale.y,
-                data.scale.z / parentWorldScale.z
-            );
-            target.transform.localScale = requiredLocalScale;
+        //     UnityEngine.Vector3 parentWorldScale = target.transform.parent.lossyScale;
+        //     UnityEngine.Vector3 requiredLocalScale = new(
+        //         data.scale.x / parentWorldScale.x,
+        //         data.scale.y / parentWorldScale.y,
+        //         data.scale.z / parentWorldScale.z
+        //     );
+        //     target.transform.localScale = requiredLocalScale;
 
-            foreach (var component in target.GetComponents<MeshFilter>())
-                Destroy(component);
-            foreach (var component in target.GetComponents<MeshRenderer>())
-                Destroy(component);
-            foreach (var component in target.GetComponents<Light>())
-                Destroy(component);
+        //     foreach (var component in target.GetComponents<MeshFilter>())
+        //         Destroy(component);
+        //     foreach (var component in target.GetComponents<MeshRenderer>())
+        //         Destroy(component);
+        //     foreach (var component in target.GetComponents<Light>())
+        //         Destroy(component);
 
-            BuildComponents(target, data.components);
-        }
+        //     BuildComponents(target, data.components);
+        // }
 
         private Transform _generatedContentRoot;
 
