@@ -97,67 +97,39 @@ namespace Scener.Ws
                         Debug.LogError("SceneBuilder not found in scene.");
                     }
                     break;
-                // case IncomingRequestContextMessage:
-                //     SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
-                //     if (sceneSerializer != null)
-                //     {
-                //         try
-                //         {
-                //             var json_scene = sceneSerializer.SerializeScene();
-                //             var contextMessage = new OutgoingRequestContextMessage(json_scene);
-                //             await WsClient.instance.SendMessage(contextMessage);
-                //         }
-                //         catch (Exception ex)
-                //         {
-                //             Debug.LogError("Failed to serialize scene: " + ex.Message);
-                //             terminal.AddMessageToChat(
-                //                 $"<b>Error occured</b>: {500} {"No scene found"}"
-                //             );
-                //             break;
-                //         }
-                //     }
-                //     else
-                //     {
-                //         Debug.LogError("SceneSerializer not found in scene.");
-                //         terminal.AddMessageToChat(
-                //             $"<b>Error occured</b>: {500} {"No scene found"}"
-                //         );
-                //         break;
-                //     }
-                //     break;
-                // case IncomingModify3DSceneMessage msg:
-                //     Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
-                //     terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
+                case IncomingModify3DSceneMessage msg:
+                    Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
 
-                //     foreach (var obj in msg.Data)
-                //     {
-                //         string fullPath = Path.Combine(resourcesPath, obj.Filename);
+                    foreach (var obj in msg.Data)
+                    {
+                        string fullPath = Path.Combine(resourcesPath, obj.Filename);
 
-                //         try
-                //         {
-                //             await File.WriteAllBytesAsync(fullPath, obj.Data);
+                        try
+                        {
+                            await File.WriteAllBytesAsync(fullPath, obj.Data);
 
-                //             Debug.Log($"Successfully saved GLB file to: {fullPath}");
-                //         }
-                //         catch (Exception e)
-                //         {
-                //             Debug.LogError(
-                //                 $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
-                //             );
-                //         }
-                //     }
-                //     UnityEditor.AssetDatabase.Refresh();
-                //     Debug.Log("AssetDatabase refreshed to import new models.");
+                            Debug.Log($"Successfully saved GLB file to: {fullPath}");
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError(
+                                $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
+                            );
+                        }
+                    }
+                    UnityEditor.AssetDatabase.Refresh();
+                    Debug.Log("AssetDatabase refreshed to import new models.");
 
-                //     if (sceneBuilder != null)
-                //     {
-                //         sceneBuilder.ModifySceneFromJSON(msg.Scene);
-                //     }
-                //     else
-                //     {
-                //         Debug.LogError("SceneBuilder not found in scene.");
-                //     }
-                //     break;
+                    if (sceneBuilder != null)
+                    {
+                        sceneBuilder.ModifySceneFromJSON(msg.ModifiedScene);
+                    }
+                    else
+                    {
+                        Debug.LogError("SceneBuilder not found in scene.");
+                    }
+                    break;
                 case IncomingErrorMessage msg:
                     Debug.LogError($"Error message received: {msg.Status} {msg.ErrorText}");
                     terminal.AddMessageToChat(

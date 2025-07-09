@@ -27,9 +27,6 @@ namespace Scener.Sdk
 
         [EnumMember(Value = "gesture")]
         Gesture,
-
-        [EnumMember(Value = "request_context")]
-        RequestContext,
     }
 
     public enum IncomingMessageType
@@ -48,9 +45,6 @@ namespace Scener.Sdk
 
         [EnumMember(Value = "convert_speech")]
         ConvertSpeech,
-
-        [EnumMember(Value = "request_context")]
-        RequestContext,
     }
 
     public interface IOutgoingMessage
@@ -100,19 +94,6 @@ namespace Scener.Sdk
             {
                 Type = OutgoingMessageType.Gesture.ToEnumString(),
                 Text = this.GestureData,
-                Status = 200,
-            };
-        }
-    }
-
-    public record OutgoingRequestContextMessage(string json_scene) : IOutgoingMessage
-    {
-        public Content ToProto()
-        {
-            return new Content
-            {
-                Type = OutgoingMessageType.RequestContext.ToEnumString(),
-                Metadata = json_scene,
                 Status = 200,
             };
         }
@@ -175,7 +156,6 @@ namespace Scener.Sdk
                         .ToList()
                 ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
-                "request_context" => new IncomingRequestContextMessage(),
                 "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Text),
                 _ => new IncomingUnknownMessage(protoContent.Type),
             };
@@ -200,11 +180,9 @@ namespace Scener.Sdk
 
     public record IncomingModify3DSceneMessage(
         string ResponseText,
-        string Scene,
+        string ModifiedScene,
         List<AppMediaAsset> Data
     ) : IIncomingMessage;
-
-    public record IncomingRequestContextMessage() : IIncomingMessage;
 
     public record IncomingConvertSpeechMessage(string ResponseText) : IIncomingMessage;
 
