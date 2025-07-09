@@ -162,10 +162,10 @@ namespace Scener.Importer
 
         private void ClearScene(string scene_name)
         {
-            GameObject existingRoot = GameObject.Find(scene_name);
+            var existingRoot = FindAnyObjectByType<SceneMarker>();
             if (existingRoot != null)
             {
-                Destroy(existingRoot);
+                Destroy(existingRoot.gameObject);
             }
             _generatedContentRoot = new GameObject(scene_name).transform;
             var marker = _generatedContentRoot.AddComponent<SceneMarker>();

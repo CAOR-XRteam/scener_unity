@@ -37,7 +37,7 @@ namespace Ui.Terminal
                 bool success = await gltf.Load(modelAsset.Data);
                 if (success)
                 {
-                    GameObject currentModel = new($"{modelAsset.Id}");
+                    currentModel = new($"{modelAsset.Id}");
                     success = await gltf.InstantiateMainSceneAsync(currentModel.transform);
 
                     if (success)
