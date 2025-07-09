@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Scener.Exporter;
 using Scener.Importer;
+using Scener.ModelInstantiator;
 using Scener.Sdk;
 using Ui.Terminal;
 using Unity.Burst.Intrinsics;
@@ -55,8 +56,7 @@ namespace Scener.Ws
                 case IncomingGenerate3DObjectMessage msg:
                     Debug.Log($"Received generate 3D object message: {msg.ResponseText}");
                     terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
-                    ModelInstantiator modelInstantiator =
-                        FindFirstObjectByType<ModelInstantiator>();
+                    ObjectBuilder modelInstantiator = FindFirstObjectByType<ObjectBuilder>();
                     if (modelInstantiator != null)
                     {
                         modelInstantiator.LoadAndPlaceModel(msg.Data[0]);
