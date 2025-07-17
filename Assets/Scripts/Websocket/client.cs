@@ -11,6 +11,7 @@ namespace Scener.Ws
         //Parameters
         public static WsClient instance { get; private set; } // Singleton instance
         private WebSocket ws;
+        public string clientId { get; set; }
 
         // Automatic functions
         void Awake()

@@ -31,6 +31,9 @@ namespace Scener.Sdk
 
     public enum IncomingMessageType
     {
+        [EnumMember(Value = "session_start")]
+        SessionStart,
+
         [EnumMember(Value = "unrelated_response")]
         UnrelatedResponse,
 
@@ -112,6 +115,7 @@ namespace Scener.Sdk
 
             return protoContent.Type switch
             {
+                "session_start" => new IncomingSessionStartMessage(protoContent.Text),
                 "unrelated_response" => new IncomingUnrelatedResponseMessage(protoContent.Text),
                 "generate_image" => new IncomingGenerateImageMessage(
                     protoContent.Text,
@@ -163,6 +167,8 @@ namespace Scener.Sdk
     }
 
     public record AppMediaAsset(string Id, string Filename, byte[] Data);
+
+    public record IncomingSessionStartMessage(string Text) : IIncomingMessage;
 
     public record IncomingUnrelatedResponseMessage(string ResponseText) : IIncomingMessage;
 

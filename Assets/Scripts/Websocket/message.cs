@@ -30,6 +30,11 @@ namespace Scener.Ws
 
             switch (message)
             {
+                case IncomingSessionStartMessage msg:
+                    Debug.Log($"Received session start message: {msg.Text}");
+                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
+                    WsClient.instance.clientId = msg.Text;
+                    break;
                 case IncomingUnrelatedResponseMessage msg:
                     Debug.Log($"Received unrelated response: {msg}");
                     terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
