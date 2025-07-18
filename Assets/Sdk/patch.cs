@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using Scener.Sdk;
 
-namespace Scene.Sdk
+namespace Scener.Sdk
 {
     public class SceneUpdate
     {

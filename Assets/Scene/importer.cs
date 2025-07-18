@@ -15,85 +15,304 @@ namespace Scener.Importer
         {
             try
             {
-                JsonSerializerSettings settings = new()
-                {
-                    TypeNameHandling = TypeNameHandling.Auto,
-                    NullValueHandling = NullValueHandling.Ignore,
-                };
+                Debug.Log($"Received JSON for scene modification:\n{json}");
+                SceneUpdate patch = JsonConvert.DeserializeObject<SceneUpdate>(json);
 
-                Scene patch =
-                    JsonConvert.DeserializeObject<Scene>(json, settings)
-                    ?? throw new System.Exception("Deserialization resulted in a null object.");
+                if (patch == null)
+                {
+                    throw new System.Exception(
+                        "Deserialization of the scene patch resulted in a null object."
+                    );
+                }
 
                 if (_generatedContentRoot == null)
                 {
-                    var marker = FindAnyObjectByType<SceneMarker>();
+                    var marker = FindFirstObjectByType<SceneMarker>();
                     if (marker != null)
                     {
                         _generatedContentRoot = marker.transform;
                     }
                     else
                     {
-                        Debug.LogError("Cannot modify scene: scene root not found.");
-                        return;
+                        Debug.LogWarning(
+                            "SceneMarker root not found. Creating a default root named 'GeneratedSceneRoot'."
+                        );
+                        _generatedContentRoot = new GameObject("GeneratedSceneRoot").transform;
                     }
                 }
-                if (patch.skybox != null)
+
+                if (patch.Skybox != null)
                 {
-                    Debug.Log("Applying skybox update.");
-                    BuildSkybox(patch.skybox);
+                    BuildSkybox(patch.Skybox);
                 }
 
-                if (patch.graph != null)
-                {
-                    foreach (SceneObject op in patch.graph)
-                    {
-                        Transform parentTransform = _generatedContentRoot;
-                        if (!string.IsNullOrEmpty(op.parent_id))
-                        {
-                            GameObject parentObject = FindObjectInScene(op.parent_id);
-                            if (parentObject != null)
-                            {
-                                parentTransform = parentObject.transform;
-                            }
-                            else
-                            {
-                                Debug.LogWarning(
-                                    $"Could not find specified parent '{op.parent_id}' for object '{op.id}'. Attaching to scene root instead."
-                                );
-                            }
-                        }
+                ProcessDeletions(patch.ObjectsToDelete);
+                ProcessUpdates(patch.ObjectsToUpdate);
+                ProcessRegenerations(patch.ObjectsToRegenerate);
+                ProcessAdditions(patch.ObjectsToAdd);
 
-                        GameObject targetObject = FindObjectInScene(op.id);
-
-                        if (targetObject != null)
-                        {
-                            Debug.Log($"Updating existing object: {op.id}");
-                            if (targetObject.transform.parent != parentTransform)
-                            {
-                                Debug.Log(
-                                    $"Changing parent of '{op.id}' to '{parentTransform.name}'."
-                                );
-                                targetObject.transform.SetParent(
-                                    parentTransform,
-                                    worldPositionStays: true
-                                );
-                            }
-                            UpdateGameObject(targetObject, op);
-                        }
-                        else
-                        {
-                            Debug.Log($"Adding new object: {op.id}");
-                            CreateGameObject(op, parentTransform);
-                        }
-                    }
-                    Debug.Log("Scene graph built successfully!");
-                }
+                Debug.Log("Scene patch applied successfully!");
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"Error updating scene from JSON: {e.Message}\n{e.StackTrace}");
+                Debug.LogError(
+                    $"Error applying scene patch from JSON: {e.Message}\n{e.StackTrace}"
+                );
             }
+        }
+
+        private void ProcessDeletions(List<string> objectIdsToDelete)
+        {
+            if (objectIdsToDelete == null || !objectIdsToDelete.Any())
+                return;
+
+            Debug.Log($"Processing {objectIdsToDelete.Count} deletions.");
+            foreach (string objectId in objectIdsToDelete)
+            {
+                GameObject objectToDelete = FindObjectInScene(objectId);
+                if (objectToDelete != null)
+                {
+                    Debug.Log($"Deleting object: {objectId}");
+                    Destroy(objectToDelete);
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"Could not find object '{objectId}' to delete. It may have already been removed."
+                    );
+                }
+            }
+        }
+
+        private void ProcessUpdates(List<SceneObjectUpdate> updates)
+        {
+            if (updates == null || !updates.Any())
+                return;
+
+            Debug.Log($"Processing {updates.Count} updates.");
+            foreach (var updateData in updates)
+            {
+                GameObject targetObject = FindObjectInScene(updateData.Id);
+                if (targetObject != null)
+                {
+                    ApplyUpdateToGameObject(targetObject, updateData);
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"Could not find object '{updateData.Id}' to update. It may have been deleted."
+                    );
+                }
+            }
+        }
+
+        private void ProcessRegenerations(List<RegenerationInfo> regenerations)
+        {
+            if (regenerations == null || !regenerations.Any())
+                return;
+
+            Debug.Log($"Processing {regenerations.Count} regenerations.");
+            foreach (var regenInfo in regenerations)
+            {
+                Debug.Log(
+                    $"Object '{regenInfo.Id}' is marked for regeneration with prompt: '{regenInfo.Prompt}'"
+                );
+                HandleRegeneration(regenInfo);
+            }
+        }
+
+        private void ProcessAdditions(List<SceneObject> objectsToAdd)
+        {
+            if (objectsToAdd == null || !objectsToAdd.Any())
+                return;
+
+            Debug.Log($"Processing {objectsToAdd.Count} additions.");
+            foreach (SceneObject newObjectData in objectsToAdd)
+            {
+                if (FindObjectInScene(newObjectData.id) != null)
+                {
+                    Debug.LogWarning(
+                        $"Object with id '{newObjectData.id}' already exists. Skipping addition."
+                    );
+                    continue;
+                }
+
+                Transform parentTransform = FindParentTransform(newObjectData.parent_id);
+                CreateGameObject(newObjectData, parentTransform);
+            }
+        }
+
+        private void ApplyUpdateToGameObject(GameObject target, SceneObjectUpdate updateData)
+        {
+            // Reparenting Logic
+            if (!string.IsNullOrEmpty(updateData.ParentId))
+            {
+                Transform newParentTransform = FindParentTransform(updateData.ParentId);
+                if (target.transform.parent != newParentTransform)
+                {
+                    Debug.Log(
+                        $"Changing parent of '{updateData.Id}' from '{target.transform.parent.name}' to '{newParentTransform.name}'."
+                    );
+                    target.transform.SetParent(newParentTransform, worldPositionStays: false);
+                }
+            }
+
+            if (updateData.Position != null)
+                target.transform.localPosition = updateData.Position.ToUnityVector3();
+            if (updateData.Rotation != null)
+                target.transform.localRotation = Quaternion.Euler(
+                    updateData.Rotation.ToUnityVector3()
+                );
+            if (updateData.Scale != null)
+                target.transform.localScale = updateData.Scale.ToUnityVector3();
+
+            if (updateData.ComponentsToUpdate != null && updateData.ComponentsToUpdate.Any())
+            {
+                ApplyComponentUpdates(target, updateData.ComponentsToUpdate);
+            }
+        }
+
+        private void ApplyComponentUpdates(
+            GameObject target,
+            List<ComponentUpdate> componentUpdates
+        )
+        {
+            foreach (var update in componentUpdates)
+            {
+                switch (update.component_type)
+                {
+                    case SceneObjectType.Primitive:
+                        ApplyPrimitiveUpdate(target, update as PrimitiveObjectUpdate);
+                        break;
+                    case SceneObjectType.Light:
+                        ApplyLightUpdate(target, update as BaseLightUpdate);
+                        break;
+                }
+            }
+        }
+
+        private void ApplyPrimitiveUpdate(GameObject target, PrimitiveObjectUpdate updateData)
+        {
+            if (updateData == null)
+                return;
+
+            var renderer = target.GetComponentInChildren<MeshRenderer>();
+            if (renderer == null)
+            {
+                Debug.LogWarning(
+                    $"No MeshRenderer found on {target.name} or children to apply primitive update."
+                );
+                return;
+            }
+
+            if (updateData.color != null)
+            {
+                renderer.material.color = updateData.color.ToUnityColor();
+            }
+
+            if (updateData.shape.HasValue)
+            {
+                Debug.Log($"Changing shape of {target.name} to {updateData.shape.Value}.");
+
+                if (renderer.gameObject != target)
+                    Destroy(renderer.gameObject);
+
+                var primitive = GameObject.CreatePrimitive(
+                    updateData.shape.Value.ToUnityPrimitiveShape()
+                );
+                primitive.transform.SetParent(target.transform, false);
+                primitive.transform.SetLocalPositionAndRotation(
+                    UnityEngine.Vector3.zero,
+                    Quaternion.identity
+                );
+                primitive.transform.localScale = UnityEngine.Vector3.one;
+
+                var newRenderer = primitive.GetComponent<MeshRenderer>();
+                if (updateData.color != null)
+                {
+                    newRenderer.material.color = updateData.color.ToUnityColor();
+                }
+            }
+        }
+
+        private void ApplyLightUpdate(GameObject target, BaseLightUpdate updateData)
+        {
+            if (updateData == null)
+                return;
+
+            if (!target.TryGetComponent<Light>(out var light))
+            {
+                light = target.AddComponent<Light>();
+            }
+
+            if (updateData.intensity.HasValue)
+                light.intensity = updateData.intensity.Value;
+            if (updateData.indirect_multiplier.HasValue)
+                light.bounceIntensity = updateData.indirect_multiplier.Value;
+            if (updateData.color != null)
+                light.color = updateData.color.ToUnityColor();
+
+            switch (updateData)
+            {
+                case SpotLightUpdate spot:
+                    light.type = UnityEngine.LightType.Spot;
+                    if (spot.range.HasValue)
+                        light.range = spot.range.Value;
+                    if (spot.spot_angle.HasValue)
+                        light.spotAngle = spot.spot_angle.Value;
+                    break;
+
+                case PointLightUpdate point:
+                    light.type = UnityEngine.LightType.Point;
+                    if (point.range.HasValue)
+                        light.range = point.range.Value;
+                    break;
+
+                case DirectionalLightUpdate _:
+                    light.type = UnityEngine.LightType.Directional;
+                    break;
+
+                case AreaLightUpdate area:
+                    light.type = UnityEngine.LightType.Rectangle; // Or Disc based on shape
+                    if (area.width.HasValue && area.height.HasValue)
+                        light.areaSize = new Vector2(area.width.Value, area.height.Value);
+                    break;
+            }
+        }
+
+        private void HandleRegeneration(RegenerationInfo regenInfo)
+        {
+            GameObject target = FindObjectInScene(regenInfo.Id);
+            if (target == null)
+            {
+                Debug.LogWarning($"Could not find object '{regenInfo.Id}' to regenerate.");
+                return;
+            }
+
+            // Application-specific logic goes here. For example:
+            // 1. Clear out the old model (e.g., destroy all children of `target`).
+            // 2. Show a "loading" indicator.
+            // 3. Make an API call with `regenInfo.id` and `regenInfo.prompt`.
+            // 4. On success, load the new model and parent it to `target`.
+            Debug.Log(
+                $"Triggering regeneration for {regenInfo.Id} with prompt: '{regenInfo.Prompt}'"
+            );
+        }
+
+        private Transform FindParentTransform(string parentId)
+        {
+            if (!string.IsNullOrEmpty(parentId))
+            {
+                GameObject parentObject = FindObjectInScene(parentId);
+                if (parentObject != null)
+                {
+                    return parentObject.transform;
+                }
+                Debug.LogWarning(
+                    $"Could not find specified parent '{parentId}'. Attaching to scene root instead."
+                );
+            }
+            return _generatedContentRoot;
         }
 
         private GameObject FindObjectInScene(string objectId)
