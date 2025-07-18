@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Scene.Sdk;
 using Scener.Sdk;
 using UnityEngine;
 
@@ -212,4 +213,80 @@ public static class EnumExtensions
 
         return attribute?.Value ?? enumValue.ToString();
     }
+}
+
+public class ComponentUpdateConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType) => objectType == typeof(ComponentUpdate);
+
+    public override bool CanWrite => false;
+
+    public override object ReadJson(
+        JsonReader reader,
+        Type objectType,
+        object existingValue,
+        JsonSerializer serializer
+    )
+    {
+        if (reader.TokenType == JsonToken.Null)
+            return null;
+
+        JObject item = JObject.Load(reader);
+        var componentTypeStr = item["component_type"]?.Value<string>();
+
+        if (!Enum.TryParse(componentTypeStr, true, out SceneObjectType componentType))
+        {
+            throw new JsonSerializationException($"Unsupported component_type: {componentTypeStr}");
+        }
+
+        return componentType switch
+        {
+            SceneObjectType.Primitive => item.ToObject<PrimitiveObjectUpdate>(serializer),
+            SceneObjectType.Light => item.ToObject<BaseLightUpdate>(serializer),
+            _ => throw new JsonSerializationException(
+                $"Unsupported component_type: {componentTypeStr}"
+            ),
+        };
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
+        throw new NotImplementedException();
+}
+
+public class LightUpdateConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType) => objectType == typeof(BaseLightUpdate);
+
+    public override bool CanWrite => false;
+
+    public override object ReadJson(
+        JsonReader reader,
+        Type objectType,
+        object existingValue,
+        JsonSerializer serializer
+    )
+    {
+        if (reader.TokenType == JsonToken.Null)
+            return null;
+
+        JObject item = JObject.Load(reader);
+        var lightTypeStr = item["type"]?.Value<string>();
+
+        if (!Enum.TryParse(lightTypeStr, true, out Scener.Sdk.LightType lightType))
+        {
+            throw new JsonSerializationException($"Unsupported light type: {lightTypeStr}");
+        }
+
+        return lightType switch
+        {
+            Scener.Sdk.LightType.Spot => item.ToObject<SpotLightUpdate>(serializer),
+            Scener.Sdk.LightType.Directional => item.ToObject<DirectionalLightUpdate>(serializer),
+            Scener.Sdk.LightType.Point => item.ToObject<PointLightUpdate>(serializer),
+            Scener.Sdk.LightType.Area => item.ToObject<AreaLightUpdate>(serializer),
+            _ => throw new JsonSerializationException($"Unsupported light type: {lightTypeStr}"),
+        };
+    }
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
+        throw new NotImplementedException();
 }
