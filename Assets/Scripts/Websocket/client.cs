@@ -73,8 +73,9 @@ namespace Scener.Ws
             {
                 Debug.LogWarning("WsMessage not found in scene.");
             }
-
-            ws = new WebSocket("ws://localhost:8765");
+            // Initialize WebSocket connection
+            Debug.Log("Initializing WebSocket connection...");
+            ws = new WebSocket("ws://localhost:8766");
             ws.OnOpen += () => Debug.Log("Connection opened!");
             ws.OnError += e => Debug.Log("Error: " + e);
             ws.OnClose += e => Debug.Log("Connection closed!");

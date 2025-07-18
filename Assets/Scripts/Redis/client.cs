@@ -5,9 +5,9 @@ using UnityEngine;
 
 namespace Scener.Redis
 {
-    public class RedisAPI : MonoBehaviour
+    public class RedisClient : MonoBehaviour
     {
-        public static RedisAPI Instance { get; private set; }
+        public static RedisClient instance { get; private set; }
 
         private readonly string host = "127.0.0.1";
         private readonly int port = 6379;
@@ -19,12 +19,12 @@ namespace Scener.Redis
 
         private void Awake()
         {
-            if (Instance != null && Instance != this)
+            if (instance != null && instance != this)
             {
                 Destroy(gameObject);
                 return;
             }
-            Instance = this;
+            instance = this;
             DontDestroyOnLoad(gameObject);
         }
 

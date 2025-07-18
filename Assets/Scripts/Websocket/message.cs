@@ -1,8 +1,10 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Scener.Exporter;
 using Scener.Importer;
 using Scener.ModelInstantiator;
+using Scener.Redis;
 using Scener.Sdk;
 using Ui.Terminal;
 using UnityEngine;
@@ -27,12 +29,12 @@ namespace Scener.Ws
 
             string resourcesPath = Path.Combine(Application.dataPath, "Resources");
             SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
+            SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
 
             switch (message)
             {
                 case IncomingSessionStartMessage msg:
                     Debug.Log($"Received session start message: {msg.Text}");
-                    terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.Text);
                     WsClient.instance.clientId = msg.Text;
                     break;
                 case IncomingUnrelatedResponseMessage msg:
@@ -101,6 +103,27 @@ namespace Scener.Ws
                     {
                         Debug.LogError("SceneBuilder not found in scene.");
                     }
+                    if (sceneSerializer != null)
+                    {
+                        string scene_json = sceneSerializer.SerializeScene();
+                        if (
+                            await RedisClient.instance.WriteSceneAsync(
+                                WsClient.instance.clientId,
+                                scene_json
+                            )
+                        )
+                        {
+                            Debug.Log("Scene data written to Redis successfully.");
+                        }
+                        else
+                        {
+                            Debug.LogError("Failed to write scene data to Redis.");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("SceneSerializer not found in scene.");
+                    }
                     break;
                 case IncomingModify3DSceneMessage msg:
                     Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
@@ -133,6 +156,18 @@ namespace Scener.Ws
                     else
                     {
                         Debug.LogError("SceneBuilder not found in scene.");
+                    }
+                    if (sceneSerializer != null)
+                    {
+                        string scene_json = sceneSerializer.SerializeScene();
+                        await RedisClient.instance.WriteSceneAsync(
+                            WsClient.instance.clientId,
+                            scene_json
+                        );
+                    }
+                    else
+                    {
+                        Debug.LogError("SceneSerializer not found in scene.");
                     }
                     break;
                 case IncomingErrorMessage msg:
