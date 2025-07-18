@@ -307,7 +307,9 @@ namespace Scener.Importer
 
             Transform result = _generatedContentRoot
                 .GetComponentsInChildren<Transform>(true)
-                .FirstOrDefault(t => t.gameObject.name == objectId);
+                .FirstOrDefault(t =>
+                    t.gameObject.GetComponent<SceneObjectMetadata>().id == objectId
+                );
 
             return result != null ? result.gameObject : null;
         }
@@ -357,7 +359,8 @@ namespace Scener.Importer
 
         private void CreateGameObject(SceneObject node, Transform parent)
         {
-            GameObject newObj = new(node.id);
+            GameObject newObj = new(node.name);
+            newObj.AddComponent<SceneObjectMetadata>().id = node.id;
             newObj.transform.SetParent(parent, worldPositionStays: false);
 
             // newObj.transform.SetLocalPositionAndRotation(

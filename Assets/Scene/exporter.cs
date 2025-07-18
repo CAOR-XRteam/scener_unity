@@ -66,7 +66,8 @@ namespace Scener.Exporter
         {
             SceneObject node = new()
             {
-                id = obj.name,
+                name = obj.name,
+                id = obj.GetComponent<SceneObjectMetadata>().id,
                 parent_id = obj.transform.parent.name,
                 position = obj.transform.localPosition.ToVector3(),
                 rotation = obj.transform.localEulerAngles.ToVector3(),
@@ -109,7 +110,9 @@ namespace Scener.Exporter
                 && !ObjectConverter.IsPrimitive(obj, out _)
             )
             {
-                components.Add(new DynamicObject { id = obj.name });
+                components.Add(
+                    new DynamicObject { id = obj.GetComponent<SceneObjectMetadata>().id }
+                );
             }
 
             return components;

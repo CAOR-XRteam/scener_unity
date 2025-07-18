@@ -7,6 +7,11 @@ using UnityEngine;
 
 namespace Scener.Sdk
 {
+    public class SceneObjectMetadata : MonoBehaviour
+    {
+        public string id;
+    }
+
     public class SceneMarker : MonoBehaviour
     {
         public string sceneName;
@@ -166,6 +171,7 @@ namespace Scener.Sdk
 
     public class SceneObject
     {
+        public string name;
         public string id;
         public string parent_id;
 
