@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using Newtonsoft.Json;
 using Scener.Sdk;
@@ -16,15 +17,11 @@ namespace Scener.Importer
             try
             {
                 Debug.Log($"Received JSON for scene modification:\n{json}");
-                SceneUpdate patch = JsonConvert.DeserializeObject<SceneUpdate>(json);
-
-                if (patch == null)
-                {
-                    throw new System.Exception(
+                SceneUpdate patch =
+                    JsonConvert.DeserializeObject<SceneUpdate>(json)
+                    ?? throw new System.Exception(
                         "Deserialization of the scene patch resulted in a null object."
                     );
-                }
-
                 if (_generatedContentRoot == null)
                 {
                     var marker = FindFirstObjectByType<SceneMarker>();
@@ -34,10 +31,8 @@ namespace Scener.Importer
                     }
                     else
                     {
-                        Debug.LogWarning(
-                            "SceneMarker root not found. Creating a default root named 'GeneratedSceneRoot'."
-                        );
-                        _generatedContentRoot = new GameObject("GeneratedSceneRoot").transform;
+                        Debug.LogWarning("SceneMarker root not found. Nothing to update");
+                        return;
                     }
                 }
 
@@ -77,9 +72,7 @@ namespace Scener.Importer
                 }
                 else
                 {
-                    Debug.LogWarning(
-                        $"Could not find object '{objectId}' to delete. It may have already been removed."
-                    );
+                    Debug.LogWarning($"Could not find object '{objectId}' to delete.");
                 }
             }
         }
@@ -99,9 +92,7 @@ namespace Scener.Importer
                 }
                 else
                 {
-                    Debug.LogWarning(
-                        $"Could not find object '{updateData.Id}' to update. It may have been deleted."
-                    );
+                    Debug.LogWarning($"Could not find object '{updateData.Id}' to update.");
                 }
             }
         }
@@ -144,7 +135,6 @@ namespace Scener.Importer
 
         private void ApplyUpdateToGameObject(GameObject target, SceneObjectUpdate updateData)
         {
-            // Reparenting Logic
             if (!string.IsNullOrEmpty(updateData.ParentId))
             {
                 Transform newParentTransform = FindParentTransform(updateData.ParentId);
@@ -273,7 +263,7 @@ namespace Scener.Importer
                     break;
 
                 case AreaLightUpdate area:
-                    light.type = UnityEngine.LightType.Rectangle; // Or Disc based on shape
+                    light.type = UnityEngine.LightType.Rectangle;
                     if (area.width.HasValue && area.height.HasValue)
                         light.areaSize = new Vector2(area.width.Value, area.height.Value);
                     break;
@@ -288,12 +278,7 @@ namespace Scener.Importer
                 Debug.LogWarning($"Could not find object '{regenInfo.Id}' to regenerate.");
                 return;
             }
-
-            // Application-specific logic goes here. For example:
-            // 1. Clear out the old model (e.g., destroy all children of `target`).
-            // 2. Show a "loading" indicator.
-            // 3. Make an API call with `regenInfo.id` and `regenInfo.prompt`.
-            // 4. On success, load the new model and parent it to `target`.
+            BuildDynamic(target, new DynamicObject { id = regenInfo.Id });
             Debug.Log(
                 $"Triggering regeneration for {regenInfo.Id} with prompt: '{regenInfo.Prompt}'"
             );
@@ -324,30 +309,7 @@ namespace Scener.Importer
                 .GetComponentsInChildren<Transform>(true)
                 .FirstOrDefault(t => t.gameObject.name == objectId);
 
-            return result?.gameObject;
-        }
-
-        private void UpdateGameObject(GameObject target, SceneObject data)
-        {
-            target.transform.position = data.position.ToUnityVector3();
-            target.transform.localRotation = Quaternion.Euler(data.rotation.ToUnityVector3());
-
-            UnityEngine.Vector3 parentWorldScale = target.transform.parent.lossyScale;
-            UnityEngine.Vector3 requiredLocalScale = new(
-                data.scale.x / parentWorldScale.x,
-                data.scale.y / parentWorldScale.y,
-                data.scale.z / parentWorldScale.z
-            );
-            target.transform.localScale = requiredLocalScale;
-
-            foreach (var component in target.GetComponents<MeshFilter>())
-                Destroy(component);
-            foreach (var component in target.GetComponents<MeshRenderer>())
-                Destroy(component);
-            foreach (var component in target.GetComponents<Light>())
-                Destroy(component);
-
-            BuildComponents(target, data.components);
+            return result != null ? result.gameObject : null;
         }
 
         private Transform _generatedContentRoot;
