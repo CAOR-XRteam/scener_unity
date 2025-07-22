@@ -1,4 +1,6 @@
+using System.IO;
 using System.Threading.Tasks;
+using DotNetEnv;
 using Google.Protobuf;
 using NativeWebSocket;
 using Scener.Sdk;
@@ -73,9 +75,29 @@ namespace Scener.Ws
             {
                 Debug.LogWarning("WsMessage not found in scene.");
             }
+
+            string host;
+            string port;
+            string envFilePath = Path.Combine(Application.streamingAssetsPath, ".env");
+
+            if (File.Exists(envFilePath))
+            {
+                Env.Load(envFilePath);
+
+                host = Env.GetString("WEBSOCKET_HOST", "localhost");
+                port = Env.GetString("WEBSOCKET_PORT", "8765");
+            }
+            else
+            {
+                Debug.LogError(
+                    ".env file not found at: " + envFilePath + ". Using default values."
+                );
+                return;
+            }
+
             // Initialize WebSocket connection
             Debug.Log("Initializing WebSocket connection...");
-            ws = new WebSocket("ws://localhost:8766");
+            ws = new WebSocket("ws://10.201.20.122:8767");
             ws.OnOpen += () => Debug.Log("Connection opened!");
             ws.OnError += e => Debug.Log("Error: " + e);
             ws.OnClose += e => Debug.Log("Connection closed!");

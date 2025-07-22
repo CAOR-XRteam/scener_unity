@@ -9,7 +9,7 @@ namespace Scener.Redis
     {
         public static RedisClient instance { get; private set; }
 
-        private readonly string host = "127.0.0.1";
+        private readonly string host = "10.201.20.122";
         private readonly int port = 6379;
 
         private ConnectionMultiplexer _redisConnection;

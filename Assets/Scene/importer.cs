@@ -305,13 +305,13 @@ namespace Scener.Importer
             if (_generatedContentRoot == null)
                 return null;
 
-            Transform result = _generatedContentRoot
-                .GetComponentsInChildren<Transform>(true)
-                .FirstOrDefault(t =>
-                    t.gameObject.GetComponent<SceneObjectMetadata>().id == objectId
-                );
+            SceneObjectMetadata metadata = _generatedContentRoot
+                .GetComponentsInChildren<SceneObjectMetadata>(true)
+                .FirstOrDefault(m => m.id == objectId);
 
-            return result != null ? result.gameObject : null;
+            Debug.Log($"Metadata found: {metadata}");
+
+            return metadata != null ? metadata.gameObject : null;
         }
 
         private Transform _generatedContentRoot;
