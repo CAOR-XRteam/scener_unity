@@ -52,6 +52,9 @@ namespace Scener.Sdk
         [JsonProperty("id")]
         public string Id { get; set; }
 
+        [JsonProperty("new_id")]
+        public string NewId { get; set; }
+
         [JsonProperty("prompt")]
         public string Prompt { get; set; }
     }

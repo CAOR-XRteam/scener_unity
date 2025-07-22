@@ -278,9 +278,15 @@ namespace Scener.Importer
                 Debug.LogWarning($"Could not find object '{regenInfo.Id}' to regenerate.");
                 return;
             }
-            BuildDynamic(target, new DynamicObject { id = regenInfo.Id });
+
+            SceneObjectMetadata metadata = _generatedContentRoot
+                .GetComponentsInChildren<SceneObjectMetadata>(true)
+                .FirstOrDefault(m => m.id == regenInfo.Id);
+            metadata.id = regenInfo.NewId;
+
+            BuildDynamic(target, new DynamicObject { id = regenInfo.NewId });
             Debug.Log(
-                $"Triggering regeneration for {regenInfo.Id} with prompt: '{regenInfo.Prompt}'"
+                $"Triggering regeneration for {regenInfo.NewId} with prompt: '{regenInfo.Prompt}'"
             );
         }
 
@@ -456,13 +462,27 @@ namespace Scener.Importer
                 MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
                 MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
 
-                target.AddComponent<MeshFilter>().sharedMesh = sourceMeshFilter.sharedMesh;
-                target.AddComponent<MeshRenderer>().sharedMaterials =
-                    sourceMeshRenderer.sharedMaterials;
-            }
-            else
-            {
-                Debug.LogWarning($"Could not find model asset '{data.id}' in Resources folder.");
+                if (sourceMeshFilter != null && sourceMeshRenderer != null)
+                {
+                    if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
+                    {
+                        targetMeshFilter = target.AddComponent<MeshFilter>();
+                    }
+                    targetMeshFilter.sharedMesh = sourceMeshFilter.sharedMesh;
+
+                    if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
+                    {
+                        targetMeshRenderer = target.AddComponent<MeshRenderer>();
+                    }
+
+                    targetMeshRenderer.sharedMaterials = sourceMeshRenderer.sharedMaterials;
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"Could not find model asset '{data.id}' in Resources folder."
+                    );
+                }
             }
         }
 
