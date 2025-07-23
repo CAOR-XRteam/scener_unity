@@ -68,7 +68,7 @@ namespace Scener.Exporter
             {
                 name = obj.name,
                 id = obj.GetComponent<SceneObjectMetadata>().id,
-                parent_id = obj.transform.parent.name,
+                parent_id = obj.transform.parent.GetComponent<SceneObjectMetadata>().id,
                 position = obj.transform.localPosition.ToVector3(),
                 rotation = obj.transform.localEulerAngles.ToVector3(),
                 scale = obj.transform.localScale.ToVector3(),
