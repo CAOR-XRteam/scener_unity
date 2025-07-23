@@ -1,5 +1,7 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
+using DotNetEnv;
 using StackExchange.Redis;
 using UnityEngine;
 
@@ -9,8 +11,8 @@ namespace Scener.Redis
     {
         public static RedisClient instance { get; private set; }
 
-        private readonly string host = "10.201.20.122";
-        private readonly int port = 6379;
+        private string host;
+        private int port;
 
         private ConnectionMultiplexer _redisConnection;
         private IDatabase _redisDatabase;
@@ -48,6 +50,16 @@ namespace Scener.Redis
 
             try
             {
+                string envFilePath = Path.Combine(Application.streamingAssetsPath, ".env");
+
+                if (File.Exists(envFilePath))
+                {
+                    Env.Load(envFilePath);
+
+                    host = Env.GetString("REDIS_HOST", "localhost");
+                    port = Env.GetInt("REDIS_PORT", 6379);
+                }
+
                 Debug.Log($"Attempting to connect to Redis at {host}:{port}...");
                 _redisConnection = await ConnectionMultiplexer.ConnectAsync($"{host}:{port}");
                 _redisDatabase = _redisConnection.GetDatabase();

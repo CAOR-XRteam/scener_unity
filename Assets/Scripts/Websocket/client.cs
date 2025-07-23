@@ -97,7 +97,7 @@ namespace Scener.Ws
 
             // Initialize WebSocket connection
             Debug.Log("Initializing WebSocket connection...");
-            ws = new WebSocket("ws://10.201.20.122:8767");
+            ws = new WebSocket($"ws://{host}:{port}");
             ws.OnOpen += () => Debug.Log("Connection opened!");
             ws.OnError += e => Debug.Log("Error: " + e);
             ws.OnClose += e => Debug.Log("Connection closed!");
