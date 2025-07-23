@@ -186,7 +186,9 @@ namespace Scener.Importer
             if (updateData == null)
                 return;
 
-            var renderer = target.GetComponentInChildren<MeshRenderer>();
+            var renderer = target.GetComponent<MeshRenderer>();
+            var meshFilter = target.GetComponent<MeshFilter>();
+
             if (renderer == null)
             {
                 Debug.LogWarning(
@@ -204,24 +206,18 @@ namespace Scener.Importer
             {
                 Debug.Log($"Changing shape of {target.name} to {updateData.shape.Value}.");
 
-                if (renderer.gameObject != target)
-                    Destroy(renderer.gameObject);
+                if (meshFilter.sharedMesh != null)
+                {
+                    Destroy(meshFilter.sharedMesh);
+                }
 
-                var primitive = GameObject.CreatePrimitive(
+                GameObject tempPrimitive = GameObject.CreatePrimitive(
                     updateData.shape.Value.ToUnityPrimitiveShape()
                 );
-                primitive.transform.SetParent(target.transform, false);
-                primitive.transform.SetLocalPositionAndRotation(
-                    UnityEngine.Vector3.zero,
-                    Quaternion.identity
-                );
-                primitive.transform.localScale = UnityEngine.Vector3.one;
+                Mesh newSourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
+                meshFilter.sharedMesh = Instantiate(newSourceMesh);
 
-                var newRenderer = primitive.GetComponent<MeshRenderer>();
-                if (updateData.color != null)
-                {
-                    newRenderer.material.color = updateData.color.ToUnityColor();
-                }
+                DestroyImmediate(tempPrimitive);
             }
         }
 
@@ -429,18 +425,41 @@ namespace Scener.Importer
             GameObject tempPrimitive = GameObject.CreatePrimitive(
                 data.shape.ToUnityPrimitiveShape()
             );
-            target.AddComponent<MeshFilter>().sharedMesh = tempPrimitive
-                .GetComponent<MeshFilter>()
-                .sharedMesh;
-            _ = target.AddComponent<MeshRenderer>();
+
+            if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
+            {
+                targetMeshFilter = target.AddComponent<MeshFilter>();
+            }
+            if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
+            {
+                targetMeshRenderer = target.AddComponent<MeshRenderer>();
+            }
+
+            Mesh sourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
+            targetMeshFilter.sharedMesh = Instantiate(sourceMesh);
+            if (data.color != null)
+            {
+                targetMeshRenderer.material.color = data.color.ToUnityColor();
+            }
 
             DestroyImmediate(tempPrimitive);
-
-            MeshRenderer renderer = target.GetComponent<MeshRenderer>();
-
-            Material newMaterial = renderer.material;
-            newMaterial.color = data.color.ToUnityColor();
         }
+
+        // private void BuildPrimitive(GameObject target, PrimitiveObject data)
+        // {
+        //     GameObject primitiveInstance = GameObject.CreatePrimitive(
+        //         data.shape.ToUnityPrimitiveShape()
+        //     );
+
+        //     primitiveInstance.name = $"{target.name}_Mesh";
+        //     primitiveInstance.transform.SetParent(target.transform, false);
+
+        //     MeshRenderer renderer = primitiveInstance.GetComponent<MeshRenderer>();
+        //     if (renderer != null && data.color != null)
+        //     {
+        //         renderer.material.color = data.color.ToUnityColor();
+        //     }
+        // }
 
         private void BuildDynamic(GameObject target, DynamicObject data)
         {
