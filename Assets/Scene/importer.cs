@@ -189,10 +189,10 @@ namespace Scener.Importer
             var renderer = target.GetComponent<MeshRenderer>();
             var meshFilter = target.GetComponent<MeshFilter>();
 
-            if (renderer == null)
+            if (renderer == null || meshFilter == null)
             {
                 Debug.LogWarning(
-                    $"No MeshRenderer found on {target.name} or children to apply primitive update."
+                    $"No MeshRenderer and/or MeshFilter found on {target.name} to apply primitive update."
                 );
                 return;
             }
@@ -206,18 +206,15 @@ namespace Scener.Importer
             {
                 Debug.Log($"Changing shape of {target.name} to {updateData.shape.Value}.");
 
-                if (meshFilter.sharedMesh != null)
-                {
-                    Destroy(meshFilter.sharedMesh);
-                }
-
                 GameObject tempPrimitive = GameObject.CreatePrimitive(
                     updateData.shape.Value.ToUnityPrimitiveShape()
                 );
-                Mesh newSourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
-                meshFilter.sharedMesh = Instantiate(newSourceMesh);
 
-                DestroyImmediate(tempPrimitive);
+                Mesh newSourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
+
+                meshFilter.mesh = newSourceMesh;
+
+                Destroy(tempPrimitive);
             }
         }
 
@@ -442,7 +439,7 @@ namespace Scener.Importer
                 targetMeshRenderer.material.color = data.color.ToUnityColor();
             }
 
-            DestroyImmediate(tempPrimitive);
+            Destroy(tempPrimitive);
         }
 
         // private void BuildPrimitive(GameObject target, PrimitiveObject data)
