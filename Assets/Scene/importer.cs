@@ -373,6 +373,7 @@ namespace Scener.Importer
             //     node.position.ToUnityVector3(),
             //     Quaternion.Euler(node.rotation.ToUnityVector3())
             // );
+
             newObj.transform.position = node.position.ToUnityVector3();
             newObj.transform.localRotation = Quaternion.Euler(node.rotation.ToUnityVector3());
 
