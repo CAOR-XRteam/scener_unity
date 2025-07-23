@@ -197,24 +197,18 @@ namespace Scener.Importer
                 return;
             }
 
-            if (updateData.color != null)
-            {
-                renderer.material.color = updateData.color.ToUnityColor();
-            }
-
             if (updateData.shape.HasValue)
             {
                 Debug.Log($"Changing shape of {target.name} to {updateData.shape.Value}.");
 
-                GameObject tempPrimitive = GameObject.CreatePrimitive(
-                    updateData.shape.Value.ToUnityPrimitiveShape()
-                );
+                Mesh newPrimitiveMesh = updateData.shape.Value.ToUnityMesh();
 
-                Mesh newSourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
+                meshFilter.mesh = newPrimitiveMesh;
+            }
 
-                meshFilter.mesh = newSourceMesh;
-
-                Destroy(tempPrimitive);
+            if (updateData.color != null)
+            {
+                renderer.material.color = updateData.color.ToUnityColor();
             }
         }
 
@@ -417,46 +411,44 @@ namespace Scener.Importer
             }
         }
 
+        // private void BuildPrimitive(GameObject target, PrimitiveObject data)
+        // {
+        //     GameObject tempPrimitive = GameObject.CreatePrimitive(
+        //         data.shape.ToUnityPrimitiveShape()
+        //     );
+
+        //     if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
+        //     {
+        //         targetMeshFilter = target.AddComponent<MeshFilter>();
+        //     }
+        //     if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
+        //     {
+        //         targetMeshRenderer = target.AddComponent<MeshRenderer>();
+        //     }
+
+        //     Mesh sourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
+        //     targetMeshFilter.sharedMesh = Instantiate(sourceMesh);
+        //     if (data.color != null)
+        //     {
+        //         targetMeshRenderer.material.color = data.color.ToUnityColor();
+        //     }
+
+        //     Destroy(tempPrimitive);
+        // }
+
         private void BuildPrimitive(GameObject target, PrimitiveObject data)
         {
-            GameObject tempPrimitive = GameObject.CreatePrimitive(
-                data.shape.ToUnityPrimitiveShape()
-            );
+            var targetMeshFilter = target.AddComponent<MeshFilter>();
+            var targetMeshRenderer = target.AddComponent<MeshRenderer>();
 
-            if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
-            {
-                targetMeshFilter = target.AddComponent<MeshFilter>();
-            }
-            if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
-            {
-                targetMeshRenderer = target.AddComponent<MeshRenderer>();
-            }
+            Mesh primitiveMesh = data.shape.ToUnityMesh();
+            targetMeshFilter.mesh = primitiveMesh;
 
-            Mesh sourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
-            targetMeshFilter.sharedMesh = Instantiate(sourceMesh);
             if (data.color != null)
             {
                 targetMeshRenderer.material.color = data.color.ToUnityColor();
             }
-
-            Destroy(tempPrimitive);
         }
-
-        // private void BuildPrimitive(GameObject target, PrimitiveObject data)
-        // {
-        //     GameObject primitiveInstance = GameObject.CreatePrimitive(
-        //         data.shape.ToUnityPrimitiveShape()
-        //     );
-
-        //     primitiveInstance.name = $"{target.name}_Mesh";
-        //     primitiveInstance.transform.SetParent(target.transform, false);
-
-        //     MeshRenderer renderer = primitiveInstance.GetComponent<MeshRenderer>();
-        //     if (renderer != null && data.color != null)
-        //     {
-        //         renderer.material.color = data.color.ToUnityColor();
-        //     }
-        // }
 
         private void BuildDynamic(GameObject target, DynamicObject data)
         {

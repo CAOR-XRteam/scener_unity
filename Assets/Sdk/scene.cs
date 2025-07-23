@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace Scener.Sdk
@@ -147,6 +148,20 @@ namespace Scener.Sdk
                 ShapeType.Capsule => PrimitiveType.Capsule,
                 ShapeType.Plane => PrimitiveType.Plane,
                 ShapeType.Quad => PrimitiveType.Quad,
+                _ => throw new NotImplementedException(),
+            };
+        }
+
+        public static Mesh ToUnityMesh(this ShapeType shape)
+        {
+            return shape switch
+            {
+                ShapeType.Cube => Resources.GetBuiltinResource<Mesh>("Cube.fbx"),
+                ShapeType.Sphere => Resources.GetBuiltinResource<Mesh>("Sphere.fbx"),
+                ShapeType.Cylinder => Resources.GetBuiltinResource<Mesh>("Cylinder.fbx"),
+                ShapeType.Capsule => Resources.GetBuiltinResource<Mesh>("Capsule.fbx"),
+                ShapeType.Plane => Resources.GetBuiltinResource<Mesh>("Plane.fbx"),
+                ShapeType.Quad => Resources.GetBuiltinResource<Mesh>("Quad.fbx"),
                 _ => throw new NotImplementedException(),
             };
         }
