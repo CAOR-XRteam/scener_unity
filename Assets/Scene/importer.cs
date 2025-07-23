@@ -688,7 +688,7 @@ namespace Scener.Importer
             ModifySceneFromJSON(updateJson);
         }
 
-        // crushes the app lol
+        // TODO: primitive update crushes the app lol
         [ContextMenu("Test Update Primitive")]
         private void TestUpdatePrimitive()
         {
