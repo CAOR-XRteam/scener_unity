@@ -621,6 +621,288 @@ namespace Scener.Importer
             };
         }
 
+        [ContextMenu("Test Update1 Scene")]
+        private void TestUpdateSkybox()
+        {
+            string updateJson =
+                @"
+{
+  ""name"": ""A sunny room with a dog and a cat."",
+  ""skybox"": {
+    ""type"": ""sun"",
+    ""top_color"": { ""r"": 0.6, ""g"": 0.3, ""b"": 0.2, ""a"": 1.0 },
+    ""top_exponent"": 1.5,
+    ""horizon_color"": { ""r"": 0.9, ""g"": 0.5, ""b"": 0.2, ""a"": 1.0 },
+    ""bottom_color"": { ""r"": 0.1, ""g"": 0.1, ""b"": 0.2, ""a"": 1.0 },
+    ""bottom_exponent"": 1.0,
+    ""sky_intensity"": 1.2,
+    ""sun_color"": { ""r"": 1.0, ""g"": 0.6, ""b"": 0.3, ""a"": 1.0 },
+    ""sun_intensity"": 2.5,
+    ""sun_alpha"": 170.0,
+    ""sun_beta"": 15.0,
+    ""sun_vector"": { ""x"": 0.86, ""y"": 0.15, ""z"": 0.0, ""w"": 0 }
+  },
+  ""objects_to_add"": [],
+  ""objects_to_update"": [],
+  ""objects_to_delete"": [],
+  ""objects_to_regenerate"": []
+}
+";
+
+            ModifySceneFromJSON(updateJson);
+        }
+
+        [ContextMenu("Test Delete")]
+        private void TestDelete()
+        {
+            string updateJson =
+                @"
+{
+  ""name"": ""A sunny room with a dog and a cat."",
+  ""skybox"": null,
+  ""objects_to_add"": [],
+  ""objects_to_update"": [],
+  ""objects_to_delete"": [
+    ""c7bc8a4f-71fc-4ff6-87e9-eafc4093421d""
+  ],
+  ""objects_to_regenerate"": []
+}
+";
+
+            ModifySceneFromJSON(updateJson);
+        }
+
+        [ContextMenu("Test Update Primitive")]
+        private void TestUpdatePrimitive()
+        {
+            string updateJson =
+                @"
+{
+  ""name"": ""A sunny room with a dog and a cat."",
+  ""skybox"": null,
+  ""objects_to_add"": [],
+  ""objects_to_update"": [
+    {
+      ""id"": ""floor_plane"",
+      ""components_to_update"": [
+        {
+          ""component_type"": ""primitive"",
+          ""shape"": ""plane"",
+          ""color"": { ""r"": 0.2, ""g"": 0.3, ""b"": 0.9, ""a"": 1.0 }
+        }
+      ]
+    }
+  ],
+  ""objects_to_delete"": [],
+  ""objects_to_regenerate"": []
+}
+";
+
+            ModifySceneFromJSON(updateJson);
+        }
+
+        [ContextMenu("Test Update And Regenerate")]
+        private void TestUpdateAndRegenerate()
+        {
+            string updateJson =
+                @"
+{
+  ""name"": ""A sunny room with a dog and a cat."",
+  ""skybox"": null,
+  ""objects_to_add"": [],
+  ""objects_to_update"": [
+    {
+      ""id"": ""c7bc8a4f-71fc-4ff6-87e9-eafc4093421d"",
+      ""position"": { ""x"": 0, ""y"": 0.5, ""z"": 0 },
+      ""scale"": { ""x"": 1.2, ""y"": 1.2, ""z"": 1.2 }
+    }
+  ],
+  ""objects_to_delete"": [],
+  ""objects_to_regenerate"": [
+    {
+      ""id"": ""c7bc8a4f-71fc-4ff6-87e9-eafc4093421d"",
+      ""new_id"": ""f217e1bd-34bd-4eb4-8ef3-34fa3a5cb127"",
+      ""prompt"": ""a large bear""
+    }
+  ]
+}
+";
+
+            ModifySceneFromJSON(updateJson);
+        }
+
+        [ContextMenu("Test Update1 Scene")]
+        private void TestUpdate1Scene()
+        {
+            string updateJson =
+                @"
+{
+  ""name"": ""A sunny room with a dog and a cat."",
+  ""skybox"": null,
+  ""objects_to_add"": [
+    {
+      ""id"": ""green_sphere_01"",
+      ""name"": ""green sphere"",
+      ""parent_id"": ""24803b20-6880-4d98-92bf-fb53d4979f3b"",
+      ""position"": { ""x"": -2, ""y"": 0.1, ""z"": 2 },
+      ""rotation"": { ""x"": 0, ""y"": 0, ""z"": 0 },
+      ""scale"": { ""x"": 0.5, ""y"": 0.5, ""z"": 0.5 },
+      ""components"": [
+        {
+          ""component_type"": ""primitive"",
+          ""shape"": ""sphere"",
+          ""color"": { ""r"": 0.1, ""g"": 0.9, ""b"": 0.2, ""a"": 1.0 }
+        }
+      ],
+      ""children"": []
+    }
+  ],
+  ""objects_to_update"": [],
+  ""objects_to_delete"": [
+    ""affe9368-4562-4473-92a5-e4b14fab7441""
+  ],
+  ""objects_to_regenerate"": []
+}
+";
+
+            ModifySceneFromJSON(updateJson);
+        }
+
+        [ContextMenu("Test Update2 Scene")]
+        private void TestUpdate2Scene()
+        {
+            string updateJson =
+                @"
+                    {
+                    ""name"": ""A sunny room with a dog and a cat."",
+                    ""skybox"": null,
+                    ""objects_to_add"": [],
+                    ""objects_to_update"": [
+                        {
+                        ""id"": ""affe9368-4562-4473-92a5-e4b14fab7441"",
+                        ""position"": { ""x"": 0, ""y"": 0.5, ""z"": 0 },
+                        ""rotation"": { ""x"": -30, ""y"": 0, ""z"": 0 },
+                        ""scale"": { ""x"": 1.0, ""y"": 1.0, ""z"": 1.0 }
+                        }
+                    ],
+                    ""objects_to_delete"": [],
+                    ""objects_to_regenerate"": []
+                    }
+                    ";
+            ModifySceneFromJSON(updateJson);
+        }
+
+        [ContextMenu("Test Scene")]
+        private void TestScene()
+        {
+            string sceneJson =
+                @"
+                    {
+                    ""name"": ""A sunny room with a dog and a cat."",
+                    ""skybox"": {
+                        ""type"": ""sun"",
+                        ""top_color"": {""r"": 0.3, ""g"": 0.5, ""b"": 0.8, ""a"": 1},
+                        ""top_exponent"": 1.5,
+                        ""horizon_color"": {""r"": 0.7, ""g"": 0.6, ""b"": 0.5, ""a"": 1},
+                        ""bottom_color"": {""r"": 0.2, ""g"": 0.2, ""b"": 0.2, ""a"": 1},
+                        ""bottom_exponent"": 1.0,
+                        ""sun_color"": {""r"": 1.0, ""g"": 0.95, ""b"": 0.8, ""a"": 1},
+                        ""sky_intensity"": 1.0,
+                        ""sun_intensity"": 1.5,
+                        ""sun_alpha"": 60.0,
+                        ""sun_beta"": 45.0,
+                        ""sun_vector"": {""x"": 0.7071, ""y"": 0.7071, ""z"": 0.0, ""w"": 0}
+                    },
+                    ""graph"": [
+                        {
+                        ""id"": ""24803b20-6880-4d98-92bf-fb53d4979f3b"",
+                        ""name"": ""room_container"",
+                        ""parent_id"": null,
+                        ""position"": {""x"": 0, ""y"": 2.5, ""z"": 0},
+                        ""rotation"": {""x"": 0, ""y"": 0, ""z"": 0},
+                        ""scale"": {""x"": 10, ""y"": 5, ""z"": 10},
+                        ""components"": [
+                            {
+                            ""component_type"": ""primitive"",
+                            ""shape"": ""cube"",
+                            ""color"": {""r"": 0.8, ""g"": 0.8, ""b"": 0.8, ""a"": 1}
+                            }
+                        ],
+                        ""children"": [
+                            {
+                            ""id"": ""affe9368-4562-4473-92a5-e4b14fab7441"",
+                            ""name"": ""cat"",
+                            ""parent_id"": ""24803b20-6880-4d98-92bf-fb53d4979f3b"",
+                            ""position"": {""x"": -2, ""y"": 0.1, ""z"": 2},
+                            ""rotation"": {""x"": 0, ""y"": 0, ""z"": 0},
+                            ""scale"": {""x"": 0.5, ""y"": 0.5, ""z"": 0.5},
+                            ""components"": [
+                                {
+                                ""component_type"": ""dynamic"",
+                                ""id"": ""affe9368-4562-4473-92a5-e4b14fab7441""
+                                }
+                            ],
+                            ""children"": []
+                            },
+                            {
+                            ""id"": ""c7bc8a4f-71fc-4ff6-87e9-eafc4093421d"",
+                            ""name"": ""dog"",
+                            ""parent_id"": ""24803b20-6880-4d98-92bf-fb53d4979f3b"",
+                            ""position"": {""x"": 2, ""y"": 0.1, ""z"": 2},
+                            ""rotation"": {""x"": 0, ""y"": 0, ""z"": 0},
+                            ""scale"": {""x"": 0.6, ""y"": 0.6, ""z"": 0.6},
+                            ""components"": [
+                                {
+                                ""component_type"": ""dynamic"",
+                                ""id"": ""c7bc8a4f-71fc-4ff6-87e9-eafc4093421d""
+                                }
+                            ],
+                            ""children"": []
+                            },
+                            {
+                            ""id"": ""floor_plane"",
+                            ""name"": ""floor"",
+                            ""parent_id"": ""24803b20-6880-4d98-92bf-fb53d4979f3b"",
+                            ""position"": {""x"": 0, ""y"": -2.5, ""z"": 0},
+                            ""rotation"": {""x"": 0, ""y"": 0, ""z"": 0},
+                            ""scale"": {""x"": 10, ""y"": 0.1, ""z"": 10},
+                            ""components"": [
+                                {
+                                ""component_type"": ""primitive"",
+                                ""shape"": ""plane"",
+                                ""color"": {""r"": 0.4, ""g"": 0.4, ""b"": 0.4, ""a"": 1}
+                                }
+                            ],
+                            ""children"": []
+                            }
+                        ]
+                        },
+                        {
+                        ""id"": ""sun_light"",
+                        ""name"": ""the_sun"",
+                        ""parent_id"": null,
+                        ""position"": {""x"": 10, ""y"": 10, ""z"": 10},
+                        ""rotation"": {""x"": 0, ""y"": 0, ""z"": 0},
+                        ""scale"": {""x"": 1, ""y"": 1, ""z"": 1},
+                        ""components"": [
+                            {
+                            ""component_type"": ""light"",
+                            ""type"": ""directional"",
+                            ""color"": {""r"": 1.0, ""g"": 0.95, ""b"": 0.8, ""a"": 1},
+                            ""intensity"": 1.5,
+                            ""indirect_multiplier"": 1.0,
+                            ""mode"": ""realtime"",
+                            ""shadow_type"": ""soft_shadows""
+                            }
+                        ],
+                        ""children"": []
+                        }
+                    ]
+                    }
+                    ";
+            BuildSceneFromJSON(sceneJson);
+        }
+
         [ContextMenu("Test Scene: Sun Skybox with Primitives and Dynamic Model")]
         private void TestScene_Sun()
         {
