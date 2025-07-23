@@ -688,6 +688,7 @@ namespace Scener.Importer
             ModifySceneFromJSON(updateJson);
         }
 
+        // crushes the app lol
         [ContextMenu("Test Update Primitive")]
         private void TestUpdatePrimitive()
         {
