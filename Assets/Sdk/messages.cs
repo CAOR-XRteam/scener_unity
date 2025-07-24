@@ -110,7 +110,10 @@ namespace Scener.Sdk
         {
             if (protoContent.Status != 200)
             {
-                return new IncomingErrorMessage(protoContent.Status, $"Error: {protoContent.Text}");
+                return new IncomingErrorMessage(
+                    protoContent.Status,
+                    $"Error: {protoContent.Error}"
+                );
             }
 
             return protoContent.Type switch
@@ -160,7 +163,7 @@ namespace Scener.Sdk
                         .ToList()
                 ),
                 "convert_speech" => new IncomingConvertSpeechMessage(protoContent.Text),
-                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Text),
+                "error" => new IncomingErrorMessage(protoContent.Status, protoContent.Error),
                 _ => new IncomingUnknownMessage(protoContent.Type),
             };
         }
