@@ -11,12 +11,6 @@ namespace System.Runtime.CompilerServices
 
 namespace Scener.Sdk
 {
-    public enum Status
-    {
-        stream,
-        error,
-    };
-
     public enum OutgoingMessageType
     {
         [EnumMember(Value = "text")]
@@ -27,27 +21,6 @@ namespace Scener.Sdk
 
         [EnumMember(Value = "gesture")]
         Gesture,
-    }
-
-    public enum IncomingMessageType
-    {
-        [EnumMember(Value = "session_start")]
-        SessionStart,
-
-        [EnumMember(Value = "unrelated_response")]
-        UnrelatedResponse,
-
-        [EnumMember(Value = "generate_image")]
-        GenerateImage,
-
-        [EnumMember(Value = "generate_3d_object")]
-        Generate3DObject,
-
-        [EnumMember(Value = "generate_3d_scene")]
-        Generate3DScene,
-
-        [EnumMember(Value = "convert_speech")]
-        ConvertSpeech,
     }
 
     public interface IOutgoingMessage
