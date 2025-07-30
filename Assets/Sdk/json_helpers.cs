@@ -289,3 +289,42 @@ public class LightUpdateConverter : JsonConverter
     public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) =>
         throw new NotImplementedException();
 }
+
+public class AdditionInfoConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(SceneObject);
+    }
+
+    public override bool CanWrite => false;
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override object ReadJson(
+        JsonReader reader,
+        Type objectType,
+        object existingValue,
+        JsonSerializer serializer
+    )
+    {
+        if (reader.TokenType == JsonToken.Null)
+        {
+            return null;
+        }
+
+        JObject wrapperObject = JObject.Load(reader);
+
+        JToken sceneObjectToken = wrapperObject["scene_object"];
+
+        if (sceneObjectToken == null)
+        {
+            return null;
+        }
+
+        return sceneObjectToken.ToObject<SceneObject>(serializer);
+    }
+}

@@ -740,6 +740,42 @@ namespace Scener.Importer
             ModifySceneFromJSON(updateJson);
         }
 
+        [ContextMenu("Test Dynamic Scene")]
+        private void TestUpdateDynamicScene()
+        {
+            string updateJson =
+                @"
+{
+  ""name"": ""A sunny room with a dog and a cat."",
+  ""skybox"": null,
+  ""objects_to_add"": [ {
+    ""prompt"": ""a dynamic object"",
+    ""scene_object"":{
+        ""id"": ""f217e1bd-34bd-4eb4-8ef3-34fa3a5cb127"",
+        ""name"": ""dynamic_object"",
+        ""parent_id"": ""24803b20-6880-4d98-92bf-fb53d4979f3b"",
+        ""position"": { ""x"": -2, ""y"": 0.1, ""z"": 2 },
+        ""rotation"": { ""x"": 0, ""y"": 0, ""z"": 0 },
+        ""scale"": { ""x"": 0.5, ""y"": 0.5, ""z"": 0.5 },
+        ""components"": [
+            {
+            ""component_type"": ""dynamic"",
+            ""id"": ""f217e1bd-34bd-4eb4-8ef3-34fa3a5cb127"",
+            }
+        ],
+        ""children"": []
+        }
+    }
+  ],
+  ""objects_to_update"": [],
+  ""objects_to_delete"": [],
+  ""objects_to_regenerate"": []
+}
+";
+
+            ModifySceneFromJSON(updateJson);
+        }
+
         [ContextMenu("Test Update1 Scene")]
         private void TestUpdate1Scene()
         {

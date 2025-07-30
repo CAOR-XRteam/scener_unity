@@ -12,6 +12,7 @@ namespace Scener.Sdk
         public Skybox Skybox { get; set; }
 
         [JsonProperty("objects_to_add")]
+        [JsonConverter(typeof(ListConverter<SceneObject, AdditionInfoConverter>))]
         public List<SceneObject> ObjectsToAdd { get; set; } = new List<SceneObject>();
 
         [JsonProperty("objects_to_update")]
