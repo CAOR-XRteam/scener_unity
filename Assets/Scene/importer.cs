@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using GLTFast;
 using Newtonsoft.Json;
 using Scener.Sdk;
 using Unity.VisualScripting;
@@ -10,7 +11,11 @@ namespace Scener.Importer
 {
     public class SceneBuilder : MonoBehaviour
     {
-        // TODO: rethink partial deserialization
+        public void ModifySceneFromMessage(IncomingModify3DSceneMessage msg)
+        {
+            PreloadModelData(msg.Data);
+            ModifySceneFromJSON(msg.ModifiedScene);
+        }
 
         public void ModifySceneFromJSON(string json)
         {
@@ -307,6 +312,30 @@ namespace Scener.Importer
             return metadata != null ? metadata.gameObject : null;
         }
 
+        public void BuildSceneFromMessage(IncomingGenerate3DSceneMessage msg)
+        {
+            PreloadModelData(msg.Data);
+            BuildSceneFromJSON(msg.Scene);
+        }
+
+        private readonly Dictionary<string, AppMediaAsset> _loadedModelData = new();
+
+        private void PreloadModelData(List<AppMediaAsset> data)
+        {
+            _loadedModelData.Clear();
+            if (data == null)
+                return;
+
+            foreach (var obj in data)
+            {
+                if (!_loadedModelData.ContainsKey(obj.Id))
+                {
+                    _loadedModelData.Add(obj.Id, obj);
+                    Debug.Log($"Pre-loaded model data for ID: {obj.Id}");
+                }
+            }
+        }
+
         private Transform _generatedContentRoot;
 
         public void BuildSceneFromJSON(string json)
@@ -450,7 +479,7 @@ namespace Scener.Importer
             }
         }
 
-        private void BuildDynamic(GameObject target, DynamicObject data)
+        private void BuildDynamicEditor(GameObject target, DynamicObject data)
         {
             GameObject modelAsset = Resources.Load<GameObject>(data.id);
             if (modelAsset != null)
@@ -491,6 +520,78 @@ namespace Scener.Importer
                     Debug.LogWarning(
                         $"Could not find model asset '{data.id}' in Resources folder."
                     );
+                }
+            }
+        }
+
+        private async void BuildDynamic(GameObject target, DynamicObject data)
+        {
+            if (!_loadedModelData.TryGetValue(data.id, out AppMediaAsset modelAsset))
+            {
+                Debug.LogWarning(
+                    $"Could not find pre-loaded model data for dynamic object ID '{data.id}'."
+                );
+                return;
+            }
+
+            GameObject tempModelInstance = null;
+            var gltf = new GltfImport();
+            if (await gltf.Load(modelAsset.Data))
+            {
+                tempModelInstance = new GameObject($"tmp_{data.id}");
+                await gltf.InstantiateMainSceneAsync(tempModelInstance.transform);
+            }
+
+            if (tempModelInstance == null)
+            {
+                Debug.LogError($"Failed to load and instantiate temporary model for ID: {data.id}");
+                return;
+            }
+
+            try
+            {
+                MeshFilter sourceMeshFilter =
+                    tempModelInstance.GetComponentInChildren<MeshFilter>();
+                MeshRenderer sourceMeshRenderer =
+                    tempModelInstance.GetComponentInChildren<MeshRenderer>();
+
+                if (sourceMeshFilter != null && sourceMeshRenderer != null)
+                {
+                    if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
+                    {
+                        targetMeshFilter = target.AddComponent<MeshFilter>();
+                    }
+                    targetMeshFilter.sharedMesh = sourceMeshFilter.sharedMesh;
+
+                    if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
+                    {
+                        targetMeshRenderer = target.AddComponent<MeshRenderer>();
+                    }
+                    targetMeshRenderer.sharedMaterials = sourceMeshRenderer.sharedMaterials;
+                }
+                else
+                {
+                    Debug.LogWarning(
+                        $"Could not find MeshFilter/Renderer in the loaded model '{data.id}'."
+                    );
+                }
+
+                /*
+                Debug.Log($"Reparenting children from '{data.id}' to '{target.name}'.");
+                // Loop backwards because the child collection changes as we move items.
+                for (int i = tempModelInstance.transform.childCount - 1; i >= 0; i--)
+                {
+                    Transform child = tempModelInstance.transform.GetChild(i);
+                    // 'worldPositionStays: false' ensures the child maintains its local position/rotation.
+                    child.SetParent(target.transform, worldPositionStays: false);
+                }
+                */
+            }
+            finally
+            {
+                if (tempModelInstance != null)
+                {
+                    Destroy(tempModelInstance);
                 }
             }
         }
@@ -579,18 +680,18 @@ namespace Scener.Importer
                     light.type = UnityEngine.LightType.Spot;
                     light.range = spot.range;
                     light.spotAngle = spot.spot_angle;
-                    SetLightModeAndShadows(light, spot.mode, spot.shadow_type);
+                    // SetLightModeAndShadows(light, spot.mode, spot.shadow_type);
                     break;
                 case Scener.Sdk.LightType.Directional:
                     DirectionalLight directional = lightData as DirectionalLight;
                     light.type = UnityEngine.LightType.Directional;
-                    SetLightModeAndShadows(light, directional.mode, directional.shadow_type);
+                    // SetLightModeAndShadows(light, directional.mode, directional.shadow_type);
                     break;
                 case Scener.Sdk.LightType.Point:
                     PointLight point = lightData as PointLight;
                     light.type = UnityEngine.LightType.Point;
                     light.range = point.range;
-                    SetLightModeAndShadows(light, point.mode, point.shadow_type);
+                    // SetLightModeAndShadows(light, point.mode, point.shadow_type);
                     break;
                 case Scener.Sdk.LightType.Area:
                     AreaLight area = lightData as AreaLight;
@@ -605,29 +706,28 @@ namespace Scener.Importer
                         light.type = UnityEngine.LightType.Disc;
                         light.areaSize = new Vector2(area.radius.Value, area.radius.Value);
                     }
-                    light.lightmapBakeType = LightmapBakeType.Baked;
                     break;
                 default:
                     break;
             }
         }
 
-        private void SetLightModeAndShadows(Light light, LightMode mode, ShadowType shadowType)
-        {
-            light.lightmapBakeType = mode switch
-            {
-                LightMode.Baked => LightmapBakeType.Baked,
-                LightMode.Mixed => LightmapBakeType.Mixed,
-                _ => LightmapBakeType.Realtime,
-            };
+        // private void SetLightModeAndShadows(Light light, LightMode mode, ShadowType shadowType)
+        // {
+        //     light.lightmapBakeType = mode switch
+        //     {
+        //         LightMode.Baked => LightmapBakeType.Baked,
+        //         LightMode.Mixed => LightmapBakeType.Mixed,
+        //         _ => LightmapBakeType.Realtime,
+        //     };
 
-            light.shadows = shadowType switch
-            {
-                ShadowType.NoShadows => LightShadows.None,
-                ShadowType.HardShadows => LightShadows.Hard,
-                _ => LightShadows.Soft,
-            };
-        }
+        //     light.shadows = shadowType switch
+        //     {
+        //         ShadowType.NoShadows => LightShadows.None,
+        //         ShadowType.HardShadows => LightShadows.Hard,
+        //         _ => LightShadows.Soft,
+        //     };
+        // }
 
         [ContextMenu("Test Update1 Scene")]
         private void TestUpdateSkybox()

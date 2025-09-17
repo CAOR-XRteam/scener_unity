@@ -27,7 +27,6 @@ namespace Scener.Ws
                 return;
             }
 
-            string resourcesPath = Path.Combine(Application.dataPath, "Resources");
             SceneBuilder sceneBuilder = FindFirstObjectByType<SceneBuilder>();
             SceneSerializer sceneSerializer = FindFirstObjectByType<SceneSerializer>();
 
@@ -75,29 +74,9 @@ namespace Scener.Ws
                     Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
                     terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
 
-                    foreach (var obj in msg.Data)
-                    {
-                        string fullPath = Path.Combine(resourcesPath, obj.Filename);
-
-                        try
-                        {
-                            await File.WriteAllBytesAsync(fullPath, obj.Data);
-
-                            Debug.Log($"Successfully saved GLB file to: {fullPath}");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(
-                                $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
-                            );
-                        }
-                    }
-                    UnityEditor.AssetDatabase.Refresh();
-                    Debug.Log("AssetDatabase refreshed to import new models.");
-
                     if (sceneBuilder != null)
                     {
-                        sceneBuilder.BuildSceneFromJSON(msg.Scene);
+                        sceneBuilder.BuildSceneFromMessage(msg);
                     }
                     else
                     {
@@ -129,29 +108,9 @@ namespace Scener.Ws
                     Debug.Log($"Received generate 3D scene message: {msg.ResponseText}");
                     terminal.AddMessageToChat("<b>[Agent]</b>: " + msg.ResponseText);
 
-                    foreach (var obj in msg.Data)
-                    {
-                        string fullPath = Path.Combine(resourcesPath, obj.Filename);
-
-                        try
-                        {
-                            await File.WriteAllBytesAsync(fullPath, obj.Data);
-
-                            Debug.Log($"Successfully saved GLB file to: {fullPath}");
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(
-                                $"Failed to save GLB file '{obj.Filename}'. Error: {e.Message}"
-                            );
-                        }
-                    }
-                    UnityEditor.AssetDatabase.Refresh();
-                    Debug.Log("AssetDatabase refreshed to import new models.");
-
                     if (sceneBuilder != null)
                     {
-                        sceneBuilder.ModifySceneFromJSON(msg.ModifiedScene);
+                        sceneBuilder.ModifySceneFromMessage(msg);
                     }
                     else
                     {

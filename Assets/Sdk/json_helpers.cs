@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Scener.Sdk;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 
 public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
     where TConverter : JsonConverter, new()
@@ -93,9 +94,9 @@ public class SceneComponentConverter : JsonCreationConverter<SceneComponent>
                 string lightType = jObject["type"]?.ToString();
                 return lightType switch
                 {
-                    "spot" => new SpotLight(),
-                    "directional" => new DirectionalLight(),
-                    "point" => new PointLight(),
+                    "spot" => new Scener.Sdk.SpotLight(),
+                    "directional" => new Scener.Sdk.DirectionalLight(),
+                    "point" => new Scener.Sdk.PointLight(),
                     "area" => new AreaLight(),
                     _ => throw new ArgumentException($"Unknown light type: {lightType}"),
                 };
@@ -117,11 +118,11 @@ public class LightConverter
 
     public static void MapLightModeAndShadows(dynamic lightData, Light light)
     {
-        lightData.mode = light.lightmapBakeType switch
+        lightData.mode = light.bakingOutput.lightmapBakeType switch
         {
-            LightmapBakeType.Baked => LightMode.Baked,
-            LightmapBakeType.Mixed => LightMode.Mixed,
-            _ => LightMode.Realtime,
+            LightmapBakeType.Baked => Scener.Sdk.LightMode.Baked,
+            LightmapBakeType.Mixed => Scener.Sdk.LightMode.Mixed,
+            _ => Scener.Sdk.LightMode.Realtime,
         };
         lightData.shadow_type = light.shadows switch
         {
