@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Scener.Sdk;
 using UnityEngine;
-using UnityEngine.Experimental.GlobalIllumination;
 
 public class ListConverter<TBase, TConverter> : JsonConverter<List<TBase>>
     where TConverter : JsonConverter, new()

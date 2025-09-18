@@ -1,38 +1,67 @@
-.chat-dictate-button {
-    width: 100px;
-    background-color: rgb(70, 72, 73);
-    color: white;
-    font-size: 13px;
-    border-radius: 2px;
-}
-
-.chat-send-button {
-    width: 60px;
-    background-color: rgb(70, 72, 73);
-    color: white;
-    font-size: 13px;
-    border-radius: 2px;
-}
-
-.chat-message {
-    color: rgb(255, 255, 255);
-    font-size: 1px;
-    white-space: normal;
-    -unity-line-height: 0;
-    pointer-events: none;
-}
-
 .chat-input-field {
+    height: 80px;
+    min-height: 60px;
+    max-height: 80px;
     flex-direction: row;
     align-items: stretch;
-    flex-grow: 1;
+    padding: 0;
+    flex-grow: 0;
 }
 
 .chat-input {
-    background-color: rgb(166, 204, 241);
+    height: 100%;
+    align-self: stretch;
+    flex-grow: 1;
+    flex-shrink: 1;
+    margin: 2px 2px 2px 0;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.chat-input .unity-base-field__input {
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 8px;
+    background-color: transparent;
     color: black;
-    width: 210px;
-    height: 40px;
-    overflow: scroll;
+    -unity-text-align: upper-left;
+    align-self: stretch;
+}
+
+.chat-scrollview {
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: auto;
+    width: auto;
+}
+
+.chat-send-button,
+.chat-dictate-button {
+    background-color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255); 
+    height: 100%;
+    min-height: 0;
+    margin: 2px;
+    padding: 0;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+}
+
+.label_text {
+    color: rgb(255, 255, 255);
+    font-size: 11px;
     white-space: normal;
+}
+
+.scroll_box {
+    flex-grow: 1;
+    background-color: rgb(133, 150, 165);
+    height: 150px;
+    white-space: normal;
+    visibility: visible;
+    -unity-text-align: lower-left;
 }

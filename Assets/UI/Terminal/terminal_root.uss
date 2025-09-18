@@ -6,6 +6,16 @@
     background-color: rgb(44, 62, 80);
 }
 
+.chatbox {
+    background-color: rgba(44, 62, 80, 0);
+    height: 283px;
+    width: 224px;
+    flex-grow: 0;
+    flex-shrink: 1;
+    flex-direction: column;
+    padding: 5px;
+}
+
 .image_container {
     align-items: flex-start;
     margin: 10px;
