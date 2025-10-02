@@ -271,6 +271,8 @@ namespace Scener.Importer
                 return;
             }
 
+            target.name = regenInfo.NewName ?? target.name;
+
             SceneObjectMetadata metadata = _generatedContentRoot
                 .GetComponentsInChildren<SceneObjectMetadata>(true)
                 .FirstOrDefault(m => m.id == regenInfo.Id);
@@ -440,31 +442,6 @@ namespace Scener.Importer
             }
         }
 
-        // private void BuildPrimitive(GameObject target, PrimitiveObject data)
-        // {
-        //     GameObject tempPrimitive = GameObject.CreatePrimitive(
-        //         data.shape.ToUnityPrimitiveShape()
-        //     );
-
-        //     if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
-        //     {
-        //         targetMeshFilter = target.AddComponent<MeshFilter>();
-        //     }
-        //     if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
-        //     {
-        //         targetMeshRenderer = target.AddComponent<MeshRenderer>();
-        //     }
-
-        //     Mesh sourceMesh = tempPrimitive.GetComponent<MeshFilter>().sharedMesh;
-        //     targetMeshFilter.sharedMesh = Instantiate(sourceMesh);
-        //     if (data.color != null)
-        //     {
-        //         targetMeshRenderer.material.color = data.color.ToUnityColor();
-        //     }
-
-        //     Destroy(tempPrimitive);
-        // }
-
         private void BuildPrimitive(GameObject target, PrimitiveObject data)
         {
             var targetMeshFilter = target.AddComponent<MeshFilter>();
@@ -476,51 +453,6 @@ namespace Scener.Importer
             if (data.color != null)
             {
                 targetMeshRenderer.material.color = data.color.ToUnityColor();
-            }
-        }
-
-        private void BuildDynamicEditor(GameObject target, DynamicObject data)
-        {
-            GameObject modelAsset = Resources.Load<GameObject>(data.id);
-            if (modelAsset != null)
-            {
-                // With the commented code below, it keeps the original hierarchy of unity when loading a 3D object (theathe gameobject that contains geometry gameobject with mesh and materials)
-
-                // GameObject tmp = Instantiate(modelAsset, target.transform);
-                // for (int i = tmp.transform.childCount - 1; i >= 0; i--)
-                // {
-                //     Transform child = tmp.transform.GetChild(i);
-                //     child.SetParent(target.transform, worldPositionStays: false);
-                // }
-
-                // Destroy(tmp);
-
-                // With this code, it flattens the hierarchy and only keeps the mesh and materials of the model asset
-
-                MeshFilter sourceMeshFilter = modelAsset.GetComponentInChildren<MeshFilter>();
-                MeshRenderer sourceMeshRenderer = modelAsset.GetComponentInChildren<MeshRenderer>();
-
-                if (sourceMeshFilter != null && sourceMeshRenderer != null)
-                {
-                    if (!target.TryGetComponent<MeshFilter>(out var targetMeshFilter))
-                    {
-                        targetMeshFilter = target.AddComponent<MeshFilter>();
-                    }
-                    targetMeshFilter.sharedMesh = sourceMeshFilter.sharedMesh;
-
-                    if (!target.TryGetComponent<MeshRenderer>(out var targetMeshRenderer))
-                    {
-                        targetMeshRenderer = target.AddComponent<MeshRenderer>();
-                    }
-
-                    targetMeshRenderer.sharedMaterials = sourceMeshRenderer.sharedMaterials;
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        $"Could not find model asset '{data.id}' in Resources folder."
-                    );
-                }
             }
         }
 
