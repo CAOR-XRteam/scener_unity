@@ -1,56 +1,85 @@
 # Client (3D Scene Generation Platform)
 
-## How to use
+## Overview
 
-To be able to generate 3D scenes, you must establish a connection with the server side of the project. See (server_repo_hyper_link) for detailed documentation on how to launch the server.
+This document outlines the client-side component of the 3D Scene Generation Platform, a system designed to enable users to interactively create and modify 3D environments. This client, built on Unity, provides a rich graphical interface for communicating with an AI agent hosted on the server.
 
-Current fonctionalities: generate 3D objects (command example: generate a 3D model of a cat), generate 3D scenes (command example: generate a sunny room with a couch, a coffee table near it and a cat sitting in the corner), modify 3D scene (command example: remove the cat from the scene, turn the cat into a dog, move the cat out of the room, add a cow in the middle of the room).
-### Adding the project locally
+## How to Use
 
-1. Clone the git repository
-2. Download Unity Hub
-3. Add the project to Unity Hub and launch it
-4. Enter the play-mode
-5. Send messages via chat interface
+To begin generating 3D scenes, you must first establish a connection with the project's server component. Please refer to the [server repository documentation](server_repo_hyper_link) for detailed instructions on launching the server.
 
-### Using prebuilt executable
+### Core Functionalities
 
-Executable file is available at #TODO
+The platform offers robust capabilities for 3D scene manipulation:
 
-## 1. Fonctionalities/Modules
+*   **Generate 3D Objects:** Create individual 3D models based on textual descriptions.
+    *   *Example: "generate a 3D model of a cat"*
+*   **Generate 3D Scenes:** Construct complex 3D environments from high-level prompts.
+    *   *Example: "generate a sunny room with a couch, a coffee table near it, and a cat sitting in the corner"*
+*   **Modify 3D Scenes:** Dynamically alter existing scenes with specific commands.
+    *   *Examples: "remove the cat from the scene", "turn the cat into a dog", "move the cat out of the room", "add a cow in the middle of the room"*
 
-1. User Interface
+### Getting Started
 
-A module providing a graphical terminal interface in Unity that allows the user to interact directly with the AI agent. It includes input handling (keyboard and microphone) and text message display. The user interface layer integrates elements such as an input field, a message history display, and status indicators.
+#### Adding the Project Locally
 
-Appearance and styles and related scripts are available under Assets/UI/Terminal and Assets/Scripts/Terminal respectively.
+1.  **Clone Repository:** Clone the project's Git repository to your local machine.
+2.  **Download Unity Hub:** Ensure you have Unity Hub installed.
+3.  **Add & Launch Project:** Add the cloned project to Unity Hub and launch it within the Unity Editor.
+4.  **Enter Play Mode:** Start the Unity application in play-mode.
+5.  **Interact:** Send commands via the integrated chat interface to begin scene generation.
 
-2. Websocket Client
+#### Using Pre-built Executable
 
-A module implementing a WebSocket client that maintains a bidirectional communication channel over a TCP connection with the Python backend, enabling real-time exchange of messages, scene updates, and user commands. It calls internal methods to format user input into the appropriate messaging protocol (Protobuf) before sending it to the backend, or to render the agent’s responses in real time within the terminal window.
+A pre-built executable file for the client will be available at: #TODO
 
-Module consists of two scripts: client.cs (script that allows to open/close websocket connection, receive and send messages) and message.cs (containts all incoming message processing logic).  
+## Technical Architecture
 
-3. Redis Client
+The client application is composed of several interconnected modules, each handling a specific aspect of user interaction, communication, and 3D scene management within Unity.
 
-Redis is a in-memory database (cf https://redis.io/) used to store scene JSON data. On every scene change (creation or modification) current Unity scene is serialized into JSON format and written to the database with client id key.
+### 1. User Interface (UI)
 
-Client.cs script allows to open/close redis connection and to write JSON scene data to the database.
+This module provides a comprehensive graphical terminal interface within Unity, facilitating direct interaction with the AI agent. It encompasses:
 
-4. SDK
+*   **Input Handling:** Manages user input via keyboard and microphone.
+*   **Message Display:** Renders a history of text messages exchanged with the agent.
+*   **Status Indicators:** Presents real-time operational feedback to the user.
 
-A module defining all data structures used in communication with the Python backend, using Protocol Buffers (Protobuf) as the serialization protocol for efficient, language-independent data transfer. It provides three main categories of structures:
+*Related assets and scripts are located under `Assets/UI/Terminal` and `Assets/Scripts/Terminal` respectively.*
 
-- message structures representing outgoing and incoming communication payloads. Each message type includes serialization and deserialization methods to convert all objects into their Protobuf form (to_proto() / from_proto()). Different message types cover a wide range of communication scenarios. It accounts for textual and vocal outgoing messages. For detailed incoming message types see (server_repo_hyper_link);
-- scene structures that encompass all object models related to the Unity scene JSON representation. They encapsulate spatial and semantic information about scene elements such as objects, transformations, materials, lights, and skybox configurations, and are designed to match the format of Unity’s runtime scene graph, enabling direct scene generation after deserialization in Unity;
-- patch structures that allow efficient scene modification. It accounts for the following modification: object addition, object modification (size/scale/shape/colour/position), object deletion, object regeneration (replace generated 3D mesh by a new one).
+### 2. WebSocket Client
 
-json_helpers.cs file contains useful functions for serialization/deserialization of these structures.
+The WebSocket Client module is responsible for maintaining a persistent, bidirectional communication channel over a TCP connection with the Python backend. This enables real-time exchange of user commands, scene updates, and agent responses.
 
-5. Scene management
+*   It formats user input into the appropriate messaging protocol (Protocol Buffers) before transmission to the backend.
+*   It renders the AI agent's responses in real-time within the terminal window.
 
-A module allowing 3D object and scene rendering/modification in Unity, as well as scene serialization.
+*This module consists of two primary scripts: `client.cs` (manages WebSocket connection, message sending, and receiving) and `message.cs` (handles all incoming message processing logic).*  
 
-- importer.cs script contains code for scene creation/modification in Unity, all auxiliary functions using for these processes as well as some test cases.
-- exporter.cs scripts contains code for scene serialization.
-- model_instantiator.cs contains code for a single 3D object instantiation in Unity.
+### 3. Redis Client
+
+Redis, an in-memory data structure store ([learn more](https://redis.io/)), is utilized to store serialized scene JSON data. Upon every scene modification or creation, the current Unity scene is serialized into JSON format and written to the Redis database, indexed by the client's unique ID.
+
+*The `client.cs` script facilitates opening/closing Redis connections and writing JSON scene data to the database.*
+
+### 4. Software Development Kit (SDK)
+
+The SDK module defines all data structures critical for communication with the Python backend, leveraging Protocol Buffers (Protobuf) for efficient, language-independent data transfer. It categorizes structures into three main groups:
+
+*   **Message Structures:** Represent outgoing and incoming communication payloads, including support for textual and vocal messages. Each message type provides `to_proto()` and `from_proto()` methods for Protobuf serialization and deserialization. For detailed incoming message types, please refer to the [server repository documentation](server_repo_hyper_link).
+*   **Scene Structures:** Encompass object models for Unity scene JSON representation. These structures encapsulate spatial and semantic information (e.g., objects, transformations, materials, lights, skybox configurations) and are designed to align with Unity's runtime scene graph, enabling direct scene generation.
+*   **Patch Structures:** Allow for efficient scene modifications, supporting operations such as:
+    *   Object addition
+    *   Object modification (size, scale, shape, color, position)
+    *   Object deletion
+    *   Object regeneration (replacing a generated 3D mesh with a new one)
+
+*The `json_helpers.cs` file contains utility functions for the serialization and deserialization of these structures.*
+
+### 5. Scene Management
+
+This module is central to the creation, modification, and serialization of 3D objects and scenes within Unity.
+
+*   **`importer.cs`:** Contains code for scene creation and modification in Unity, along with auxiliary functions and test cases for these processes.
+*   **`exporter.cs`:** Manages the serialization of Unity scenes into a structured format.
+*   **`model_instantiator.cs`:** Handles the instantiation of individual 3D objects within the Unity environment.
