@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the client-side component of the 3D Scene Generation Platform, a system designed to enable users to interactively create and modify 3D environments. This client, built on Unity, provides a rich graphical interface for communicating with an AI agent hosted on the server.
+This document outlines the client-side component of the [3D Scene Generation Platform](https://github.com/arteume/Scener), a system designed to enable users to interactively create and modify 3D environments. This client, built on Unity, provides a rich graphical interface for communicating with an AI agent hosted on the server.
 
 ## How to Use
 
