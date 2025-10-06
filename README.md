@@ -51,6 +51,6 @@ json_helpers.cs file contains useful functions for serialization/deserialization
 
 A module allowing 3D object and scene rendering/modification in Unity, as well as scene serialization.
 
-- importer.cs script contains code for scene creation/modification in Unity, all auxiliary functions using for these processes as well ass some test cases.
+- importer.cs script contains code for scene creation/modification in Unity, all auxiliary functions using for these processes as well as some test cases.
 - exporter.cs scripts contains code for scene serialization.
 - model_instantiator.cs contains code for a single 3D object instantiation in Unity.
