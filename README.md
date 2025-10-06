@@ -27,10 +27,11 @@ The platform offers robust capabilities for 3D scene manipulation:
 #### Adding the Project Locally
 
 1.  **Clone Repository:** Clone the project's Git repository to your local machine.
-2.  **Download Unity Hub:** Ensure you have Unity Hub installed.
-3.  **Add & Launch Project:** Add the cloned project to Unity Hub and launch it within the Unity Editor.
-4.  **Enter Play Mode:** Start the Unity application in play-mode.
-5.  **Interact:** Send commands via the integrated chat interface to begin scene generation.
+2.  **Configure Environment:** Configure a `.env` file under `Assets/StreamingAssets` with the necessary host and port parameters. This file should contain `WEBSOCKET_HOST`, `WEBSOCKET_PORT`, `REDIS_HOST`, and `REDIS_PORT` variables. Ensure that the specified ports match those used by the server.
+3.  **Download Unity Hub:** Ensure you have Unity Hub installed.
+4.  **Add & Launch Project:** Add the cloned project to Unity Hub and launch it within the Unity Editor.
+5.  **Enter Play Mode:** Start the Unity application in play-mode.
+6.  **Interact:** Send commands via the integrated chat interface to begin scene generation.
 
 #### Using Pre-built Executable
 
