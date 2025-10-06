@@ -18,6 +18,9 @@ The platform offers robust capabilities for 3D scene manipulation:
     *   *Example: "generate a sunny room with a couch, a coffee table near it, and a cat sitting in the corner"*
 *   **Modify 3D Scenes:** Dynamically alter existing scenes with specific commands.
     *   *Examples: "remove the cat from the scene", "turn the cat into a dog", "move the cat out of the room", "add a cow in the middle of the room"*
+*   **Database Operations:** Manage the server's local database, which stores and reuses generated 3D assets (see [server repository documentation](server_repo_hyper_link)). You can delete individual assets or clear the entire database.
+    *   **Warning:** Clearing the database is a permanent and irreversible action.
+    *   *Examples: "delete asset `asset_id`", "clear the database"*
 
 ### Getting Started
 
