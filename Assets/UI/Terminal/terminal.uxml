@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Terminal/terminal_root.uss?fileID=7433441132597879392&amp;guid=6e2036d3df92dc2bb9ca577f15d2bc4b&amp;type=3#terminal_root" />
+    <Style src="project://database/Assets/UI/Terminal/terminal_input.uss?fileID=7433441132597879392&amp;guid=5412b9860da2e3c35a340b134dc17f57&amp;type=3#terminal_input" />
+
+    <ui:VisualElement name="image_container" class="image_container" />
+
+    <ui:VisualElement name="terminal" class="chatbox">
+        <ui:VisualElement name="box_input" class="chat-input-field">
+            <ui:TextField name="field_text" multiline="true" class="chat-input" />
+            <ui:Button name="button_send" text="Send" focusable="false" class="chat-send-button" />
+            <ui:Button name="button_mic" text="Dictate" focusable="false" class="chat-dictate-button" />
+        </ui:VisualElement>
+
+        <ui:ScrollView name="box_text" class="chat-scrollview" show-vertical-scroller="true" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Hidden" />
+    </ui:VisualElement>
+</ui:UXML>
