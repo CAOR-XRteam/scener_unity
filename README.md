@@ -87,3 +87,18 @@ This module is central to the creation, modification, and serialization of 3D ob
 *   **`importer.cs`:** Contains code for scene creation and modification in Unity, along with auxiliary functions and test cases for these processes.
 *   **`exporter.cs`:** Manages the serialization of Unity scenes into a structured format.
 *   **`model_instantiator.cs`:** Handles the instantiation of individual 3D objects within the Unity environment.
+
+---
+
+<div align="center">
+  <p>
+    Developed at the <a href="https://www.caor.minesparis.psl.eu/">Center for Robotics (CAOR), Mines Paris, PSL University</a></strong>
+  </p>
+  <p>
+    <a href="https://creativecommons.org/licenses/by-sa/4.0/">
+      <img src="https://mirrors.creativecommons.org/presskit/buttons/88x31/png/by-sa.png" alt="CC BY-SA 4.0" width="88" height="31">
+    </a>
+    <br>
+    This project is licensed under the <a href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+  </p>
+</div>
